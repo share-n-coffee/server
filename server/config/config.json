@@ -1,0 +1,9 @@
+{
+  "database": "mongodb://demoman:wgforge1@ds147926.mlab.com:47926/demoproject",
+  "port": 3000,
+  "corsOptions": {
+    "origin": "http://localhost:3000",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "credentials": true
+  }
+}

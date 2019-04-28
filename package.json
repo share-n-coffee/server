@@ -1,0 +1,38 @@
+{
+  "name": "demoproject",
+  "version": "0.0.1",
+  "description": "auth project",
+  "main": "server.js",
+  "scripts": {
+    "client-install": "npm install --prefix client",
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saniok017/demoproject.git"
+  },
+  "author": "saniok",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/saniok017/demoproject/issues"
+  },
+  "homepage": "https://github.com/saniok017/demoproject#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "concurrently": "^4.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "express-partials": "^0.3.0",
+    "express-session": "^1.16.1",
+    "isomorphic-unfetch": "^3.0.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^5.5.4",
+    "passport": "^0.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.11"
+  }
+}
