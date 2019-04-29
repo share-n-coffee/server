@@ -6,8 +6,56 @@ const ensureAuthenticated = require('../lib/ensureAuthenticated');
 const User = require('../models/user');
 
 const routesHandle = app => {
+  app.get('/user', ensureAuthenticated, (req, res) => {
+    res.send({ user: req.user });
+  });
+
   app.get('/', (req, res) => {
-    User.find().then(user => res.json(user));
+    res.render('index', { user: req.user, errors: false });
+  });
+
+  app.get('/failed', (req, res) => {
+    res.render('index', { user: req.user, errors: true });
+  });
+
+  app.get(
+    '/auth/telegram',
+    passport.authenticate('telegram'),
+    (req, res) => {}
+  );
+
+  app.get(
+    '/auth/telegram/callback',
+    passport.authenticate('telegram', { failureRedirect: '/failed' }),
+    (req, res) => {
+      User.findOneAndUpdate(
+        {
+          id: req.user.id
+        },
+        {
+          $set: {
+            id: req.user.id,
+            first_name: req.body.first_name,
+            last_name: req.body.last_name,
+            username: req.body.username,
+            avatar: req.body.avatar
+          }
+        },
+        {
+          _id: -1,
+          upsert: true
+        },
+        (err, result) => {
+          if (err) return res.send(err);
+          res.redirect('/');
+        }
+      );
+    }
+  );
+
+  app.get('/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
   });
 };
 
