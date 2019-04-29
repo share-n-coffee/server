@@ -4,7 +4,7 @@
 
 ## Quick Start
 
-- GO to [https://telepass.me/my_apps](url) and click `Create new app`
+- GO to [telegram](https://telepass.me/my_apps) and click `Create new app`
 - Name your app
 - set Redirect URL to `http://localhost:3000/auth/telegram/callback`
 - smash `Create` button
