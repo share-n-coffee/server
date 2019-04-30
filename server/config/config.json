@@ -7,8 +7,8 @@
     "credentials": true
   },
   "telegramAuth": {
-    "clientID": "<set your Secret here>",
-    "clientSecret": "<set your App ID here>",
+    "clientID": "<set your App ID here>",
+    "clientSecret": "<set your Secret here>",
     "callbackURL": "http://localhost:3000/auth/telegram/callback"
   }
 }

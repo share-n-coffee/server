@@ -7,15 +7,23 @@ const User = require('../models/user');
 
 const routesHandle = app => {
   app.get('/user', ensureAuthenticated, (req, res) => {
-    res.send({ user: req.user });
+    res.send({
+      user: req.user
+    });
   });
 
   app.get('/', (req, res) => {
-    res.render('index', { user: req.user, errors: false });
+    res.render('index', {
+      user: req.user,
+      errors: false
+    });
   });
 
   app.get('/failed', (req, res) => {
-    res.render('index', { user: req.user, errors: true });
+    res.render('index', {
+      user: req.user,
+      errors: true
+    });
   });
 
   app.get(
@@ -26,22 +34,21 @@ const routesHandle = app => {
 
   app.get(
     '/auth/telegram/callback',
-    passport.authenticate('telegram', { failureRedirect: '/failed' }),
+    passport.authenticate('telegram', {
+      failureRedirect: '/failed'
+    }),
     (req, res) => {
-      User.findOneAndUpdate(
-        {
+      User.findOneAndUpdate({
           id: req.user.id
-        },
-        {
+        }, {
           $set: {
             id: req.user.id,
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
-            username: req.body.username,
-            avatar: req.body.avatar
+            first_name: req.user.first_name,
+            last_name: req.user.last_name,
+            username: req.user.username,
+            avatar: req.user.avatar
           }
-        },
-        {
+        }, {
           _id: -1,
           upsert: true
         },
