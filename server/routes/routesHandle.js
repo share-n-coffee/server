@@ -64,6 +64,9 @@ const routesHandle = app => {
     req.logout();
     res.redirect('/');
   });
+
+  //  process request to API
+  app.use('/api', require('../api/api'));
 };
 
 module.exports = routesHandle;
