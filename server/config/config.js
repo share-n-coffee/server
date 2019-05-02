@@ -9,6 +9,6 @@ module.exports = {
   "telegramAuth": {
     "clientID": `${process.env.TELEGRAM_ID}`,
     "clientSecret": `${process.env.TELEGRAM_SECRET}`,
-    "callbackURL": "https://forgeserver.herokuapp.com/auth/telegram/callback"
+    "callbackURL": `${process.env.CALLBACK_URL}`,
   }
 }
