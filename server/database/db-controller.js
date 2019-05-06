@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('./server/config/config');
+const User = require('models/user.js');
+const Event = require('models/event.js');
 
 mongoose
   .connect(config.database, {
@@ -12,3 +14,5 @@ mongoose
   .catch(err => {
     console.log(`Can not connect to the database ${err}`);
   });
+
+

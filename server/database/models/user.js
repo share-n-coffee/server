@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
   id: {
-    type: Number,
+    type: String,
     required: true
   },
   avatar: {
@@ -22,29 +22,61 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  banned: {
+  isBanned: {
     type: Boolean,
-    required: true
+    required: true,
+    default: false
   },
   events: {
     type: Array,
-    required: true
-  },
-  company: {
-    type: String,
-    required: true
+    required: true,
+    default: []
   },
   department: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Department',
     required: true
   },
   birthday: {
     type: Date,
-    required: true
+    required: true,
+    default: null
   },
   gender: {
     type: String,
-    required: true
+    required: true,
+    default: null
+  },
+  created: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  logs: {
+    acceptedEvents: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event'
+    }],
+    visitedEvents: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event'
+    }],
+    bans: [{
+      date: Date,
+      duration: Date
+    }]
+  },
+  admin: {
+    isAdmin: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    password: {
+      type: String,
+      required: true,
+      default: null
+    }
   }
 });
 
