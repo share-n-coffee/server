@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
-  id: {
+  id_telegram: {
     type: String,
     required: true
   },
