@@ -1,11 +1,12 @@
-const signUpButton = document.getElementById('signUp');
-const signInButton = document.getElementById('signIn');
-const container = document.getElementById('container');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
 
-signUpButton.addEventListener('click', () => {
-  container.classList.add('right-panel-active');
-});
+ReactDOM.render(<App />, document.getElementById('root'));
 
-signInButton.addEventListener('click', () => {
-  container.classList.remove('right-panel-active');
-});
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.unregister();
