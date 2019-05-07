@@ -6,7 +6,7 @@
 
 ## GET INFO ABOUT USER
 ```properties
-GET /api/user/{user_telegram_ID}
+GET /api/users/{user_telegram_ID}
 ```
 
 ### RESPONSE CLASS (STATUS 200)
