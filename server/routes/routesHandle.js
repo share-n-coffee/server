@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const passport = require('passport');
 const mongoose = require('mongoose');
@@ -38,9 +39,11 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      User.findOneAndUpdate({
+      User.findOneAndUpdate(
+        {
           id: req.user.id
-        }, {
+        },
+        {
           $set: {
             id: req.user.id,
             first_name: req.user.first_name,
@@ -48,11 +51,13 @@ const routesHandle = app => {
             username: req.user.username,
             avatar: req.user.avatar
           }
-        }, {
+        },
+        {
           _id: -1,
           upsert: true
         },
-        (err, result) => {
+        // eslint-disable-next-line consistent-return
+        function cb(err, result) {
           if (err) return res.send(err);
           res.redirect('/');
         }
