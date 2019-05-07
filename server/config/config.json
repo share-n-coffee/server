@@ -1,14 +1,14 @@
-{
-  "database": "mongodb://demoman:wgforge1@ds147926.mlab.com:47926/demoproject",
-  "port": 3000,
-  "corsOptions": {
-    "origin": "http://localhost:3000",
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-    "credentials": true
+module.exports = {
+  database: `${process.env.NODE_MONGODB_URI}`,
+  port: `${process.env.PORT || 3000}`,
+  corsOptions: {
+    origin: 'https://forgeserver.herokuapp.com/',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true
   },
-  "telegramAuth": {
-    "clientID": "<set your App ID here>",
-    "clientSecret": "<set your Secret here>",
-    "callbackURL": "http://localhost:3000/auth/telegram/callback"
+  telegramAuth: {
+    clientID: `${process.env.NODE_TELEGRAM_ID}`,
+    clientSecret: `${process.env.NODE_TELEGRAM_SECRET}`,
+    callbackURL: 'https://forge-development.herokuapp.com/auth/telegram/callback'
   }
-}
+};
