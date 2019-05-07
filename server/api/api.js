@@ -2,10 +2,44 @@ const config = require('../config/config');
 const express = require("express");
 const router = express.Router();
 const mongoose = require('mongoose');
-const User = require('../models/user');
+const Schema = mongoose.Schema;
 
 
-router.get('/user/:userID', (req, res) => {
+/*
+* This is demo functionality, that's must be removed when DB-Controller will be done
+* vvvvvvvv
+*/
+const demo_user = mongoose.model('demo_user', new Schema({
+  id: {
+    type: String,
+    required: true
+  },
+  avatar: {
+    type: String,
+    required: true
+  },
+  first_name: {
+    type: String,
+    required: true
+  },
+  last_name: {
+    type: String,
+    required: true
+  },
+  username: {
+    type: String,
+    required: true
+  }
+}));
+
+const demo_users = mongoose.model('demo_user');
+
+/*
+* ^^^^^^^^^^
+* This is demo functionality, that's must be removed when DB-Controller will be done
+*/
+
+router.get('/users/:user_telegram_id', (req, res) => {
   mongoose
     .connect(config.database, {
       useNewUrlParser: true,
@@ -13,8 +47,8 @@ router.get('/user/:userID', (req, res) => {
     })
     .then(() => {
       console.log('Database is connected');
-      User
-        .findOne({ id: req.params.userID})
+      demo_users
+        .findOne({ "id_telegram": req.params.user_telegram_id})
         .exec(function (err, user) {
           res.status(200).send(user);
         });
