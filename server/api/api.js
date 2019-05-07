@@ -182,13 +182,33 @@ router.get('/events/:event_id', (req, res) => {
     .then(() => {
       console.log('Database is connected');
       demo_events
-        .findOne({ "id": req.params.event_id})
+        .findOne({ "id": req.params.event_id })
         .exec(function (err, event) {
           res.status(200).send(event);
         });
     })
     .catch(err => {
-      res.status(422).send({ 'Error': `Can not connect to the database ${err}`});
+      res.status(422).send({ 'Error': `Can not connect to the database ${err}` });
+      console.log(`Can not connect to the database ${err}`);
+    });
+});
+
+router.get('/events/', (req, res) => {
+  mongoose
+    .connect(config.database, {
+      useNewUrlParser: true,
+      useCreateIndex: true
+    })
+    .then(() => {
+      console.log('Database is connected');
+      demo_events
+        .find({})
+        .exec(function (err, event) {
+          res.status(200).send(event);
+        });
+    })
+    .catch(err => {
+      res.status(422).send({ 'Error': `Can not connect to the database ${err}` });
       console.log(`Can not connect to the database ${err}`);
     });
 });
