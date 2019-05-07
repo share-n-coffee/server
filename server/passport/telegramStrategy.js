@@ -1,8 +1,5 @@
-const {
-  Strategy
-} = require('passport-telegram');
+const { Strategy } = require('passport-telegram');
 const config = require('../config/config');
-const fetch = require('isomorphic-unfetch');
 
 const telegramStrategy = new Strategy(
   config.telegramAuth,
