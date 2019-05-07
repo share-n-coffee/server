@@ -40,11 +40,11 @@ const routesHandle = app => {
     (req, res) => {
       User.findOneAndUpdate(
         {
-          id: req.user.id
+          id_telegram: req.user.id
         },
         {
           $set: {
-            id: req.user.id,
+            id_telegram: req.user.id,
             first_name: req.user.first_name,
             last_name: req.user.last_name,
             username: req.user.username,
