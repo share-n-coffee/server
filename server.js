@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const middlewares = require('./server/middleware/middleware');
 const routesHandle = require('./server/routes/routesHandle');
+const mongoose = require('mongoose');
+const config = require('./server/config/config');
 
 const port = process.env.PORT || 3000;
 const dev = process.env.NODE_ENV !== 'production';
