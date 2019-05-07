@@ -8,7 +8,10 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "lint": "eslint -c .eslintrc.js ./server/**/*.js",
+    "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
+    "format": "prettier --write \"server/**/*.js\""
   },
   "repository": {
     "type": "git",
@@ -31,9 +34,31 @@
     "isomorphic-unfetch": "^3.0.0",
     "mongoose": "^5.5.4",
     "passport": "^0.4.0",
-    "passport-telegram": "^1.0.0"
+    "passport-telegram": "^1.0.0",
+    "eslint": "^5.0.0"
   },
   "devDependencies": {
-    "nodemon": "^1.18.11"
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "husky": "^2.2.0",
+    "lint-staged": "^8.1.6",
+    "nodemon": "^1.18.11",
+    "prettier": "^1.13.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "*.js": [
+        "eslint -c .eslintrc.js --fix",
+        "prettier --write",
+        "git add"
+      ]
+    }
   }
 }
