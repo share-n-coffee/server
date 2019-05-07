@@ -16,7 +16,7 @@ router.get('/user/:userID', (req, res) => {
       User
         .findOne({ id: req.params.userID})
         .exec(function (err, user) {
-          res.send(user);
+          res.status(200).send(user);
         });
     })
     .catch(err => {
