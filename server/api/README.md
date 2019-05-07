@@ -1,30 +1,37 @@
-# demoproject
+# Random Coffee API documentation
 
 > Demoproject app built with the express along with mongodb for data storage, passport for authentication.
 
-## Quick Start
+#
 
-- GO to [telegram](https://telepass.me/my_apps) and click `Create new app`
-- Name your app
-- set Redirect URL to `http://localhost:3000/auth/telegram/callback`
-- smash `Create` button
-- and finaly set your Secret and App ID in `./server/config/config.json`
-
-```bash
-# Install dependencies for server
-npm install
-
-# Install dependencies for client
-npm run client-install
-
-# Run the client & server with concurrently
-npm run dev
-
-# Run the Express server only
-npm run server
-
-# Run the React client only
-npm run client
-
-# Server runs on http://localhost:3000 and client on http://localhost:5000
+## GET INFO ABOUT USER
+```properties
+GET /api/user/{user_telegram_ID}
 ```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+{
+  "id_telegram": "541419431",
+  "avatar": "https://randomuser.me/api/portraits/men/16.jpg",
+  "first_name": "hugh",
+  "last_name": "gonzales",
+  "username": "smallmeercat345",
+  "isBanned": false,
+  "events": [],
+  "birthday": "1965-07-24T00:48:01Z",
+  "gender": "male",
+  "created": "2019-05-07T12:26:19.895Z",
+  "logs": {
+    "acceptedEvents": [],
+    "visitedEvents": [],
+    "bans": []
+  },
+  "admin": {
+    "isAdmin": false,
+    "password": null
+  }
+}
+```
+
+#
