@@ -32,7 +32,44 @@ const demo_user = mongoose.model('demo_user', new Schema({
   }
 }));
 
+const demo_event = mongoose.model('demo_event', new Schema({
+  id: {
+    type: Number,
+    required: true
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  desciption: {
+    type: String,
+    required: true
+  },
+  location: {
+    type: String,
+    required: true
+  },
+  type: {
+    type: String,
+    required: true
+  },
+  regularity: {
+    type: Date,
+    required: true
+  },
+  startDate: {
+    type: Date,
+    required: true
+  },
+  created: {
+    type: Date,
+    required: true,
+    default: Date.now
+  }
+}));
+
 const demo_users = mongoose.model('demo_user');
+const demo_events = mongoose.model('demo_event');
 
 /*
 * ^^^^^^^^^^
@@ -54,6 +91,27 @@ router.get('/users/:user_telegram_id', (req, res) => {
         });
     })
     .catch(err => {
+      res.status(422).send({ 'Error': `Can not connect to the database ${err}` });
+      console.log(`Can not connect to the database ${err}`);
+    });
+});
+
+router.get('/events/:event_id', (req, res) => {
+  mongoose
+    .connect(config.database, {
+      useNewUrlParser: true,
+      useCreateIndex: true
+    })
+    .then(() => {
+      console.log('Database is connected');
+      demo_events
+        .findOne({ "id": req.params.event_id})
+        .exec(function (err, event) {
+          res.status(200).send(event);
+        });
+    })
+    .catch(err => {
+      res.status(422).send({ 'Error': `Can not connect to the database ${err}`});
       console.log(`Can not connect to the database ${err}`);
     });
 });
