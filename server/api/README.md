@@ -35,3 +35,26 @@ GET /api/users/{user_telegram_ID}
 ```
 
 #
+
+## GET INFO ABOUT EVENT
+```properties
+GET /api/events/{event_id}
+```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+{
+  "_id": "5cd17bb3892885c8f3000509",
+  "id": 1,
+  "title": "Kaya University",
+  "description": "Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.\n\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.",
+  "location": "7.1854773, 1.9979411",
+  "type": "amet",
+  "created": "2019-05-07T14:31:15.569Z"
+}
+```
+
+#
+
+
+
