@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const mongoose = require('mongoose');
 const ensureAuthenticated = require('../lib/ensureAuthenticated');
-const User = require('../models/user');
+const User = require('../database/models/user');
 
 const routesHandle = app => {
   app.get('/user', ensureAuthenticated, (req, res) => {
@@ -38,9 +38,11 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      User.findOneAndUpdate({
+      User.findOneAndUpdate(
+        {
           id: req.user.id
-        }, {
+        },
+        {
           $set: {
             id: req.user.id,
             first_name: req.user.first_name,
@@ -48,7 +50,8 @@ const routesHandle = app => {
             username: req.user.username,
             avatar: req.user.avatar
           }
-        }, {
+        },
+        {
           _id: -1,
           upsert: true
         },
