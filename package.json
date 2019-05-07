@@ -22,11 +22,13 @@
   "homepage": "https://github.com/saniok017/demoproject#readme",
   "dependencies": {
     "concurrently": "^4.1.0",
+    "config": "^3.1.0",
     "cors": "^2.8.5",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
     "isomorphic-unfetch": "^3.0.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.4",
     "passport": "^0.4.0",
     "passport-telegram": "^1.0.0"
