@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
-const controller = require('./dbController.js');
-const UserSchema = require('./models/user.js');
 const connectDatabase = require('./connectDatabase.js');
+const demoUsers = require('./models/demo/user.js');
+const demoEvents = require('./models/demo/event.js');
+const demoDepartments = require('./models/demo/department.js');
+const controller = require('./dbController.js');
+
+controller.bind(null, demoUsers, demoEvents, demoDepartments);
 
 connectDatabase();
-const demoUsers = mongoose.model('demo_user', new UserSchema());
 
 console.log(demoUsers);

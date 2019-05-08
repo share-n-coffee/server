@@ -3,21 +3,27 @@ const Users = require('./models/user.js');
 const Events = require('./models/event.js');
 const Departments = require('./models/department.js');
 
-function DBController() {
+function DBController(
+  users = Users,
+  events = Events,
+  departments = Departments
+) {
   const getUserByTelegramId = id => {
-    const query = Users.findOne({ id_telegram: id }).exec();
+    const query = users.findOne({ id_telegram: id }).exec();
     return new Promise(query);
   };
 
   const getEventById = eventId => {
-    const query = Events.findOne({
-      _id: mongoose.Types.ObjectId(eventId)
-    }).exec();
+    const query = events
+      .findOne({
+        _id: mongoose.Types.ObjectId(eventId)
+      })
+      .exec();
     return new Promise(query);
   };
 
   const getAllEvents = () => {
-    const query = Events.find({}).exec();
+    const query = events.find({}).exec();
     return new Promise(query);
   };
 
