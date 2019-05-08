@@ -15,7 +15,7 @@
 npm install
 
 # Install dependencies for client
-npm run client-install
+cd .client   than   npm install
 
 # Run the client & server with concurrently
 npm run dev
