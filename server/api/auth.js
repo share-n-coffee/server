@@ -133,4 +133,17 @@ router.post('/admin', async (req, res) => {
   }
 });
 
+//route GET api/auth/admin
+router.get('/admin', auth, async (req, res) => {
+  try {
+    const user = await demoUsers
+      .findById(req.user.id)
+      .select('-admin.password');
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 module.exports = router;
