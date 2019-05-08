@@ -48,7 +48,7 @@ function DBController() {
   };
 
   const getEventById = eventId => {
-    const query = Events.findOne({ id: eventId }).exec();
+    const query = Events.findOne({ _id: mongoose.Types.ObjectId(eventId) }).exec();
     return createRequest(query);
   };
 
