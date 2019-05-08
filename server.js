@@ -12,10 +12,13 @@ const dev = process.env.NODE_ENV !== 'production';
 const app = express();
 
 mongoose
-  .connect(config.database, {
-    useNewUrlParser: true,
-    useCreateIndex: true
-  })
+  .connect(
+    config.database,
+    {
+      useNewUrlParser: true,
+      useCreateIndex: true
+    }
+  )
   .then(() => {
     console.log('Database is connected');
   })
@@ -27,6 +30,7 @@ app.set('view engine', 'ejs');
 app.set('views', `${__dirname}/server/views`);
 middlewares(app);
 routesHandle(app);
+app.use('/api/auth', require('./server/api/auth'));
 
 app.listen(port, err => {
   if (err) throw err;
