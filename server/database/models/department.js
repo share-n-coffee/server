@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const DepartmentSchema = new Schema({
   id: {
@@ -21,4 +22,4 @@ const DepartmentSchema = new Schema({
   }
 });
 
-module.exports = Department = mongoose.model('Department', DepartmentSchema);
+module.exports = mongoose.model('demo_Department', DepartmentSchema);
