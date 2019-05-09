@@ -5,20 +5,17 @@ const Departments = require('./models/department.js');
 
 function DBController() {
   const getUserByTelegramId = id => {
-    const query = Users.findOne({ id_telegram: id }).exec();
-    return new Promise(query);
+    return Users.findOne({ id_telegram: id }).exec();
   };
 
   const getEventById = eventId => {
-    const query = Events.findOne({
+    return Events.findOne({
       _id: mongoose.Types.ObjectId(eventId)
     }).exec();
-    return new Promise(query);
   };
 
   const getAllEvents = () => {
-    const query = Events.find({}).exec();
-    return new Promise(query);
+    return Events.find({}).exec();
   };
 
   return { getUserByTelegramId, getEventById, getAllEvents };
