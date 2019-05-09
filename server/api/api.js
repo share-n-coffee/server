@@ -1,6 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const config = require('../config/config');
 const DBController = require('./../database/dbController');
 
 const router = express.Router();
@@ -47,6 +45,14 @@ router.get('/departments/', (req, res) => {
         .send(departments)
     )
     .catch(error => res.status(422).send(error));
+});
+
+router.post('/departments/', (req, res) => {
+  console.log('==============');
+  console.log(req.params);
+  console.log(req.body);
+
+  res.status(200).send(req.body);
 });
 
 router.put('/users/:user_telegram_id/:department_id', (req, res) => {
