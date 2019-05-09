@@ -1,5 +1,8 @@
+const mongoURI =
+  'mongodb://demoman:wgforge1@ds147926.mlab.com:47926/demoproject';
+
 module.exports = {
-  database: `${process.env.NODE_MONGODB_URI}`,
+  database: `${process.env.NODE_MONGODB_URI || mongoURI}`,
   port: `${process.env.PORT || 3000}`,
   corsOptions: {
     origin: 'https://forgeserver.herokuapp.com/',
@@ -9,6 +12,8 @@ module.exports = {
   telegramAuth: {
     clientID: `${process.env.NODE_TELEGRAM_ID}`,
     clientSecret: `${process.env.NODE_TELEGRAM_SECRET}`,
-    callbackURL: 'https://forge-development.herokuapp.com/auth/telegram/callback'
-  }
+    callbackURL:
+      'https://forge-development.herokuapp.com/auth/telegram/callback'
+  },
+  jwtSecret: 'baNaNa'
 };
