@@ -18,7 +18,14 @@ function DBController() {
     return Events.find({}).exec();
   };
 
-  return { getUserByTelegramId, getEventById, getAllEvents };
+  const setUserDepartment = (userTelegramId, departmentId) => {
+    return Users.findOneAndUpdate(
+      { id_telegram: userTelegramId },
+      { $set: { department: new mongoose.Types.ObjectId(departmentId) } }
+    ).exec();
+  };
+
+  return { getUserByTelegramId, getEventById, getAllEvents, setUserDepartment };
 }
 
 module.exports = DBController();
