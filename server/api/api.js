@@ -38,8 +38,19 @@ router.get('/events/', (req, res) => {
     .catch(error => res.status(422).send(error));
 });
 
+router.get('/departments/', (req, res) => {
+  DBController.getAllDepartments()
+    .then(departments =>
+      res
+        .status(200)
+        .set('Content-Type', 'application/json')
+        .send(departments)
+    )
+    .catch(error => res.status(422).send(error));
+});
+
 router.put('/users/:user_telegram_id/:department_id', (req, res) => {
-  DBController.setUserDepartment(
+  DBController.putUserDepartment(
     req.params.user_telegram_id,
     req.params.department_id
   )
