@@ -18,7 +18,11 @@ function DBController() {
     return Events.find({}).exec();
   };
 
-  const setUserDepartment = (userTelegramId, departmentId) => {
+  const getAllDepartments = () => {
+    return Departments.find({}).exec();
+  };
+
+  const putUserDepartment = (userTelegramId, departmentId) => {
     return Users.findOneAndUpdate(
       { id_telegram: userTelegramId },
       { $set: { department: departmentId } },
@@ -27,7 +31,13 @@ function DBController() {
     );
   };
 
-  return { getUserByTelegramId, getEventById, getAllEvents, setUserDepartment };
+  return {
+    getUserByTelegramId,
+    getEventById,
+    getAllEvents,
+    getAllDepartments,
+    putUserDepartment
+  };
 }
 
 module.exports = DBController();
