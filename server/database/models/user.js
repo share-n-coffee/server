@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const UserSchema = new Schema({
   id_telegram: {
@@ -53,18 +54,24 @@ const UserSchema = new Schema({
     default: Date.now
   },
   logs: {
-    acceptedEvents: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Event'
-    }],
-    visitedEvents: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Event'
-    }],
-    bans: [{
-      date: Date,
-      duration: Date
-    }]
+    acceptedEvents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event'
+      }
+    ],
+    visitedEvents: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event'
+      }
+    ],
+    bans: [
+      {
+        date: Date,
+        duration: Date
+      }
+    ]
   },
   admin: {
     isAdmin: {
@@ -80,4 +87,4 @@ const UserSchema = new Schema({
   }
 });
 
-module.exports = User = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('demo_User', UserSchema);

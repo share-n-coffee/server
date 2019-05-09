@@ -1,9 +1,9 @@
 require('dotenv').config();
 
 const express = require('express');
+const mongoose = require('mongoose');
 const middlewares = require('./server/middleware/middleware');
 const routesHandle = require('./server/routes/routesHandle');
-const mongoose = require('mongoose');
 const config = require('./server/config/config');
 
 const port = process.env.PORT || 3000;
@@ -30,6 +30,7 @@ app.set('view engine', 'ejs');
 app.set('views', `${__dirname}/server/views`);
 middlewares(app);
 routesHandle(app);
+// eslint-disable-next-line import/no-unresolved
 app.use('/api/auth', require('./server/api/auth'));
 
 app.listen(port, err => {
