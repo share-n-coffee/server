@@ -31,7 +31,7 @@ app.set('views', `${__dirname}/server/views`);
 middlewares(app);
 routesHandle(app);
 // eslint-disable-next-line import/no-unresolved
-app.use('/api/auth', require('./server/api/auth'));
+// app.use('/api/auth', require('./server/api/auth'));
 
 app.listen(port, err => {
   if (err) throw err;
