@@ -1,9 +1,9 @@
 require('dotenv').config();
 
 const express = require('express');
+const mongoose = require('mongoose');
 const middlewares = require('./server/middleware/middleware');
 const routesHandle = require('./server/routes/routesHandle');
-const mongoose = require('mongoose');
 const config = require('./server/config/config');
 
 const port = process.env.PORT || 3000;
@@ -28,6 +28,8 @@ mongoose
 
 app.set('view engine', 'ejs');
 app.set('views', `${__dirname}/server/views`);
+app.use(express.static(`${__dirname}./.docz/dist`));
+app.use(express.static(`${__dirname}./.docz/dist/static`));
 middlewares(app);
 routesHandle(app);
 app.use('/api/auth', require('./server/api/auth'));

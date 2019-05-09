@@ -1,0 +1,26 @@
+---
+name: Hello world
+route: /
+---
+
+# Hello world
+
+Hello, I'm a [MDX](https://mdxjs.com/) file!
+
+# Documentation build with [Docz](https://www.docz.site/)
+
+---
+
+# Button
+
+import { Playground, Props } from 'docz';
+import { Button } from './client/src/components/Button.jsx';
+
+<Props of={Button} />
+
+## Basic usage
+
+<Playground>
+  <Button>Click me</Button>
+  <Button kind='secondary'>Click me</Button>
+</Playground>

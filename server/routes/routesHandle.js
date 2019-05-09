@@ -1,9 +1,11 @@
 const express = require('express');
-const router = express.Router();
 const passport = require('passport');
 const mongoose = require('mongoose');
+const path = require('path');
 const ensureAuthenticated = require('../lib/ensureAuthenticated');
 const User = require('../database/models/user');
+
+const page = '../../../.docz/dist/index.html';
 
 const routesHandle = app => {
   app.get('/user', ensureAuthenticated, (req, res) => {
@@ -17,6 +19,10 @@ const routesHandle = app => {
       user: req.user,
       errors: false
     });
+  });
+
+  app.get('/docs', (req, res) => {
+    res.sendFile(path.join(`${__dirname}${page}`));
   });
 
   app.get('/failed', (req, res) => {
@@ -55,6 +61,7 @@ const routesHandle = app => {
           _id: -1,
           upsert: true
         },
+        // eslint-disable-next-line consistent-return
         (err, result) => {
           if (err) return res.send(err);
           res.redirect('/');
@@ -69,6 +76,7 @@ const routesHandle = app => {
   });
 
   //  process request to API
+  // eslint-disable-next-line global-require
   app.use('/api', require('../api/api'));
 };
 

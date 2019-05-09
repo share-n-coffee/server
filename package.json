@@ -1,10 +1,11 @@
 {
-  "name": "demoproject",
-  "version": "1.0.1",
+  "name": "Forge_server",
+  "version": "1.1.2",
   "description": "auth project",
   "main": "server.js",
   "scripts": {
-    "client-install": "npm install --prefix client",
+    "docz:dev": "docz dev --open",
+    "docz:build": "docz build",
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
@@ -30,16 +31,18 @@
     "cross-env": "^5.2.0",
     "dotenv": "^7.0.0",
     "ejs": "^2.6.1",
+    "eslint": "^5.0.0",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
     "isomorphic-unfetch": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.4",
     "passport": "^0.4.0",
-    "passport-telegram": "^1.0.0",
-    "eslint": "^5.0.0"
+    "passport-telegram": "^1.0.0"
   },
   "devDependencies": {
+    "docz": "^1.2.0",
+    "docz-theme-default": "^1.2.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-import": "^2.14.0",
@@ -47,6 +50,7 @@
     "husky": "^2.2.0",
     "lint-staged": "^8.1.6",
     "nodemon": "^1.18.11",
+    "path": "^0.12.7",
     "prettier": "^1.13.0"
   },
   "husky": {
