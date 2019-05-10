@@ -14,6 +14,17 @@ router.get('/users/:user_telegram_id', (req, res) => {
     .catch(error => res.status(422).send(error));
 });
 
+router.get('/users/', (req, res) => {
+  DBController.getAllUsers()
+    .then(users =>
+      res
+        .status(200)
+        .set('Content-Type', 'application/json')
+        .send(users)
+    )
+    .catch(error => res.status(422).send(error));
+});
+
 router.get('/events/:event_id', (req, res) => {
   DBController.getEventById(req.params.event_id)
     .then(event =>

@@ -3,18 +3,17 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const DepartmentSchema = new Schema({
-  id: {
-    type: Number,
-    required: true
-  },
+  //  Название отдела
   title: {
     type: String,
     required: true
   },
+  //  Описание отдела
   description: {
     type: String,
     required: true
   },
+  //  Дата создания
   created: {
     type: Date,
     required: true,
