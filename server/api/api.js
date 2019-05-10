@@ -47,6 +47,17 @@ router.get('/events/', (req, res) => {
     .catch(error => res.status(422).send(error));
 });
 
+router.get('/departments/:department_id', (req, res) => {
+  DBController.getDepartmentById(req.params.department_id)
+    .then(department =>
+      res
+        .status(200)
+        .set('Content-Type', 'application/json')
+        .send(department)
+    )
+    .catch(error => res.status(422).send(error));
+});
+
 router.get('/departments/', (req, res) => {
   DBController.getAllDepartments()
     .then(departments =>
@@ -59,11 +70,15 @@ router.get('/departments/', (req, res) => {
 });
 
 router.post('/departments/', (req, res) => {
-  console.log('==============');
-  console.log(req.params);
-  console.log(req.body);
-
-  res.status(200).send(req.body);
+  DBController.postNewDepartment(req.body)
+    .then(data => data)
+    .then(addedDepartment => {
+      res
+        .status(200)
+        .set('Content-Type', 'application/json')
+        .send(addedDepartment);
+    })
+    .catch(error => res.status(422).send(error));
 });
 
 router.put('/users/:user_telegram_id/:department_id', (req, res) => {
