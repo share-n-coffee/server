@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const connectDatabase = require('../lib/connectDatabase');
+const connectDatabase = require('../lib/connectDatabase.js');
 const demoUsers = require('./models/demo/user.js');
 const demoEvents = require('./models/demo/event.js');
 const demoDepartments = require('./models/demo/department.js');
