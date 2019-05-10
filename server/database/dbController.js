@@ -4,6 +4,10 @@ const Events = require('./models/event.js');
 const Departments = require('./models/department.js');
 
 function DBController() {
+  const getAllUsers = () => {
+    return Users.find({}).exec();
+  };
+
   const getUserByTelegramId = id => {
     return Users.findOne({ id_telegram: id }).exec();
   };
@@ -36,7 +40,8 @@ function DBController() {
     getEventById,
     getAllEvents,
     getAllDepartments,
-    putUserDepartment
+    putUserDepartment,
+    getAllUsers
   };
 }
 
