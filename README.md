@@ -2,6 +2,7 @@
 
 [![codecov](https://codecov.io/gh/saniok017/Server/branch/master/graph/badge.svg)](https://codecov.io/gh/saniok017/Server) 
 [![Build Status](https://travis-ci.com/saniok017/Server.svg?branch=master)](https://travis-ci.com/saniok017/Server)
+![Heroku](http://heroku-badge.herokuapp.com/?app=forge-development&style=flat)
 
 ## Quick Start
 
