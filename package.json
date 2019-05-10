@@ -12,7 +12,7 @@
     "lint": "eslint -c .eslintrc.js ./server/**/*.js",
     "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
     "format": "prettier --write \"server/**/*.js\"",
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
