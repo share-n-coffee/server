@@ -1,4 +1,3 @@
-const bodyParser = require('body-parser');
 const passport = require('passport');
 const ensureAuthenticated = require('../lib/ensureAuthenticated');
 const User = require('../database/models/user');
@@ -68,8 +67,6 @@ const routesHandle = app => {
   });
 
   //  process request to API
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json());
   // eslint-disable-next-line global-require
   app.use('/api', require('../api/api'));
 };
