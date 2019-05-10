@@ -3,3 +3,8 @@ node_js:
   - '11'
 services:
   - mongodb
+install:
+  - npm install -g codecov
+script:
+  - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
+  - codecov

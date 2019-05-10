@@ -12,7 +12,7 @@
     "lint": "eslint -c .eslintrc.js ./server/**/*.js",
     "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
     "format": "prettier --write \"server/**/*.js\"",
-    "test": "jest --coverage"
+    "test": "jest --coverage && codecov"
   },
   "repository": {
     "type": "git",
@@ -41,6 +41,7 @@
     "passport-telegram": "^1.0.0"
   },
   "devDependencies": {
+    "codecov": "^3.4.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-import": "^2.14.0",
@@ -65,5 +66,9 @@
         "git add"
       ]
     }
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
   }
 }
