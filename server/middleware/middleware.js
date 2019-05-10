@@ -5,6 +5,7 @@ const cors = require('cors');
 const config = require('../config/config');
 const telegramStrategy = require('../passport/telegramStrategy');
 const passportInitializer = require('../lib/passportInitializer');
+const job = require('../randomizer/randController');
 
 module.exports = app => {
   app.use(express.json());
