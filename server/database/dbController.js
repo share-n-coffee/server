@@ -3,31 +3,57 @@ const Users = require('./models/user.js');
 const Events = require('./models/event.js');
 const Departments = require('./models/department.js');
 
-function DBController(
-  users = Users,
-  events = Events,
-  departments = Departments
-) {
+function DBController() {
+  const getAllUsers = () => {
+    return Users.find({}).exec();
+  };
+
   const getUserByTelegramId = id => {
-    const query = users.findOne({ id_telegram: id }).exec();
-    return new Promise(query);
+    return Users.findOne({
+      id_telegram: id
+    }).exec();
   };
 
   const getEventById = eventId => {
-    const query = events
-      .findOne({
-        _id: mongoose.Types.ObjectId(eventId)
-      })
-      .exec();
-    return new Promise(query);
+    return Events.findOne({
+      _id: mongoose.Types.ObjectId(eventId)
+    }).exec();
   };
 
   const getAllEvents = () => {
-    const query = events.find({}).exec();
-    return new Promise(query);
+    return Events.find({}).exec();
   };
 
-  return { getUserByTelegramId, getEventById, getAllEvents };
+  const getAllDepartments = () => {
+    return Departments.find({}).exec();
+  };
+
+  const putUserDepartment = (userTelegramId, departmentId) => {
+    return Users.findOneAndUpdate(
+      {
+        id_telegram: userTelegramId
+      },
+      {
+        $set: {
+          department: departmentId
+        }
+      },
+      {
+        useFindAndModify: false,
+        new: true
+      },
+      (err, data) => data
+    );
+  };
+
+  return {
+    getUserByTelegramId,
+    getEventById,
+    getAllEvents,
+    getAllDepartments,
+    putUserDepartment,
+    getAllUsers
+  };
 }
 
 module.exports = DBController();

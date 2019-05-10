@@ -1,18 +1,19 @@
 const mongoose = require('mongoose');
 
-const DepartmentSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    required: true
-  },
+const { Schema } = mongoose;
+
+const DepartmentSchema = new Schema({
+  //  Название отдела
   title: {
     type: String,
     required: true
   },
+  //  Описание отдела
   description: {
     type: String,
     required: true
   },
+  //  Дата создания
   created: {
     type: Date,
     required: true,
@@ -20,4 +21,4 @@ const DepartmentSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('Department', DepartmentSchema);
+module.exports = mongoose.model('demo_Department', DepartmentSchema);

@@ -1,0 +1,265 @@
+# Random Coffee API documentation
+
+> This page contains information about Random Coffee API usage
+
+- USERS
+  - [GET all Users](#get-all-users)
+  - [GET info about User](#get-info-about-user)
+  - [PUT user Department](#put-user-department)
+- EVENTS
+  - [GET all Events](#get-all-events)
+  - [GET info about one Event](#get-info-about-one-event)
+- Departments
+  - [GET all departments](#get-all-departments)
+- Admin
+  - [ADMIN LOGIN](#admin-login)
+
+#
+
+## GET INFO ABOUT USER
+
+> **user_telegram_id** – Telegram идентификатор пользователя
+
+```properties
+GET /api/users/{user_telegram_ID}
+```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+{
+  "id_telegram": "541419431",
+  "avatar": "https://randomuser.me/api/portraits/men/16.jpg",
+  "first_name": "hugh",
+  "last_name": "gonzales",
+  "username": "smallmeercat345",
+  "department": null,
+  "isBanned": false,
+  "events": [],
+  "birthday": "1965-07-24T00:48:01Z",
+  "gender": "male",
+  "created": "2019-05-07T12:26:19.895Z",
+  "logs": {
+    "acceptedEvents": [],
+    "visitedEvents": [],
+    "bans": []
+  },
+  "admin": {
+    "isAdmin": false,
+    "password": null
+  }
+}
+```
+
+#
+
+## GET ALL USERS
+
+> Возвращает всех юзеров в виде массива объектов
+
+```properties
+GET /api/users/
+```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+[
+  {
+    "id_telegram": "541419431",
+    "avatar": "https://randomuser.me/api/portraits/men/16.jpg",
+    "first_name": "hugh",
+    "last_name": "gonzales",
+    "username": "smallmeercat345",
+    "department": null,
+    "isBanned": false,
+    "events": [],
+    "birthday": "1965-07-24T00:48:01Z",
+    "gender": "male",
+    "created": "2019-05-07T12:26:19.895Z",
+    "logs": {
+      "acceptedEvents": [],
+      "visitedEvents": [],
+      "bans": []
+    },
+    "admin": {
+      "isAdmin": false,
+      "password": null
+    }
+  },
+  {
+    ...
+  },
+  {
+    ...
+  }
+]
+```
+
+#
+
+## GET ALL EVENTS
+
+> Возвращает все события из БД в виде массива
+
+```properties
+GET /api/events/
+```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+[
+  {
+    "_id": "5cd17bb3892885c8f3000509",
+    "id": 1,
+    "title": "Kaya University",
+    "description": "Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.\n\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.",
+    "location": "7.1854773, 1.9979411",
+    "type": "amet",
+    "created": "2019-05-07T14:31:15.569Z"
+  },
+  {
+    ...
+  },
+  {
+    ...
+  },
+  {
+    ...
+  }
+]
+```
+
+#
+
+## GET INFO ABOUT ONE EVENT
+
+> **event_id** – *_id* идентификатор события из mongodb
+
+```properties
+GET /api/events/{event_id}
+```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+{
+  "_id": "5cd17bb3892885c8f3000509",
+  "id": 1,
+  "title": "Kaya University",
+  "description": "Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.\n\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.",
+  "location": "7.1854773, 1.9979411",
+  "type": "amet",
+  "created": "2019-05-07T14:31:15.569Z"
+}
+```
+
+#
+
+
+## GET ALL DEPARTMENTS
+
+> Возвращает все отделы из БД в виде массива
+
+```properties
+GET /api/departments/
+```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+[
+  {
+    "_id": "5cd1795af34ec4fa8e2bd3ab",
+    "id": 42,
+    "title": "Accounts",
+    "description": "Qui sed consequat, pork loin deserunt boudin nulla proident.  Incididunt velit bacon ad, strip steak capicola venison consectetur magna aute flank esse laboris.  Shoulder ground round doner boudin.  Quis sed nostrud, hamburger chicken magna duis boudin et aliquip corned beef buffalo turkey leberkas nulla.  Tenderloin tongue nisi eu ham hock.",
+    "created": "2019-05-07T12:24:17.266Z"
+  },
+  {
+    ...
+  },
+  {
+    ...
+  },
+  {
+    ...
+  }
+]
+```
+
+#
+
+## PUT USER DEPARTMENT
+
+> При первом входе пользователя в аккаунт, отправляем запрос с выбранным отделом
+
+> **user_telegram_id** – Telegram идентификатор пользователя
+
+> **department_id** – *_id* идентификатор отдела из mongodb
+
+```properties
+PUT /api/users/{user_telegram_ID}/{department_id}
+```
+
+### RESPONSE CLASS (STATUS 200)
+```json
+{
+  "id_telegram": "541419431",
+  "avatar": "https://randomuser.me/api/portraits/men/16.jpg",
+  "first_name": "hugh",
+  "last_name": "gonzales",
+  "username": "smallmeercat345",
+  "department": ObjectId("5cd1795af34ec4fa8e2bd3ac"),
+  "isBanned": false,
+  "events": [],
+  "birthday": "1965-07-24T00:48:01Z",
+  "gender": "male",
+  "created": "2019-05-07T12:26:19.895Z",
+  "logs": {
+    "acceptedEvents": [],
+    "visitedEvents": [],
+    "bans": []
+  },
+  "admin": {
+    "isAdmin": false,
+    "password": null
+  }
+}
+```
+
+
+
+## ADMIN LOGIN
+
+> При входе админа в аккаунт отправляем логин и пароль, а также добавляем header к запросу:
+
+```properties
+POST /api/auth/admin
+{
+    "Content-Type": "application/json"
+},
+{
+	"username":"sadtiger481",
+	"password":"tiger"
+}
+```
+
+### RESPONSE (STATUS 200)
+
+> При успешной аутентификации возвращается токен:
+
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWNkMTc1YWM0NGMyOWY2YmM3ZGJjMGExIn0sImlhdCI6MTU1NzI3NzUyMSwiZXhwIjoxNTU3MjgxMTIxfQ.g2LVARhT6k36XzUej0A6jNolneSjj3yq6lWW7IRNgzw"
+}
+```
+#
+
+
+## GET ADMIN INFO AND RIGHTS
+
+> После получения токена добавляем его в header к запросу для получения информации админа: 
+
+```properties
+GET /api/auth/admin
+{
+  "x-auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWNkMTc1YWM0NGMyOWY2YmM3ZGJjMGExIn0sImlhdCI6MTU1NzI3NzUyMSwiZXhwIjoxNTU3MjgxMTIxfQ.g2LVARhT6k36XzUej0A6jNolneSjj3yq6lWW7IRNgzw"
+}
+```
