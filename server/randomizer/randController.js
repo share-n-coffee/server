@@ -8,7 +8,8 @@ const pairsGenerator = require('./pairsGenerator');
 const job = new CronJob('0 */10 * * * *', () => {
   Promise.all([
     DBController.getAllEvents(),
-    DBController.getAllDepartments()
+    DBController.getAllDepartments(),
+    DBController.getAllUsers()
   ]).then(data => {
     pairsGenerator(data); // <===  Функция генерации пар//
   });
