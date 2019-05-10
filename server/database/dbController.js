@@ -9,7 +9,7 @@ function DBController() {
   };
 
   const getUserByTelegramId = id => {
-    return Users.findOne({ id_telegram: id }).exec();
+    return Users.findOne({ telegram_user_id: id }).exec();
   };
 
   const getEventById = eventId => {
@@ -28,7 +28,7 @@ function DBController() {
 
   const putUserDepartment = (userTelegramId, departmentId) => {
     return Users.findOneAndUpdate(
-      { id_telegram: userTelegramId },
+      { telegram_user_id: userTelegramId },
       { $set: { department: departmentId } },
       { useFindAndModify: false, new: true },
       (err, data) => data
