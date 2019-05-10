@@ -1,6 +1,8 @@
 const passport = require('passport');
 const ensureAuthenticated = require('../lib/ensureAuthenticated');
 const User = require('../database/models/user');
+const authRoutes = require('../api/auth');
+const apiRoutes = require('../api/api');
 
 const routesHandle = app => {
   app.get('/user', ensureAuthenticated, (req, res) => {
@@ -66,8 +68,8 @@ const routesHandle = app => {
     res.redirect('/');
   });
 
-  // eslint-disable-next-line global-require
-  app.use('/api', require('../api/api'));
+  app.use('/api', apiRoutes);
+  app.use('/api/auth', authRoutes);
 };
 
 module.exports = routesHandle;

@@ -19,8 +19,6 @@ middlewares(app);
 
 routesHandle(app);
 
-app.use('/api/auth', require('./server/api/auth'));
-
 app.listen(port, err => {
   if (err) throw err;
   console.log(`> Ready on http://localhost:${port}`);
