@@ -36,11 +36,13 @@
     "express-session": "^1.16.1",
     "isomorphic-unfetch": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.2.4",
     "mongoose": "^5.5.4",
     "passport": "^0.4.0",
     "passport-telegram": "^1.0.0"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.0.1",
     "codecov": "^3.4.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.2.0",
@@ -68,6 +70,7 @@
     }
   },
   "jest": {
+    "preset": "@shelf/jest-mongodb",
     "coverageDirectory": "./coverage/",
     "collectCoverage": true
   }
