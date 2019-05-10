@@ -1,6 +1,7 @@
 # # [Development server](https://forge-development.herokuapp.com/)
 
-[![codecov](https://codecov.io/gh/saniok017/Server/branch/master/graph/badge.svg)](https://codecov.io/gh/saniok017/Server)
+[![codecov](https://codecov.io/gh/saniok017/Server/branch/master/graph/badge.svg)](https://codecov.io/gh/saniok017/Server) 
+[![Build Status](https://travis-ci.com/saniok017/Server.svg?branch=master)](https://travis-ci.com/saniok017/Server)
 
 ## Quick Start
 
