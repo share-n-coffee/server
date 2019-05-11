@@ -9,12 +9,18 @@ function DBController() {
   };
 
   const getUserByTelegramId = id => {
-    return Users.findOne({ id_telegram: id }).exec();
+    return Users.findOne({ telegramUserId: id }).exec();
   };
 
   const getEventById = eventId => {
     return Events.findOne({
       _id: mongoose.Types.ObjectId(eventId)
+    }).exec();
+  };
+
+  const getDepartmentById = departmentId => {
+    return Departments.findOne({
+      _id: mongoose.Types.ObjectId(departmentId)
     }).exec();
   };
 
@@ -28,11 +34,22 @@ function DBController() {
 
   const putUserDepartment = (userTelegramId, departmentId) => {
     return Users.findOneAndUpdate(
-      { id_telegram: userTelegramId },
+      { telegramUserId: userTelegramId },
       { $set: { department: departmentId } },
       { useFindAndModify: false, new: true },
       (err, data) => data
     );
+  };
+
+  const postNewDepartment = department => {
+    const newDepartment = new Departments(department);
+
+    return new Promise((resolve, reject) => {
+      newDepartment.save((err, addedDepartment) => {
+        if (err) reject(err);
+        resolve(addedDepartment);
+      });
+    });
   };
 
   return {
@@ -41,7 +58,9 @@ function DBController() {
     getAllEvents,
     getAllDepartments,
     putUserDepartment,
-    getAllUsers
+    getAllUsers,
+    postNewDepartment,
+    getDepartmentById
   };
 }
 

@@ -4,13 +4,13 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema({
   //  Телеграмовский идентификатор пользователя
-  telegram_user_id: {
-    type: String,
+  telegramUserId: {
+    type: Number,
     required: true
   },
   //  Телеграмовский идентификатор чата с пользователем (необходим для работы бота)
-  telegram_chat_id: {
-    type: String,
+  telegramChatId: {
+    type: Number,
     required: true
   },
   //  Ссылка на аватар пользователя
@@ -19,12 +19,12 @@ const UserSchema = new Schema({
     required: true
   },
   //  Имя
-  first_name: {
+  firstName: {
     type: String,
     required: true
   },
   //  Фамилия
-  last_name: {
+  lastName: {
     type: String,
     required: true
   },
