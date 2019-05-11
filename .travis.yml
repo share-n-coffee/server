@@ -7,7 +7,7 @@ services:
 install:
   - npm install -g codecov
 script:
-  - test
+  - npm run test
 sudo: false
 after_success:
   - ./bin/codecov -e TRAVIS_NODE_VERSION -f coverage/*.json
