@@ -1,13 +1,14 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 
-module.exports = function(req, res, next) {
+// eslint-disable-next-line consistent-return
+module.exports = function tokenCheck(req, res, next) {
   const token = req.header('x-auth-token');
 
   if (!token) {
-    return res
-      .status(401)
-      .json({ msg: 'There is no token, authorization denied' });
+    return res.status(401).json({
+      msg: 'There is no token, authorization denied'
+    });
   }
 
   try {
@@ -15,6 +16,8 @@ module.exports = function(req, res, next) {
     req.user = decoded.user;
     next();
   } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid ' });
+    res.status(401).json({
+      msg: 'Token is not valid '
+    });
   }
 };
