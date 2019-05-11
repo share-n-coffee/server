@@ -37,10 +37,19 @@ class DBController {
     return Departments.find({}).exec();
   }
 
-  putUserDepartment(id, departmentId) {
+  putUserDepartment(userId, department) {
     return Users.findOneAndUpdate(
-      { _id: id },
-      { $set: { department: departmentId } },
+      { _id: userId },
+      { $set: { department } },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  }
+
+  putUserTelegramChatId(userId, telegramChatId) {
+    return Users.findOneAndUpdate(
+      { _id: userId },
+      { $set: { telegramChatId } },
       { useFindAndModify: false, new: true },
       (err, data) => data
     );

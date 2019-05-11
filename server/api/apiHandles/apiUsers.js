@@ -49,19 +49,33 @@ router.get('/', (req, res) => {
 router.put('/', (req, res) => {
   if (
     ObjectId.isValid(req.body.userId) &&
-    ObjectId.isValid(req.body.newDepartment)
+    (ObjectId.isValid(req.body.newDepartment) || req.body.newTelegramChatId)
   ) {
-    DBController.putUserDepartment(req.body.userId, req.body.newDepartment)
-      .then(user =>
-        res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(user)
+    if (ObjectId.isValid(req.body.newDepartment)) {
+      DBController.putUserDepartment(req.body.userId, req.body.newDepartment)
+        .then(user =>
+          res
+            .status(200)
+            .set('Content-Type', 'application/json')
+            .send(user)
+        )
+        .catch(error => res.status(422).send(error));
+    } else {
+      DBController.putUserTelegramChatId(
+        req.body.userId,
+        req.body.newTelegramChatId
       )
-      .catch(error => res.status(422).send(error));
+        .then(user =>
+          res
+            .status(200)
+            .set('Content-Type', 'application/json')
+            .send(user)
+        )
+        .catch(error => res.status(422).send(error));
+    }
   } else {
     res.status(400).send(`
-      Request body must have "userId" AND "newDepartment" parameters with "ObjectId" type!
+      Request body must have valid "userId" AND ("newDepartment" OR "newTelegramChatId") parameters!
     `);
   }
 });
