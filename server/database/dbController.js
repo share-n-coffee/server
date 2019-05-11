@@ -1,47 +1,61 @@
+/* eslint-disable class-methods-use-this */
 const mongoose = require('mongoose');
-const Users = require('./models/user.js');
-const Events = require('./models/event.js');
-const Departments = require('./models/department.js');
+const Users = require('./models/user');
+const Events = require('./models/event');
+const Departments = require('./models/department');
 
-function DBController() {
-  const getAllUsers = () => {
+class DBController {
+  getAllUsers() {
     return Users.find({}).exec();
-  };
+  }
 
-  const getUserByTelegramId = id => {
+  getUserByTelegramId(id) {
     return Users.findOne({ telegramUserId: id }).exec();
-  };
+  }
 
-  const getEventById = eventId => {
+  getUserById(id) {
+    return Users.findOne({ _id: id }).exec();
+  }
+
+  getEventById(eventId) {
     return Events.findOne({
       _id: mongoose.Types.ObjectId(eventId)
     }).exec();
-  };
+  }
 
-  const getDepartmentById = departmentId => {
+  getDepartmentById(departmentId) {
     return Departments.findOne({
       _id: mongoose.Types.ObjectId(departmentId)
     }).exec();
-  };
+  }
 
-  const getAllEvents = () => {
+  getAllEvents() {
     return Events.find({}).exec();
-  };
+  }
 
-  const getAllDepartments = () => {
+  getAllDepartments() {
     return Departments.find({}).exec();
-  };
+  }
 
-  const putUserDepartment = (userTelegramId, departmentId) => {
+  putUserDepartment(userId, department) {
     return Users.findOneAndUpdate(
-      { telegramUserId: userTelegramId },
-      { $set: { department: departmentId } },
+      { _id: userId },
+      { $set: { department } },
       { useFindAndModify: false, new: true },
       (err, data) => data
     );
-  };
+  }
 
-  const postNewDepartment = department => {
+  putUserTelegramChatId(userId, telegramChatId) {
+    return Users.findOneAndUpdate(
+      { _id: userId },
+      { $set: { telegramChatId } },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  }
+
+  postNewDepartment(department) {
     const newDepartment = new Departments(department);
 
     return new Promise((resolve, reject) => {
@@ -50,18 +64,7 @@ function DBController() {
         resolve(addedDepartment);
       });
     });
-  };
-
-  return {
-    getUserByTelegramId,
-    getEventById,
-    getAllEvents,
-    getAllDepartments,
-    putUserDepartment,
-    getAllUsers,
-    postNewDepartment,
-    getDepartmentById
-  };
+  }
 }
 
-module.exports = DBController();
+module.exports = new DBController();

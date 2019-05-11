@@ -16,14 +16,14 @@ const EventSchema = new Schema({
     required: true
   },
   //  Описание события
-  desciption: {
+  description: {
     type: String,
     required: true
   },
   //  Координаты места проведения
   //  Формат: "7.1854773, 1.9979411"
   location: {
-    type: String,
+    type: Array,
     required: true
   },
   event: {

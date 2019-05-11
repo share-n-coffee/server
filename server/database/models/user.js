@@ -11,22 +11,22 @@ const UserSchema = new Schema({
   //  Телеграмовский идентификатор чата с пользователем (необходим для работы бота)
   telegramChatId: {
     type: Number,
-    required: true
+    required: false
   },
   //  Ссылка на аватар пользователя
   avatar: {
     type: String,
-    required: true
+    required: false
   },
   //  Имя
   firstName: {
     type: String,
-    required: true
+    required: false
   },
   //  Фамилия
   lastName: {
     type: String,
-    required: true
+    required: false
   },
   //  Логин из телеграмма, либо для админа установленный вручную
   username: {

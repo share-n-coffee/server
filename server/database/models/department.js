@@ -11,7 +11,7 @@ const DepartmentSchema = new Schema({
   //  Описание отдела
   description: {
     type: String,
-    required: true
+    required: false
   },
   //  Дата создания
   created: {
