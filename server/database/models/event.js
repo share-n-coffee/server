@@ -16,7 +16,7 @@ const EventSchema = new Schema({
     required: true
   },
   //  Описание события
-  desciption: {
+  description: {
     type: String,
     required: true
   },

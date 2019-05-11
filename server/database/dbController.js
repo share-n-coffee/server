@@ -1,8 +1,8 @@
 /* eslint-disable class-methods-use-this */
 const mongoose = require('mongoose');
-const Users = require('./models/user.js');
-const Events = require('./models/event.js');
-const Departments = require('./models/department.js');
+const Users = require('./models/user');
+const Events = require('./models/event');
+const Departments = require('./models/department');
 
 class DBController {
   getAllUsers() {
@@ -11,6 +11,10 @@ class DBController {
 
   getUserByTelegramId(id) {
     return Users.findOne({ telegramUserId: id }).exec();
+  }
+
+  getUserById(id) {
+    return Users.findOne({ _id: id }).exec();
   }
 
   getEventById(eventId) {
@@ -33,9 +37,9 @@ class DBController {
     return Departments.find({}).exec();
   }
 
-  putUserDepartment(userTelegramId, departmentId) {
+  putUserDepartment(id, departmentId) {
     return Users.findOneAndUpdate(
-      { telegramUserId: userTelegramId },
+      { _id: id },
       { $set: { department: departmentId } },
       { useFindAndModify: false, new: true },
       (err, data) => data

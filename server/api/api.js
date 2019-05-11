@@ -1,5 +1,4 @@
 const express = require('express');
-const DBController = require('./../database/dbController');
 const apiEvents = require('./apiHandles/apiEvents');
 const apiUsers = require('./apiHandles/apiUsers');
 const apiDepartments = require('./apiHandles/apiDepartments');
