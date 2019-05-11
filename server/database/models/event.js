@@ -23,7 +23,7 @@ const EventSchema = new Schema({
   //  Координаты места проведения
   //  Формат: "7.1854773, 1.9979411"
   location: {
-    type: String,
+    type: Array,
     required: true
   },
   event: {
