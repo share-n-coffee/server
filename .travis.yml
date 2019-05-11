@@ -4,7 +4,7 @@ node_js:
 services:
   - mongodb
 install:
-  - npm install -g codecov istanbul mocha
+  - npm install -g codecov istanbul@1.0.0-alpha.2
 script:
-  - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
+  - istanbul cover _mocha --reporter lcovonly -- -R spec
   - codecov
