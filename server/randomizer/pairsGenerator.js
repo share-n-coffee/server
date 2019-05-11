@@ -23,8 +23,6 @@ function pairsGenerator(allData) {
         }
       });
     });
-
-    console.log(events);
   }
 
   generateEvents();
@@ -39,6 +37,27 @@ function pairsGenerator(allData) {
   }
 
   generateUsersParticipation();
+
+  function checkUsersParticipation(eventId, event) {
+    Object.entries(event).forEach(department => {
+      const remainedUsers = department[1].filter(user => {
+        return usersParticipation[user].visitsRemain !== 0;
+      });
+      events[eventId][department[0]] = remainedUsers;
+    });
+
+    return event;
+  }
+
+  function generatePairs() {
+    Object.entries(events).forEach(event => {
+      checkUsersParticipation(event[0], event[1]);
+    });
+    console.log(events);
+    process.exit(0);
+  }
+
+  generatePairs();
 }
 
 module.exports = pairsGenerator;
