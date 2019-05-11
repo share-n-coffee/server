@@ -1,3 +1,4 @@
+/* eslint-disable dot-notation */
 const mongoose = require('mongoose');
 const connectDatabase = require('../lib/connectDatabase.js');
 const demoUsers = require('./models/demo/user.js');
@@ -7,7 +8,8 @@ const controller = require('./dbController.js');
 
 const testData = {
   userTelegramId: undefined,
-  eventId: undefined
+  eventId: undefined,
+  departmentId: undefined
 };
 
 connectDatabase();
@@ -19,7 +21,6 @@ describe('dbController tests', () => {
 
   test('Get all Events', done => {
     function cb(data) {
-      // eslint-disable-next-line dot-notation
       testData.eventId = data[0]['_id'];
       expect(data).toHaveLength(5);
       done();
@@ -45,6 +46,8 @@ describe('dbController tests', () => {
 
   test('Get all Departments', done => {
     function cb(data) {
+      testData.departmentId = data[0]['_id'];
+
       expect(data).toHaveLength(5);
       done();
     }
@@ -73,6 +76,17 @@ describe('dbController tests', () => {
 
     controller.getEventById(testData.eventId).then(event => {
       cb(event);
+    });
+  });
+
+  test('GET Department by _id', done => {
+    function cb(department) {
+      expect(department).toHaveProperty('description');
+      done();
+    }
+
+    controller.getDepartmentById(testData.departmentId).then(department => {
+      cb(department);
     });
   });
 });
