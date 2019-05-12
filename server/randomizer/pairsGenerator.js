@@ -6,6 +6,8 @@ function pairsGenerator(allData) {
   const usersData = allData[2];
   const events = {};
   const usersParticipation = {};
+  const generatedPairs = {};
+  const reservedUsers = {};
 
   checkDBMapping(eventsData, departmentsData, usersData);
 
@@ -65,13 +67,56 @@ function pairsGenerator(allData) {
     return usersList;
   }
 
+  function generateEventPairs(availableUsersList) {
+    const eventPairs = [];
+    const users = availableUsersList;
+    const usersWithoutPair = [];
+    users.forEach(balancedUser => {
+      if (balancedUser.isPaired === true) return;
+
+      users.forEach(user => {
+        if (balancedUser.telegramUserId === user.telegramUserId) return;
+        if (balancedUser.departmentId === user.departmentId) return;
+        if (user.isPaired === true || balancedUser.isPaired === true) return;
+        const pair = {};
+        pair.invitedUser1 = balancedUser.telegramUserId;
+        pair.invitedUser2 = user.telegramUserId;
+        eventPairs.push(pair);
+        balancedUser.isPaired = true;
+        usersParticipation[balancedUser.telegramUserId].visitsRemain--;
+        user.isPaired = true;
+        usersParticipation[user.telegramUserId].visitsRemain--;
+      });
+    });
+
+    users.forEach(user => {
+      if (user.isPaired === false) {
+        reservedUsers.push(user);
+      }
+    });
+
+    return {
+      eventPairs,
+      usersWithoutPair
+    };
+  }
+
   function generatePairs() {
     Object.entries(events).forEach(event => {
       checkUsersParticipation(event[0], event[1]);
+
       const availableUsersList = generateEventUsersList(event[1]);
-      console.log('end event');
+
+      const result = generateEventPairs(availableUsersList);
+
+      generatedPairs[event[0]] = result.eventPairs;
+      reservedUsers[event[0]] = result.usersWithoutPair;
+
+      console.log(`end pairs generation for event ${event[0]}`);
     });
 
+    console.log(generatedPairs);
+    console.log(usersParticipation);
     process.exit(0);
   }
 
