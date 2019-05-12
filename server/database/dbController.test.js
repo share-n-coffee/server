@@ -19,6 +19,11 @@ describe('dbController tests', () => {
     expect(controller).toBeTruthy();
   });
 
+  afterAll(async () => {
+    await mongoose.connection.close();
+    console.log('tests done, May the Force be with you young Jedi');
+  });
+
   test('Get all Events', done => {
     function cb(data) {
       testData.eventId = data[0]['_id'];
@@ -35,7 +40,7 @@ describe('dbController tests', () => {
     function cb(data) {
       testData.userTelegramId = data[0].telegramUserId;
 
-      expect(data).toHaveLength(20);
+      expect(data).toHaveLength(21);
       done();
     }
 
