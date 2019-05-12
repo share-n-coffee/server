@@ -1,5 +1,7 @@
 /* eslint-disable dot-notation */
 const mongoose = require('mongoose');
+const { MongoClient } = require('mongodb');
+const config = require('./../config/config');
 const connectDatabase = require('../lib/connectDatabase.js');
 const demoUsers = require('./models/demo/user.js');
 const demoEvents = require('./models/demo/event.js');
@@ -37,16 +39,28 @@ describe('dbController tests', () => {
   });
 
   test('Get all Users', done => {
-    function cb(data) {
-      testData.userTelegramId = data[0].telegramUserId;
+    function cb(controllerUsers, mongoUsersCount) {
+      testData.userTelegramId = controllerUsers[0].telegramUserId;
 
-      expect(data).toHaveLength(21);
+      expect(controllerUsers).toHaveLength(mongoUsersCount);
       done();
     }
 
-    controller.getAllUsers().then(users => {
-      cb(users);
-    });
+    MongoClient.connect(
+      config.database,
+      (err, client) => {
+        client
+          .db('demoproject')
+          .collection('demo_users')
+          .find({})
+          .count((errr, mongoUsersCount) => {
+            client.close();
+            controller.getAllUsers().then(controllerUsers => {
+              cb(controllerUsers, mongoUsersCount);
+            });
+          });
+      }
+    );
   });
 
   test('Get all Departments', done => {
