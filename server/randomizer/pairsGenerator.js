@@ -10,8 +10,8 @@ function pairsGenerator(allData) {
   const reservedUsers = {};
   let usersData = allData[2];
 
-  usersData = checkUserFields(usersData);
-  checkDBMapping(eventsData, departmentsData, usersData);
+  usersData = checkUserFields(usersData); // проверяем наличие отдела и запланированных событий
+  checkDBMapping(eventsData, departmentsData, usersData); // проверяем, что id отдела и событий у юзера соответствуют базе данных
 
   function generateEvents() {
     eventsData.forEach(event => {
@@ -29,7 +29,7 @@ function pairsGenerator(allData) {
     });
   }
 
-  generateEvents();
+  generateEvents(); // генерируем основную структуру событий
 
   function generateUsersParticipation(timesPerPeriod = 1) {
     usersData.forEach(user => {
@@ -40,7 +40,7 @@ function pairsGenerator(allData) {
     });
   }
 
-  generateUsersParticipation();
+  generateUsersParticipation(); // генерируем вспомогательный массив юзеров
 
   function checkUsersParticipation(eventId, event) {
     Object.entries(event).forEach(department => {
@@ -49,8 +49,6 @@ function pairsGenerator(allData) {
       });
       events[eventId][department[0]] = remainedUsers;
     });
-
-    return event;
   }
 
   function generateEventUsersList(event) {
@@ -116,11 +114,11 @@ function pairsGenerator(allData) {
 
   function generatePairs() {
     Object.entries(events).forEach(event => {
-      checkUsersParticipation(event[0], event[1]);
+      checkUsersParticipation(event[0], event[1]); // оставляем для генерации пар только тех юзеров, кто еще может принимать участие в данном периоде
 
-      const availableUsersList = generateEventUsersList(event[1]);
+      const availableUsersList = generateEventUsersList(event[1]); // собираем список подписчиков события из всех отделов
 
-      const result = generateEventPairs(availableUsersList);
+      const result = generateEventPairs(availableUsersList); // генерируем пары
 
       generatedPairs[event[0]] = result.eventPairs;
       reservedUsers[event[0]] = result.usersWithoutPair;
@@ -128,7 +126,7 @@ function pairsGenerator(allData) {
       console.log(`end pairs generation for event ${event[0]}`);
     });
 
-    confirmReservedUsers();
+    confirmReservedUsers(); // проверяем возможность посещения событий для юзеров, добавленных в резерв
 
     console.log('Generated Pairs:', generatedPairs);
     console.log('Users Participation for current period:', usersParticipation);
@@ -136,7 +134,7 @@ function pairsGenerator(allData) {
     process.exit(0);
   }
 
-  generatePairs();
+  generatePairs(); // вызов генерации пар
 }
 
 module.exports = pairsGenerator;
