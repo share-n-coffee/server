@@ -1,0 +1,26 @@
+{
+  "name": "telegrambot",
+  "version": "1.0.0",
+  "description": "telegramBot \"RandomCofee\"",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saniok017/demoproject.git"
+  },
+  "author": "Vorobievik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saniok017/demoproject/issues"
+  },
+  "homepage": "https://github.com/saniok017/demoproject#readme",
+  "dependencies": {
+    "node-fetch": "^2.5.0",
+    "node-telegram-bot-api": "^0.30.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.0"
+  }
+}
