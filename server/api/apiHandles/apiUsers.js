@@ -16,7 +16,6 @@ router.get('/', (req, res) => {
       .catch(error => res.status(422).send(error));
   } else {
     const searchId = req.body.userId || req.body.userTelegramId;
-    console.log(searchId);
 
     if (searchId) {
       if (ObjectId.isValid(searchId)) {

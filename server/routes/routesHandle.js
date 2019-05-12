@@ -37,8 +37,6 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      console.log(req.user);
-
       DBController.getUserByTelegramId(req.user.id)
         .then(user => {
           if (user === null || (Array.isArray(user) && user.length === 0)) {
