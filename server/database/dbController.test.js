@@ -41,11 +41,13 @@ describe('dbController tests', () => {
   test('Get all Users', done => {
     function cb(controllerUsers, mongoUsersCount) {
       testData.userTelegramId = controllerUsers[0].telegramUserId;
+      testData.userId = controllerUsers[0]['_id'];
 
       expect(controllerUsers).toHaveLength(mongoUsersCount);
       done();
     }
 
+    //  Send mongodb driver's query for comparing results
     MongoClient.connect(
       config.database,
       (err, client) => {
@@ -87,9 +89,20 @@ describe('dbController tests', () => {
     });
   });
 
+  test('GET User by _id', done => {
+    function cb(user) {
+      expect(user).toHaveProperty('username');
+      done();
+    }
+
+    controller.getUserById(testData.userId).then(user => {
+      cb(user);
+    });
+  });
+
   test('GET Event by _id', done => {
     function cb(event) {
-      // expect(event).toHaveProperty('description');
+      expect(event).toHaveProperty('description');
       done();
     }
 
@@ -106,6 +119,37 @@ describe('dbController tests', () => {
 
     controller.getDepartmentById(testData.departmentId).then(department => {
       cb(department);
+    });
+  });
+
+  test('POST new Department', done => {
+    const newDepartmentParams = {
+      title: 'New Department',
+      description: 'Just another Department'
+    };
+
+    function cb(newDepartment) {
+      expect(newDepartment.description).toMatch(
+        newDepartmentParams.description
+      );
+
+      //  Send mongodb driver's query for deleting test Department
+      MongoClient.connect(
+        config.database,
+        (err, client) => {
+          client
+            .db('demoproject')
+            .collection('demo_departments')
+            .deleteOne({ _id: newDepartment['_id'] }, () => {
+              client.close();
+              done();
+            });
+        }
+      );
+    }
+
+    controller.postNewDepartment(newDepartmentParams).then(newDepartment => {
+      cb(newDepartment);
     });
   });
 });
