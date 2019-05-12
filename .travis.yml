@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+  - '11'
+  - '10'
+services:
+  - mongodb
+sudo: false
+after_success:
+  - ./bin/codecov -e TRAVIS_NODE_VERSION -f coverage/*.json

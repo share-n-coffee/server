@@ -1,77 +1,147 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const UserSchema = new Schema({
-  id_telegram: {
-    type: String,
+  //  Телеграмовский идентификатор пользователя
+  telegramUserId: {
+    type: Number,
     required: true
   },
+  //  Телеграмовский идентификатор чата с пользователем (необходим для работы бота)
+  telegramChatId: {
+    type: Number,
+    required: false
+  },
+  //  Ссылка на аватар пользователя
   avatar: {
     type: String,
-    required: true
+    required: false
   },
-  first_name: {
+  //  Имя
+  firstName: {
     type: String,
-    required: true
+    required: false
   },
-  last_name: {
+  //  Фамилия
+  lastName: {
     type: String,
-    required: true
+    required: false
   },
+  //  Логин из телеграмма, либо для админа установленный вручную
   username: {
     type: String,
     required: true
   },
-  isBanned: {
-    type: Boolean,
-    required: true,
-    default: false
+  banned: {
+    //  Забанен ли пользователь
+    status: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    //  Если забанен, когда истекает срок бана
+    expired: {
+      type: Date,
+      required: true,
+      default: null
+    }
   },
+  //  Массив с событиями, на которые подписан пользователь
   events: {
     type: Array,
     required: true,
     default: []
   },
+  //  Отдел, в котором работает пользователь
   department: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Department',
-    required: true
+    required: false
   },
-  birthday: {
-    type: Date,
-    required: true,
-    default: null
-  },
-  gender: {
-    type: String,
-    required: true,
-    default: null
-  },
+  //  Дата создания аккаунта (дата первой авторизации через телегу)
   created: {
     type: Date,
     required: true,
     default: Date.now
   },
+  //  Здесь хранятся все действия пользователя
   logs: {
-    acceptedEvents: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Event'
-    }],
-    visitedEvents: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Event'
-    }],
-    bans: [{
-      date: Date,
-      duration: Date
-    }]
+    //  Всё подписки/отписки пользователя
+    //  Массив объектов
+    subscribedEvents: [
+      {
+        //  Идентификатор события
+        event: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Event',
+          required: true
+        },
+        //  Действие пользователя ("subscribe"/"unsubscribe") (подписка/отписка)
+        action: {
+          type: String,
+          required: true
+        }
+      }
+    ],
+    //  Всё приглашения на события, которые отправляются пользователю
+    //  Массив объектов
+    invitedEvents: [
+      {
+        //  Идентификатор события
+        event: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Event',
+          required: true
+        },
+        //  Действие пользователя ("accept"/"decline") (подтвердил/отклонил)
+        action: {
+          type: String,
+          required: true
+        }
+      }
+    ],
+    //  массив посещенных пользователем событий
+    visitedEvents: [
+      {
+        //  Идентификатор события
+        event: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Event',
+          required: true
+        },
+        //  Дата посещения
+        date: {
+          type: Date,
+          required: true
+        }
+      }
+    ],
+    //  Все полученные пользователем баны
+    bans: [
+      {
+        //  Дата бана
+        startDate: {
+          type: Date,
+          required: true
+        },
+        //  Дата окончания бана
+        endDate: {
+          type: Date,
+          required: true
+        }
+      }
+    ]
   },
+  //  Если пользователь админ
   admin: {
+    //  Админский флаг
     isAdmin: {
       type: Boolean,
       required: true,
       default: false
     },
+    //  Админский пароль для входа в систему, если к админу не привязан телеграм
     password: {
       type: String,
       required: true,
@@ -80,4 +150,4 @@ const UserSchema = new Schema({
   }
 });
 
-module.exports = User = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('demo_User', UserSchema);
