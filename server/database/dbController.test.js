@@ -40,7 +40,7 @@ describe('dbController tests', () => {
     function cb(data) {
       testData.userTelegramId = data[0].telegramUserId;
 
-      expect(data).toHaveLength(21);
+      expect(data).toHaveLength(20);
       done();
     }
 
