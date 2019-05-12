@@ -37,6 +37,8 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
+      const callbackURI = req.query.callback;
+
       DBController.getUserByTelegramId(req.user.id)
         .then(user => {
           if (user === null || (Array.isArray(user) && user.length === 0)) {
@@ -48,13 +50,13 @@ const routesHandle = app => {
               avatar: req.user.avatar
             })
               .then(newUser => {
-                res.redirect('/');
+                res.redirect(callbackURI);
               })
               .catch(err => {
                 res.send(err);
               });
           } else {
-            res.redirect('/');
+            res.redirect(callbackURI);
           }
         })
         .catch(err => {
