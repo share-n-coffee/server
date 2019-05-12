@@ -1,10 +1,12 @@
 const express = require('express');
 const { ObjectId } = require('mongoose').Types;
-const DBController = require('./../../database/dbController');
+const ClassDBController = require('./../../database/dbController');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
+  const DBController = new ClassDBController();
+
   if (!req.body.userId && !req.body.userTelegramId) {
     DBController.getAllUsers()
       .then(users =>
@@ -16,7 +18,6 @@ router.get('/', (req, res) => {
       .catch(error => res.status(422).send(error));
   } else {
     const searchId = req.body.userId || req.body.userTelegramId;
-    console.log(searchId);
 
     if (searchId) {
       if (ObjectId.isValid(searchId)) {
@@ -52,6 +53,8 @@ router.put('/', (req, res) => {
     (ObjectId.isValid(req.body.newDepartment) || req.body.newTelegramChatId)
   ) {
     if (ObjectId.isValid(req.body.newDepartment)) {
+      const DBController = new ClassDBController();
+
       DBController.putUserDepartment(req.body.userId, req.body.newDepartment)
         .then(user =>
           res
@@ -61,6 +64,8 @@ router.put('/', (req, res) => {
         )
         .catch(error => res.status(422).send(error));
     } else {
+      const DBController = new ClassDBController();
+
       DBController.putUserTelegramChatId(
         req.body.userId,
         req.body.newTelegramChatId
