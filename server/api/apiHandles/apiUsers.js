@@ -52,9 +52,9 @@ router.put('/', (req, res) => {
     ObjectId.isValid(req.body.userId) &&
     (ObjectId.isValid(req.body.newDepartment) || req.body.newTelegramChatId)
   ) {
-    if (ObjectId.isValid(req.body.newDepartment)) {
-      const DBController = new ClassDBController();
+    const DBController = new ClassDBController();
 
+    if (ObjectId.isValid(req.body.newDepartment)) {
       DBController.putUserDepartment(req.body.userId, req.body.newDepartment)
         .then(user =>
           res
@@ -64,8 +64,6 @@ router.put('/', (req, res) => {
         )
         .catch(error => res.status(422).send(error));
     } else {
-      const DBController = new ClassDBController();
-
       DBController.putUserTelegramChatId(
         req.body.userId,
         req.body.newTelegramChatId

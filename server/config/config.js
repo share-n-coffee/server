@@ -13,8 +13,7 @@ module.exports = {
     clientID: `${process.env.NODE_TELEGRAM_ID}`,
     clientSecret: `${process.env.NODE_TELEGRAM_SECRET}`,
     callbackURL:
-      // 'https://forge-development.herokuapp.com/auth/telegram/callback'
-      'http://localhost:3000/auth/telegram/callback'
+      'https://forge-development.herokuapp.com/auth/telegram/callback'
   },
   jwtSecret: 'baNaNa',
   frontendServer: 'https://loori-r.github.io/share_coffee_frontend'
