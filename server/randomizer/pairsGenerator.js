@@ -49,11 +49,29 @@ function pairsGenerator(allData) {
     return event;
   }
 
+  function generateEventUsersList(event) {
+    const usersList = [];
+
+    Object.entries(event).forEach(department => {
+      department[1].forEach(telegramUserId => {
+        const user = {};
+        user.telegramUserId = telegramUserId;
+        user.departmentId = department[0];
+        user.isPaired = false;
+        usersList.push(user);
+      });
+    });
+
+    return usersList;
+  }
+
   function generatePairs() {
     Object.entries(events).forEach(event => {
       checkUsersParticipation(event[0], event[1]);
+      const availableUsersList = generateEventUsersList(event[1]);
+      console.log('end event');
     });
-    console.log(events);
+
     process.exit(0);
   }
 
