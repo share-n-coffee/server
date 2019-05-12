@@ -50,10 +50,16 @@ const routesHandle = app => {
               avatar: req.user.avatar
             })
               .then(newUser => {
-                res.redirect(callbackURI);
+                // res.redirect(callbackURI);
+                res.statusCode = 302;
+                res.setHeader('Location', callbackURI);
+                res.end();
               })
               .catch(err => {
-                res.send(err);
+                // res.send(err);
+                res.statusCode = 302;
+                res.setHeader('Location', callbackURI);
+                res.end();
               });
           } else {
             res.redirect(callbackURI);
