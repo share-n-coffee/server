@@ -1,8 +1,9 @@
 const passport = require('passport');
 const ensureAuthenticated = require('../lib/ensureAuthenticated');
-const DBController = require('../database/dbController');
+const ClassDBController = require('../database/dbController');
 const authRoutes = require('../api/auth');
 const apiRoutes = require('../api/api');
+const config = require('../config/config');
 
 const routesHandle = app => {
   app.get('/user', ensureAuthenticated, (req, res) => {
@@ -37,7 +38,7 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      const callbackURI = req.query.callback;
+      const DBController = new ClassDBController();
 
       DBController.getUserByTelegramId(req.user.id)
         .then(user => {
@@ -50,19 +51,19 @@ const routesHandle = app => {
               avatar: req.user.avatar
             })
               .then(newUser => {
-                // res.redirect(callbackURI);
-                res.statusCode = 302;
-                res.setHeader('Location', callbackURI);
-                res.end();
+                res.redirect(
+                  303,
+                  `${config.frontendServer}/id/${newUser.telegramUserId}`
+                );
               })
               .catch(err => {
-                // res.send(err);
-                res.statusCode = 302;
-                res.setHeader('Location', callbackURI);
-                res.end();
+                res.redirect(`${config.frontendServer}/error`);
               });
           } else {
-            res.redirect(callbackURI);
+            res.redirect(
+              303,
+              `${config.frontendServer}/id/${user.telegramUserId}`
+            );
           }
         })
         .catch(err => {

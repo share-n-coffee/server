@@ -1,5 +1,5 @@
-/* eslint-disable class-methods-use-this */
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+const mongoose = require('mongoose').set('debug', true);
 
 const UserSchema = require('./../database/models/user');
 const EventSchema = require('./../database/models/event');
@@ -7,7 +7,7 @@ const DepartmentSchema = require('./../database/models/department');
 
 class DBController {
   constructor(
-    userModel = 'demo_User',
+    userModel = 'demo_user',
     eventModel = 'demo_event',
     departmentModel = 'demo_department'
   ) {
@@ -28,9 +28,14 @@ class DBController {
     return this.Users.findOne({ _id: id }).exec();
   }
 
+  getAllEvents() {
+    return this.Events.find({}).exec();
+  }
+
   getEventById(eventId) {
     return this.Events.findOne({
       _id: mongoose.Types.ObjectId(eventId)
+      // _id: eventId
     }).exec();
   }
 
@@ -38,10 +43,6 @@ class DBController {
     return this.Departments.findOne({
       _id: mongoose.Types.ObjectId(departmentId)
     }).exec();
-  }
-
-  getAllEvents() {
-    return this.Events.find({}).exec();
   }
 
   getAllDepartments() {

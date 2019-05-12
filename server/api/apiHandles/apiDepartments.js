@@ -1,10 +1,12 @@
 const express = require('express');
 const { ObjectId } = require('mongoose').Types;
-const DBController = require('../../database/dbController');
+const ClassDBController = require('../../database/dbController');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
+  const DBController = new ClassDBController();
+
   if (!req.body.departmentId) {
     DBController.getAllDepartments()
       .then(departments =>
@@ -29,6 +31,8 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+  const DBController = new ClassDBController();
+
   if (req.body.title) {
     DBController.postNewDepartment(req.body)
       .then(data => data)
