@@ -8,6 +8,7 @@ const passportInitializer = require('../lib/passportInitializer');
 
 module.exports = app => {
   app.use(express.json());
+  app.use(express.static('public'));
   app.use(cors(config.corsOptions));
   app.use(
     session({ secret: 'keyboard cat', resave: false, saveUninitialized: false })
