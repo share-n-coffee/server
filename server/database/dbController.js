@@ -65,6 +65,17 @@ class DBController {
       });
     });
   }
+
+  postNewUser(user) {
+    const newUser = new Users(user);
+
+    return new Promise((resolve, reject) => {
+      newUser.save((err, addedUser) => {
+        if (err) reject(err);
+        resolve(addedUser);
+      });
+    });
+  }
 }
 
 module.exports = new DBController();

@@ -1,6 +1,6 @@
 const passport = require('passport');
 const ensureAuthenticated = require('../lib/ensureAuthenticated');
-const User = require('../database/models/user');
+const DBController = require('../database/dbController');
 const authRoutes = require('../api/auth');
 const apiRoutes = require('../api/api');
 
@@ -37,29 +37,31 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      User.findOneAndUpdate(
-        {
-          id_telegram: req.user.id
-        },
-        {
-          $set: {
-            id_telegram: req.user.id,
-            first_name: req.user.first_name,
-            last_name: req.user.last_name,
-            username: req.user.username,
-            avatar: req.user.avatar
+      console.log(req.user);
+
+      DBController.getUserByTelegramId(req.user.id)
+        .then(user => {
+          if (user === null || (Array.isArray(user) && user.length === 0)) {
+            DBController.postNewUser({
+              telegramUserId: req.user.id,
+              firstName: req.user.first_name,
+              lastName: req.user.last_name,
+              username: req.user.username,
+              avatar: req.user.avatar
+            })
+              .then(newUser => {
+                res.redirect('/');
+              })
+              .catch(err => {
+                res.send(err);
+              });
+          } else {
+            res.redirect('/');
           }
-        },
-        {
-          _id: -1,
-          upsert: true
-        },
-        (err, result) => {
-          if (err) return res.send(err);
-          res.redirect('/');
-          return 42;
-        }
-      );
+        })
+        .catch(err => {
+          res.send(err);
+        });
     }
   );
 

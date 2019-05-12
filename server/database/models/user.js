@@ -37,13 +37,13 @@ const UserSchema = new Schema({
     //  Забанен ли пользователь
     status: {
       type: Boolean,
-      required: true,
+      required: false,
       default: false
     },
     //  Если забанен, когда истекает срок бана
     expired: {
       type: Date,
-      required: true,
+      required: false,
       default: null
     }
   },
@@ -138,13 +138,13 @@ const UserSchema = new Schema({
     //  Админский флаг
     isAdmin: {
       type: Boolean,
-      required: true,
+      required: false,
       default: false
     },
     //  Админский пароль для входа в систему, если к админу не привязан телеграм
     password: {
       type: String,
-      required: true,
+      required: false,
       default: null
     }
   }
