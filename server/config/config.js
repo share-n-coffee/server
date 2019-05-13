@@ -6,9 +6,9 @@ module.exports = {
   port: `${process.env.PORT || 3000}`,
   corsOptions: {
     origins: [
-      'https://forgeserver.herokuapp.com/',
-      'http://random-coffee.fun/',
-      'https://loori-r.github.io/share_coffee_frontend/',
+      'https://forgeserver.herokuapp.com',
+      'http://random-coffee.fun',
+      'https://loori-r.github.io',
       'http://localhost:3000'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
