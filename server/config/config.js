@@ -8,7 +8,8 @@ module.exports = {
     origins: [
       'https://forgeserver.herokuapp.com/',
       'http://random-coffee.fun/',
-      'https://loori-r.github.io/share_coffee_frontend/'
+      'https://loori-r.github.io/share_coffee_frontend/',
+      'http://localhost:3000'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
