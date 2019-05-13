@@ -3,9 +3,6 @@ const mongoose = require('mongoose');
 const { MongoClient } = require('mongodb');
 const config = require('./../config/config');
 const connectDatabase = require('../lib/connectDatabase.js');
-const demoUsers = require('./models/user.js');
-const demoEvents = require('./models/event.js');
-const demoDepartments = require('./models/department.js');
 const ClassController = require('./dbController.js');
 
 const controller = new ClassController();
@@ -69,7 +66,7 @@ describe('dbController tests', () => {
     function cb(data) {
       testData.departmentId = data[0]['_id'];
 
-      expect(data).toHaveLength(5);
+      expect(data).toHaveLength(6);
       done();
     }
 
