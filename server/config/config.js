@@ -5,7 +5,11 @@ module.exports = {
   database: `${process.env.NODE_MONGODB_URI || mongoURI}`,
   port: `${process.env.PORT || 3000}`,
   corsOptions: {
-    origin: 'https://forgeserver.herokuapp.com/',
+    origins: [
+      'https://forgeserver.herokuapp.com/',
+      'http://random-coffee.fun/',
+      'https://loori-r.github.io/share_coffee_frontend/'
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
   },
@@ -16,5 +20,5 @@ module.exports = {
       'https://forge-development.herokuapp.com/auth/telegram/callback'
   },
   jwtSecret: 'baNaNa',
-  frontendServer: 'https://loori-r.github.io/share_coffee_frontend'
+  frontendServer: 'http://random-coffee.fun/'
 };
