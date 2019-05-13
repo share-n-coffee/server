@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const DepartmentSchema = require('./../../database/models/department');
-const isUndefined = require('./isUndefined');
+const isNull = require('./isNull');
 
 function departmentMethodsFactory(departmentModelName) {
-  if (isUndefined(departmentModelName)) {
+  if (isNull(departmentModelName)) {
     return {};
   }
   const Departments = DepartmentSchema(departmentModelName);

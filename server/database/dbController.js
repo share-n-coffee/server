@@ -15,6 +15,7 @@ function DBController(user, event, department) {
     eventModel = event;
     departmentModel = department;
   }
+  console.log('user, event, dep ', userModel, eventModel, departmentModel);
   Object.assign(
     this,
     userMethodsFactory(userModel),

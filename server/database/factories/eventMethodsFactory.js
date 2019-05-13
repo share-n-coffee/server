@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const EventSchema = require('./../../database/models/event');
-const isUndefined = require('./isUndefined');
+const isNull = require('./isNull');
 
 function eventMethodsFactory(eventModelName) {
-  if (isUndefined(eventModelName)) {
+  if (isNull(eventModelName)) {
     return {};
   }
   const Events = EventSchema(eventModelName);

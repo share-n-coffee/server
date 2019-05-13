@@ -1,8 +1,8 @@
 const UserSchema = require('./../../database/models/user');
-const isUndefined = require('./isUndefined');
+const isNull = require('./isNull');
 
 function userMethodsFactory(userModelName) {
-  if (isUndefined(userModelName)) {
+  if (isNull(userModelName)) {
     return {};
   }
   const Users = UserSchema(userModelName);
