@@ -12,7 +12,7 @@
     "lint": "eslint -c .eslintrc.js ./server/**/*.js",
     "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
     "format": "prettier --write \"server/**/*.js\"",
-    "test": "jest"
+    "test": "jest --coverage && codecov"
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "concurrently": "^4.1.0",
     "config": "^3.1.0",
     "cors": "^2.8.5",
+    "cron": "^1.7.1",
     "cross-env": "^5.2.0",
     "dotenv": "^7.0.0",
     "ejs": "^2.6.1",
@@ -36,11 +37,14 @@
     "express-session": "^1.16.1",
     "isomorphic-unfetch": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.2.4",
     "mongoose": "^5.5.4",
     "passport": "^0.4.0",
     "passport-telegram": "^1.0.0"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.0.1",
+    "codecov": "^3.4.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-plugin-import": "^2.14.0",
@@ -53,7 +57,8 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged",
+      "pre-push": "npm test"
     }
   },
   "lint-staged": {
@@ -64,5 +69,10 @@
         "git add"
       ]
     }
+  },
+  "jest": {
+    "preset": "@shelf/jest-mongodb",
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
   }
 }
