@@ -10,6 +10,7 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'no-console': 0,
-    'no-unused-vars': 0
+    'no-unused-vars': 0,
+    'no-plusplus': 0
   }
 };

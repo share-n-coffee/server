@@ -1,11 +1,14 @@
 /* eslint-disable dot-notation */
 const mongoose = require('mongoose');
+const { MongoClient } = require('mongodb');
+const config = require('./../config/config');
 const connectDatabase = require('../lib/connectDatabase.js');
-const demoUsers = require('./models/demo/user.js');
-const demoEvents = require('./models/demo/event.js');
-const demoDepartments = require('./models/demo/department.js');
-const controller = require('./dbController.js');
+const demoUsers = require('./models/user.js');
+const demoEvents = require('./models/event.js');
+const demoDepartments = require('./models/department.js');
+const ClassController = require('./dbController.js');
 
+const controller = new ClassController();
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
@@ -37,16 +40,29 @@ describe('dbController tests', () => {
   });
 
   test('Get all Users', done => {
-    function cb(data) {
-      testData.userTelegramId = data[0].telegramUserId;
-
-      expect(data).toHaveLength(20);
+    function cb(controllerUsers, mongoUsersCount) {
+      testData.userTelegramId = controllerUsers[0].telegramUserId;
+      testData.userId = controllerUsers[0]['_id'];
+      expect(controllerUsers).toHaveLength(mongoUsersCount);
       done();
     }
 
-    controller.getAllUsers().then(users => {
-      cb(users);
-    });
+    //  Send mongodb driver's query for comparing results
+    MongoClient.connect(
+      config.database,
+      (err, client) => {
+        client
+          .db('demoproject')
+          .collection('demo_users')
+          .find({})
+          .count((errr, mongoUsersCount) => {
+            client.close();
+            controller.getAllUsers().then(controllerUsers => {
+              cb(controllerUsers, mongoUsersCount);
+            });
+          });
+      }
+    );
   });
 
   test('Get all Departments', done => {
@@ -73,9 +89,20 @@ describe('dbController tests', () => {
     });
   });
 
+  test('GET User by _id', done => {
+    function cb(user) {
+      expect(user).toHaveProperty('username');
+      done();
+    }
+
+    controller.getUserById(testData.userId).then(user => {
+      cb(user);
+    });
+  });
+
   test('GET Event by _id', done => {
     function cb(event) {
-      // expect(event).toHaveProperty('description');
+      expect(event).toHaveProperty('description');
       done();
     }
 
@@ -92,6 +119,37 @@ describe('dbController tests', () => {
 
     controller.getDepartmentById(testData.departmentId).then(department => {
       cb(department);
+    });
+  });
+
+  test('POST new Department', done => {
+    const newDepartmentParams = {
+      title: 'New Department',
+      description: 'Just another Department'
+    };
+
+    function cb(newDepartment) {
+      expect(newDepartment.description).toMatch(
+        newDepartmentParams.description
+      );
+
+      //  Send mongodb driver's query for deleting test Department
+      MongoClient.connect(
+        config.database,
+        (err, client) => {
+          client
+            .db('demoproject')
+            .collection('demo_departments')
+            .deleteOne({ _id: newDepartment['_id'] }, () => {
+              client.close();
+              done();
+            });
+        }
+      );
+    }
+
+    controller.postNewDepartment(newDepartmentParams).then(newDepartment => {
+      cb(newDepartment);
     });
   });
 });

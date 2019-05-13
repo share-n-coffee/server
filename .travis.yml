@@ -5,5 +5,7 @@ node_js:
 services:
   - mongodb
 sudo: false
+script:
+  - npm run codecov
 after_success:
   - ./bin/codecov -e TRAVIS_NODE_VERSION -f coverage/*.json

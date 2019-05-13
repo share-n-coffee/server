@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const checkDBMapping = require('./checkDBMapping');
 const checkUserFields = require('./checkUserFields');
 const EEmitter = require('../coupling/events');
@@ -7,8 +8,8 @@ function pairsGenerator(allData) {
   const departmentsData = allData[1];
   const events = {};
   const usersParticipation = {};
-  const generatedPairs = {};
-  const reservedUsers = {};
+  const generatedPairs = [];
+  const reservedUsers = [];
   let usersData = allData[2];
   usersData = checkUserFields(usersData); // проверяем наличие отдела и запланированных событий
   checkDBMapping(eventsData, departmentsData, usersData); // проверяем, что id отдела и событий у юзера соответствуют базе данных
@@ -58,7 +59,7 @@ function pairsGenerator(allData) {
       department[1].forEach(telegramUserId => {
         const user = {};
         user.telegramUserId = telegramUserId;
-        user.departmentId = department[0];
+        [user.departmentId] = department;
         user.isPaired = false;
         usersList.push(user);
       });
@@ -111,13 +112,13 @@ function pairsGenerator(allData) {
   }
 
   function confirmReservedUsers() {
-    Object.entries(reservedUsers).forEach(eventReservedUsers => {
-      const remainedUsers = eventReservedUsers[1].filter(reservedUser => {
+    reservedUsers.forEach(eventReserve => {
+      const remainedUsers = eventReserve.users.filter(reservedUser => {
         return (
           usersParticipation[reservedUser.telegramUserId].visitsRemain !== 0
         );
       });
-      reservedUsers[eventReservedUsers[0]] = remainedUsers;
+      eventReserve.users = remainedUsers;
     });
   }
 
@@ -129,8 +130,15 @@ function pairsGenerator(allData) {
 
       const result = generateEventPairs(availableUsersList, event[0]); // генерируем пары
 
-      generatedPairs[event[0]] = result.eventPairs;
-      reservedUsers[event[0]] = result.usersWithoutPair;
+      const eventPairs = {};
+      [eventPairs.eventId] = event;
+      eventPairs.pairs = result.eventPairs;
+      generatedPairs.push(eventPairs);
+
+      const eventReserve = {};
+      [eventReserve.eventId] = event;
+      eventReserve.users = result.usersWithoutPair;
+      reservedUsers.push(eventReserve);
 
       console.log(`end pairs generation for event ${event[0]}`);
     });
