@@ -15,6 +15,9 @@ module.exports = {
     callbackURL:
       'https://forge-development.herokuapp.com/auth/telegram/callback'
   },
+  telegramBotToken:
+    process.env.NODE_TELEGRAM_TOKEN ||
+    '884804673:AAG9dLfMcZDAi7RM6-Aw9pH84-JJhZWe3uM',
   jwtSecret: 'baNaNa',
   frontendServer: 'https://loori-r.github.io/share_coffee_frontend'
 };
