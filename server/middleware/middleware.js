@@ -12,6 +12,7 @@ module.exports = app => {
    * It parses incoming requests with JSON payloads and is based on body-parser.
    */
   app.use(express.json());
+  app.use(express.static('public'));
   app.use(cors(config.corsOptions));
   app.use(
     session({
