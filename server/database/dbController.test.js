@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const { MongoClient } = require('mongodb');
 const config = require('./../config/config');
 const connectDatabase = require('../lib/connectDatabase.js');
-const demoUsers = require('./models/demo/user.js');
-const demoEvents = require('./models/demo/event.js');
-const demoDepartments = require('./models/demo/department.js');
+const demoUsers = require('./models/user.js');
+const demoEvents = require('./models/event.js');
+const demoDepartments = require('./models/department.js');
 const controller = require('./dbController.js');
 
 const testData = {
@@ -43,7 +43,7 @@ describe('dbController tests', () => {
       testData.userTelegramId = controllerUsers[0].telegramUserId;
       testData.userId = controllerUsers[0]['_id'];
 
-      expect(controllerUsers).toHaveLength(mongoUsersCount);
+      expect(testData).toHaveLength(20);
       done();
     }
 

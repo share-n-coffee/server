@@ -15,5 +15,6 @@ module.exports = {
     callbackURL:
       'https://forge-development.herokuapp.com/auth/telegram/callback'
   },
-  jwtSecret: 'baNaNa'
+  jwtSecret: 'baNaNa',
+  frontendServer: 'https://loori-r.github.io/share_coffee_frontend'
 };

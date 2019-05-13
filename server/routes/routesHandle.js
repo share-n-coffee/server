@@ -1,8 +1,9 @@
 const passport = require('passport');
 const ensureAuthenticated = require('../lib/ensureAuthenticated');
-const User = require('../database/models/user');
+const ClassDBController = require('../database/dbController');
 const authRoutes = require('../api/auth');
 const apiRoutes = require('../api/api');
+const config = require('../config/config');
 
 const routesHandle = app => {
   app.get('/user', ensureAuthenticated, (req, res) => {
@@ -37,29 +38,37 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      User.findOneAndUpdate(
-        {
-          id_telegram: req.user.id
-        },
-        {
-          $set: {
-            id_telegram: req.user.id,
-            first_name: req.user.first_name,
-            last_name: req.user.last_name,
-            username: req.user.username,
-            avatar: req.user.avatar
+      const DBController = new ClassDBController();
+
+      DBController.getUserByTelegramId(req.user.id)
+        .then(user => {
+          if (user === null || (Array.isArray(user) && user.length === 0)) {
+            DBController.postNewUser({
+              telegramUserId: req.user.id,
+              firstName: req.user.first_name,
+              lastName: req.user.last_name,
+              username: req.user.username,
+              avatar: req.user.avatar
+            })
+              .then(newUser => {
+                res.redirect(
+                  303,
+                  `${config.frontendServer}/id/${newUser.telegramUserId}`
+                );
+              })
+              .catch(err => {
+                res.redirect(`${config.frontendServer}/error`);
+              });
+          } else {
+            res.redirect(
+              303,
+              `${config.frontendServer}/id/${user.telegramUserId}`
+            );
           }
-        },
-        {
-          _id: -1,
-          upsert: true
-        },
-        (err, result) => {
-          if (err) return res.send(err);
-          res.redirect('/');
-          return 42;
-        }
-      );
+        })
+        .catch(err => {
+          res.send(err);
+        });
     }
   );
 
@@ -70,6 +79,9 @@ const routesHandle = app => {
 
   app.use('/api', apiRoutes);
   app.use('/api/auth', authRoutes);
+  app.use((req, res) => {
+    res.render('404');
+  });
 };
 
 module.exports = routesHandle;

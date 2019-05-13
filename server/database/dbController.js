@@ -1,44 +1,56 @@
-/* eslint-disable class-methods-use-this */
 const mongoose = require('mongoose');
-const Users = require('./models/user');
-const Events = require('./models/event');
-const Departments = require('./models/department');
+// const mongoose = require('mongoose').set('debug', true);
+
+const UserSchema = require('./../database/models/user');
+const EventSchema = require('./../database/models/event');
+const DepartmentSchema = require('./../database/models/department');
 
 class DBController {
+  constructor(
+    userModel = 'demo_user',
+    eventModel = 'demo_event',
+    departmentModel = 'demo_department'
+  ) {
+    this.Users = UserSchema(userModel);
+    this.Events = EventSchema(eventModel);
+    this.Departments = DepartmentSchema(departmentModel);
+  }
+
   getAllUsers() {
-    return Users.find({}).exec();
+    return this.Users.find({}).exec();
   }
 
   getUserByTelegramId(id) {
-    return Users.findOne({ telegramUserId: id }).exec();
+    return this.Users.findOne({ telegramUserId: id }).exec();
   }
 
   getUserById(id) {
-    return Users.findOne({ _id: id }).exec();
+    return this.Users.findOne({ _id: id }).exec();
+  }
+
+  getAllEvents() {
+    return this.Events.find({}).exec();
   }
 
   getEventById(eventId) {
-    return Events.findOne({
+    return this.Events.findOne({
       _id: mongoose.Types.ObjectId(eventId)
+      // _id: eventId
     }).exec();
   }
 
   getDepartmentById(departmentId) {
-    return Departments.findOne({
+    return this.Departments.findOne({
       _id: mongoose.Types.ObjectId(departmentId)
     }).exec();
   }
 
-  getAllEvents() {
-    return Events.find({}).exec();
-  }
-
   getAllDepartments() {
-    return Departments.find({}).exec();
+    return this.Departments.find({}).exec();
   }
 
   putUserDepartment(userId, department) {
-    return Users.findOneAndUpdate(
+    return this.Users.findOneAndUpdate(
       { _id: userId },
       { $set: { department } },
       { useFindAndModify: false, new: true },
@@ -47,7 +59,7 @@ class DBController {
   }
 
   putUserTelegramChatId(userId, telegramChatId) {
-    return Users.findOneAndUpdate(
+    return this.Users.findOneAndUpdate(
       { _id: userId },
       { $set: { telegramChatId } },
       { useFindAndModify: false, new: true },
@@ -56,7 +68,7 @@ class DBController {
   }
 
   postNewDepartment(department) {
-    const newDepartment = new Departments(department);
+    const newDepartment = new this.Departments(department);
 
     return new Promise((resolve, reject) => {
       newDepartment.save((err, addedDepartment) => {
@@ -65,6 +77,17 @@ class DBController {
       });
     });
   }
+
+  postNewUser(user) {
+    const newUser = new this.Users(user);
+
+    return new Promise((resolve, reject) => {
+      newUser.save((err, addedUser) => {
+        if (err) reject(err);
+        resolve(addedUser);
+      });
+    });
+  }
 }
 
-module.exports = new DBController();
+module.exports = DBController;
