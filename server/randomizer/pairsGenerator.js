@@ -10,7 +10,6 @@ function pairsGenerator(allData) {
   const generatedPairs = {};
   const reservedUsers = {};
   let usersData = allData[2];
-
   usersData = checkUserFields(usersData); // проверяем наличие отдела и запланированных событий
   checkDBMapping(eventsData, departmentsData, usersData); // проверяем, что id отдела и событий у юзера соответствуют базе данных
 
@@ -68,7 +67,15 @@ function pairsGenerator(allData) {
     return usersList;
   }
 
-  function generateEventPairs(availableUsersList) {
+  function findCurrentEventObject(eventId) {
+    const currentEvent = eventsData.filter(event => {
+      return event.id === eventId;
+    });
+
+    return currentEvent[0];
+  }
+
+  function generateEventPairs(availableUsersList, eventId) {
     const eventPairs = [];
     const users = availableUsersList;
     const usersWithoutPair = [];
@@ -82,6 +89,7 @@ function pairsGenerator(allData) {
         const pair = {};
         pair.invitedUser1 = balancedUser.telegramUserId;
         pair.invitedUser2 = user.telegramUserId;
+        pair.event = findCurrentEventObject(eventId);
         eventPairs.push(pair);
         balancedUser.isPaired = true;
         usersParticipation[balancedUser.telegramUserId].visitsRemain--;
@@ -119,7 +127,7 @@ function pairsGenerator(allData) {
 
       const availableUsersList = generateEventUsersList(event[1]); // собираем список подписчиков события из всех отделов
 
-      const result = generateEventPairs(availableUsersList); // генерируем пары
+      const result = generateEventPairs(availableUsersList, event[0]); // генерируем пары
 
       generatedPairs[event[0]] = result.eventPairs;
       reservedUsers[event[0]] = result.usersWithoutPair;
