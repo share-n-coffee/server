@@ -5,6 +5,21 @@ const config = require('./../config/config');
 const connectDatabase = require('../lib/connectDatabase.js');
 const ClassController = require('./dbController.js');
 
+const userMethods = [
+  'getAllUsers',
+  'getUserByTelegramId',
+  'getUserById',
+  'putUserTelegramChatId',
+  'putUserDepartment',
+  'postNewUser'
+];
+const eventMethods = ['getAllEvents', 'getEventById'];
+const departmentMethods = [
+  'getDepartmentById',
+  'getAllDepartments',
+  'postNewDepartment'
+];
+
 const controller = new ClassController();
 const testData = {
   userTelegramId: undefined,
@@ -22,6 +37,19 @@ describe('dbController tests', () => {
   afterAll(async () => {
     await mongoose.connection.close();
     console.log('tests done, May the Force be with you young Jedi');
+  });
+
+  test('Has all methods in default case', done => {
+    userMethods.forEach(method => {
+      expect(controller).toHaveProperty(method);
+    });
+    eventMethods.forEach(method => {
+      expect(controller).toHaveProperty(method);
+    });
+    departmentMethods.forEach(method => {
+      expect(controller).toHaveProperty(method);
+    });
+    done();
   });
 
   test('Get all Events', done => {
@@ -148,5 +176,65 @@ describe('dbController tests', () => {
     controller.postNewDepartment(newDepartmentParams).then(newDepartment => {
       cb(newDepartment);
     });
+  });
+});
+
+const controllerUsersOnly = new ClassController('users', null, null);
+describe('dbController tests with "users" argument passed in', () => {
+  it('config test', () => {
+    expect(controllerUsersOnly).toBeTruthy();
+  });
+
+  test('Has all user methods', done => {
+    userMethods.forEach(method => {
+      expect(controllerUsersOnly).toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has not event methods', done => {
+    eventMethods.forEach(method => {
+      expect(controllerUsersOnly).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has not department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(controllerUsersOnly).not.toHaveProperty(method);
+    });
+    done();
+  });
+});
+
+const controllerEventsAndDepartments = new ClassController(
+  null,
+  'events',
+  'departments'
+);
+describe('dbController tests with "events" and "departments" arguments passed in', () => {
+  it('config test', () => {
+    expect(controllerEventsAndDepartments).toBeTruthy();
+  });
+
+  test('Has not user methods', done => {
+    userMethods.forEach(method => {
+      expect(controllerEventsAndDepartments).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has all event methods', done => {
+    eventMethods.forEach(method => {
+      expect(controllerEventsAndDepartments).toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has all department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(controllerEventsAndDepartments).toHaveProperty(method);
+    });
+    done();
   });
 });
