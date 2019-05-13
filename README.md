@@ -1,7 +1,7 @@
 # [Development server](https://forge-development.herokuapp.com/)
 
-[![codecov](https://codecov.io/gh/saniok017/Server/branch/master/graph/badge.svg)](https://codecov.io/gh/saniok017/Server) 
-[![Build Status](https://travis-ci.com/saniok017/Server.svg?branch=master)](https://travis-ci.com/saniok017/Server)
+[![codecov](https://codecov.io/gh/saniok017/Server/branch/db-tests/graph/badge.svg)](https://codecov.io/gh/saniok017/Server) 
+[![Build Status](https://travis-ci.com/saniok017/Server.svg?branch=db-tests)](https://travis-ci.com/saniok017/Server)
 ![Heroku](http://heroku-badge.herokuapp.com/?app=forge-development&style=flat)
 
 # [jest-mongodb](https://jestjs.io/docs/en/mongodb)
