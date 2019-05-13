@@ -20,5 +20,5 @@ module.exports = {
       'https://forge-development.herokuapp.com/auth/telegram/callback'
   },
   jwtSecret: 'baNaNa',
-  frontendServer: 'http://random-coffee.fun/'
+  frontendServer: 'http://random-coffee.fun'
 };

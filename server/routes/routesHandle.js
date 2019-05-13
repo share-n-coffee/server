@@ -62,7 +62,7 @@ const routesHandle = app => {
           } else {
             res.redirect(
               303,
-              `${config.frontendServer}/id/${user.telegramUserId}`
+              `${config.frontendServer}/?id=${user.telegramUserId}`
             );
           }
         })
