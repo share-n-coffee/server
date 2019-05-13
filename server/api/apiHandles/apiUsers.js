@@ -7,43 +7,38 @@ const router = express.Router();
 router.get('/', (req, res) => {
   const DBController = new ClassDBController();
 
-  if (!req.body.userId && !req.body.userTelegramId) {
-    DBController.getAllUsers()
-      .then(users =>
+  DBController.getAllUsers()
+    .then(users =>
+      res
+        .status(200)
+        .set('Content-Type', 'application/json')
+        .send(users)
+    )
+    .catch(error => res.status(422).send(error));
+});
+
+router.get('/:id', (req, res) => {
+  const DBController = new ClassDBController();
+  const searchId = req.params.id;
+
+  if (ObjectId.isValid(searchId)) {
+    DBController.getUserById(searchId)
+      .then(user =>
         res
           .status(200)
           .set('Content-Type', 'application/json')
-          .send(users)
+          .send(user)
       )
       .catch(error => res.status(422).send(error));
   } else {
-    const searchId = req.body.userId || req.body.userTelegramId;
-
-    if (searchId) {
-      if (ObjectId.isValid(searchId)) {
-        DBController.getUserById(searchId)
-          .then(user =>
-            res
-              .status(200)
-              .set('Content-Type', 'application/json')
-              .send(user)
-          )
-          .catch(error => res.status(422).send(error));
-      } else {
-        DBController.getUserByTelegramId(searchId)
-          .then(user =>
-            res
-              .status(200)
-              .set('Content-Type', 'application/json')
-              .send(user)
-          )
-          .catch(error => res.status(422).send(error));
-      }
-    } else {
-      res
-        .status(400)
-        .send('Request body must have "userTelegramId" OR "userId" parameter!');
-    }
+    DBController.getUserByTelegramId(searchId)
+      .then(user =>
+        res
+          .status(200)
+          .set('Content-Type', 'application/json')
+          .send(user)
+      )
+      .catch(error => res.status(422).send(error));
   }
 });
 

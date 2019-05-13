@@ -1,5 +1,5 @@
-// const mongoose = require('mongoose');
-const mongoose = require('mongoose').set('debug', true);
+const mongoose = require('mongoose');
+// const mongoose = require('mongoose').set('debug', true);
 
 const UserSchema = require('./../database/models/user');
 const EventSchema = require('./../database/models/event');
