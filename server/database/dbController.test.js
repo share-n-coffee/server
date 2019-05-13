@@ -43,8 +43,7 @@ describe('dbController tests', () => {
     function cb(controllerUsers, mongoUsersCount) {
       testData.userTelegramId = controllerUsers[0].telegramUserId;
       testData.userId = controllerUsers[0]['_id'];
-
-      expect(testData).toHaveLength(mongoUsersCount);
+      expect(controllerUsers).toHaveLength(mongoUsersCount);
       done();
     }
 
