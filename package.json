@@ -12,7 +12,8 @@
     "lint": "eslint -c .eslintrc.js ./server/**/*.js",
     "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
     "format": "prettier --write \"server/**/*.js\"",
-    "test": "jest --coverage && codecov"
+    "test": "jest",
+    "codecov": "jest --coverage && codecov"
   },
   "repository": {
     "type": "git",
@@ -52,6 +53,7 @@
     "husky": "^2.2.0",
     "jest": "^24.8.0",
     "lint-staged": "^8.1.6",
+    "mongo-mock": "^3.4.0",
     "nodemon": "^1.18.11",
     "prettier": "^1.13.0"
   },
