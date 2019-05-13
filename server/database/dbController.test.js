@@ -6,8 +6,9 @@ const connectDatabase = require('../lib/connectDatabase.js');
 const demoUsers = require('./models/user.js');
 const demoEvents = require('./models/event.js');
 const demoDepartments = require('./models/department.js');
-const controller = require('./dbController.js');
+const ClassController = require('./dbController.js');
 
+const controller = new ClassController();
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
