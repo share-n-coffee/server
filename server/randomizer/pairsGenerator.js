@@ -1,6 +1,5 @@
 const checkDBMapping = require('./checkDBMapping');
 const checkUserFields = require('./checkUserFields');
-const EEmitter = require('../coupling/events');
 
 function pairsGenerator(allData) {
   const eventsData = allData[0];
@@ -147,8 +146,7 @@ function pairsGenerator(allData) {
     console.log('Generated Pairs:', generatedPairs);
     console.log('Users Participation for current period:', usersParticipation);
     console.log('Reserved Users for Events:', reservedUsers);
-
-    EEmitter.emit('pairs generated', generatedPairs); // генерируем событие 'pairs generated'(потом всунем куда надо);
+    
 
     process.exit(0);
   }
