@@ -179,62 +179,153 @@ describe('dbController tests', () => {
   });
 });
 
-const controllerUsersOnly = new ClassController('users', null, null);
-describe('dbController tests with "users" argument passed in', () => {
+describe('dbController tests with "user" argument passed in', () => {
+  const userController = new ClassController('user');
   it('config test', () => {
-    expect(controllerUsersOnly).toBeTruthy();
+    expect(userController).toBeTruthy();
   });
 
   test('Has all user methods', done => {
     userMethods.forEach(method => {
-      expect(controllerUsersOnly).toHaveProperty(method);
+      expect(userController).toHaveProperty(method);
     });
     done();
   });
 
-  test('Has not event methods', done => {
+  test('Has no event methods', done => {
     eventMethods.forEach(method => {
-      expect(controllerUsersOnly).not.toHaveProperty(method);
+      expect(userController).not.toHaveProperty(method);
     });
     done();
   });
 
-  test('Has not department methods', done => {
+  test('Has no department methods', done => {
     departmentMethods.forEach(method => {
-      expect(controllerUsersOnly).not.toHaveProperty(method);
+      expect(userController).not.toHaveProperty(method);
     });
     done();
   });
 });
 
-const controllerEventsAndDepartments = new ClassController(
-  null,
-  'events',
-  'departments'
-);
-describe('dbController tests with "events" and "departments" arguments passed in', () => {
+describe('dbController tests with "event" argument passed in', () => {
+  const eventController = new ClassController('event');
   it('config test', () => {
-    expect(controllerEventsAndDepartments).toBeTruthy();
+    expect(eventController).toBeTruthy();
   });
 
-  test('Has not user methods', done => {
+  test('Has no user methods', done => {
     userMethods.forEach(method => {
-      expect(controllerEventsAndDepartments).not.toHaveProperty(method);
+      expect(eventController).not.toHaveProperty(method);
     });
     done();
   });
 
   test('Has all event methods', done => {
     eventMethods.forEach(method => {
-      expect(controllerEventsAndDepartments).toHaveProperty(method);
+      expect(eventController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(eventController).not.toHaveProperty(method);
+    });
+    done();
+  });
+});
+
+describe('dbController tests with "department" argument passed in', () => {
+  const departmentController = new ClassController('department');
+  it('config test', () => {
+    expect(departmentController).toBeTruthy();
+  });
+
+  test('Has no user methods', done => {
+    userMethods.forEach(method => {
+      expect(departmentController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no event methods', done => {
+    eventMethods.forEach(method => {
+      expect(departmentController).not.toHaveProperty(method);
     });
     done();
   });
 
   test('Has all department methods', done => {
     departmentMethods.forEach(method => {
-      expect(controllerEventsAndDepartments).toHaveProperty(method);
+      expect(departmentController).toHaveProperty(method);
     });
+    done();
+  });
+});
+
+describe("dbController's argument should be a string", () => {
+  test('Number as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(42);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Array as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController([42]);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Undefined as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(undefined);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Null as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(null);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Boolean as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(true);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Object as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController({
+        'Bruce Willis': 'yipikaye, motherf*cker'
+      });
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+});
+
+describe('dbController takes wrong string argument', () => {
+  test('Should throw TypeError', done => {
+    function cb() {
+      return new ClassController('wg_forge_power!');
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+});
+
+describe('dbController takes over 1 argument', () => {
+  test('Should throw SyntaxError', done => {
+    function cb() {
+      return new ClassController('there', 'must', 'be', 'only', 'one');
+    }
+    expect(cb).toThrowError(SyntaxError);
     done();
   });
 });
