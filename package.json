@@ -37,7 +37,6 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.2.4",
     "mongoose": "^5.5.4",
-    "passport": "^0.4.0",
     "passport-telegram": "^1.0.0",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^3.9.0"
