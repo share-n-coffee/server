@@ -7,13 +7,15 @@ const pairsGenerator = require('./pairsGenerator');
 
 const controller = new DBController();
 
-const job = new CronJob('0 */50 * * * *', () => {
+const job = new CronJob('*/10 * * * * *', () => {
   Promise.all([
     controller.getAllEvents(),
     controller.getAllDepartments(),
     controller.getAllUsers()
   ]).then(data => {
-    pairsGenerator(data); // <===  Функция генерации пар//
+    controller.removeEventPairs().then(() => {
+      pairsGenerator(data); // <===  Функция генерации пар//
+    });
   });
 });
 
