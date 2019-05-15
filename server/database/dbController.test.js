@@ -30,7 +30,7 @@ describe('dbController tests', () => {
   test('Get all Events', done => {
     function cb(data) {
       testData.eventId = data[0]['_id'];
-      expect(data).toHaveLength(5);
+      expect(data).toHaveLength(6);
       done();
     }
 
