@@ -4,11 +4,8 @@
   "description": "auth project",
   "main": "server.js",
   "scripts": {
-    "client-install": "npm install --prefix client",
     "start": "node server.js",
     "server": "nodemon server.js",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "lint": "eslint -c .eslintrc.js ./server/**/*.js",
     "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
     "format": "prettier --write \"server/**/*.js\"",
