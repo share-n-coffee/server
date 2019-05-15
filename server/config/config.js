@@ -9,7 +9,8 @@ module.exports = {
       'https://forgeserver.herokuapp.com',
       'http://random-coffee.fun',
       'https://loori-r.github.io',
-      'http://localhost:3000'
+      'http://localhost:3000',
+      'http://127.0.0.1:5500'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
