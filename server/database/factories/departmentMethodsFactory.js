@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const DepartmentSchema = require('./../../database/models/department');
+const DepartmentSchema = require('../models/department');
 const isNull = require('./isNull');
 
 function departmentMethodsFactory(departmentModelName) {

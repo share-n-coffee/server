@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const EventSchema = require('./../../database/models/event');
+const EventSchema = require('../models/event');
 const isNull = require('./isNull');
 
 function eventMethodsFactory(eventModelName) {

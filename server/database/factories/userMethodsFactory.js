@@ -1,4 +1,4 @@
-const UserSchema = require('./../../database/models/user');
+const UserSchema = require('../models/user');
 const isNull = require('./isNull');
 
 function userMethodsFactory(userModelName) {
