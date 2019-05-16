@@ -38,7 +38,7 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      const DBController = new ClassDBController();
+      const DBController = new ClassDBController('user');
 
       DBController.getUserByTelegramId(req.user.id)
         .then(user => {
