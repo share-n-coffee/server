@@ -3,19 +3,21 @@ const DBController = require('../database/dbController');
 // eslint-disable-next-line import/order
 // eslint-disable-next-line prefer-destructuring
 const CronJob = require('cron').CronJob;
-const pairsGenerator = require('./pairsGenerator');
+const randomizer = require('./pairsGenerator');
+const checkData = require('./checkDataCorrectness');
 
 const controller = new DBController();
 
-const job = new CronJob('0 */50 * * * *', () => {
+const job = new CronJob('*/5 * * * * *', () => {
   Promise.all([
     controller.getAllEvents(),
     controller.getAllDepartments(),
     controller.getAllUsers()
-  ]).then(data => {
-    controller.removeEventPairs().then(() => {
+  ]).then(allData => {
+    checkData(allData);
+    /* controller.removeEventPairs().then(() => {
       pairsGenerator(data); // <===  Функция генерации пар//
-    });
+    }); */
   });
 });
 
