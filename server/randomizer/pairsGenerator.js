@@ -22,10 +22,10 @@ function pairsGenerator(allData) {
 
     usersData.forEach(user => {
       user.events.forEach(userEvent => {
-        if (events[userEvent][user.department]) {
-          events[userEvent][user.department].push(user.telegramUserId);
+        if (events[userEvent.eventId][user.department]) {
+          events[userEvent.eventId][user.department].push(user.telegramUserId);
         } else {
-          events[userEvent][user.department] = [user.telegramUserId];
+          events[userEvent.eventId][user.department] = [user.telegramUserId];
         }
       });
     });
@@ -141,7 +141,7 @@ function pairsGenerator(allData) {
       eventReserve.users = result.usersWithoutPair;
       reservedUsers.push(eventReserve);
 
-      console.log(`end pairs generation for event ${event[0]}`);
+      // console.log(`end pairs generation for event ${event[0]}`);
     });
 
     confirmReservedUsers(); // проверяем возможность посещения событий для юзеров, добавленных в резерв
