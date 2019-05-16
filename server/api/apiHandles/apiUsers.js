@@ -5,7 +5,7 @@ const ClassDBController = require('./../../database/dbController');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const DBController = new ClassDBController();
+  const DBController = new ClassDBController('user');
 
   DBController.getAllUsers()
     .then(users =>
@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-  const DBController = new ClassDBController();
+  const DBController = new ClassDBController('user');
   const searchId = req.params.id;
 
   if (ObjectId.isValid(searchId)) {
@@ -47,7 +47,7 @@ router.put('/', (req, res) => {
     ObjectId.isValid(req.body.userId) &&
     (ObjectId.isValid(req.body.newDepartment) || req.body.newTelegramChatId)
   ) {
-    const DBController = new ClassDBController();
+    const DBController = new ClassDBController('user');
 
     if (ObjectId.isValid(req.body.newDepartment)) {
       DBController.putUserDepartment(req.body.userId, req.body.newDepartment)

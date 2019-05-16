@@ -48,6 +48,7 @@ const routesHandle = app => {
 
   app.use('/api', apiRoutes);
   app.use('/api/auth', authRoutes);
+
   app.use((req, res) => {
     res.render('404');
   });
