@@ -3,8 +3,9 @@ const config = require('../config/config');
 
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-  console.log(token);
+  const token = req.header('Authorization')
+    ? req.header('Authorization').replace('Bearer ', '')
+    : false;
 
   if (!token) {
     return res.status(403).json({
