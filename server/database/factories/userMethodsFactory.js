@@ -1,14 +1,20 @@
 const UserSchema = require('../models/user');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function userMethodsFactory(userModelName) {
   if (isNull(userModelName)) {
     return {};
   }
+
   const Users = UserSchema(userModelName);
 
   const getAllUsers = () => {
     return Users.find({}).exec();
+  };
+
+  const querySearch = query => {
+    console.log(query);
+    return Users.find(query).exec();
   };
 
   const getUserByTelegramId = id => {
@@ -54,7 +60,8 @@ function userMethodsFactory(userModelName) {
     getUserById,
     putUserTelegramChatId,
     putUserDepartment,
-    postNewUser
+    postNewUser,
+    querySearch
   };
 }
 

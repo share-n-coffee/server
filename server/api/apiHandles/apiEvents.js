@@ -1,10 +1,12 @@
 const express = require('express');
 const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('../../database/dbController');
+const jwtAuth = require('../../middleware/jwtAuth');
+const adminAuth = require('../../middleware/adminAuth');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.route('/').get(jwtAuth, (req, res) => {
   const DBController = new ClassDBController('event');
 
   DBController.getAllEvents()
@@ -17,7 +19,7 @@ router.get('/', (req, res) => {
     .catch(error => res.status(500).send(error));
 });
 
-router.get('/:id', (req, res) => {
+router.route('/:id').get(jwtAuth, (req, res) => {
   const eventId = req.params.id;
 
   if (ObjectId.isValid(eventId)) {
@@ -30,9 +32,9 @@ router.get('/:id', (req, res) => {
           .set('Content-Type', 'application/json')
           .send(event);
       })
-      .catch(error => res.status(500).send(error));
+      .catch(error => res.status(404).send(error));
   } else {
-    res.status(400).send('Request query must be a valid ObjectId!');
+    res.status(404).send('Request query must be a valid ObjectId!');
   }
 });
 

@@ -150,6 +150,20 @@ const UserSchema = new Schema({
       required: false,
       default: null
     }
+  },
+  tokens: {
+    origin: {
+      type: String,
+      required: false
+    },
+    expiredAt: {
+      type: Date,
+      required: false
+    },
+    refresh: {
+      type: String,
+      required: false
+    }
   }
 });
 

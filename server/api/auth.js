@@ -4,7 +4,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const UserSchema = require('../database/models/user');
 const config = require('../config/config');
-const auth = require('../middleware/auth');
+const auth = require('../middleware/jwtAuth');
 
 const Users = UserSchema('demo_user');
 
@@ -26,10 +26,10 @@ router.post('/admin', async (req, res) => {
     };
 
     if (!user || !checkPass()) {
-      return res.status(400).json({
+      return res.status(403).json({
         errors: [
           {
-            msg: 'Invalid Credentials'
+            msg: 'Invalid Username or Password!'
           }
         ]
       });
@@ -37,7 +37,10 @@ router.post('/admin', async (req, res) => {
 
     const payload = {
       user: {
-        id: user.id
+        // eslint-disable-next-line no-underscore-dangle
+        _id: user._id,
+        telegramUserId: user.telegramUserId,
+        admin: user.admin
       }
     };
 
@@ -56,7 +59,13 @@ router.post('/admin', async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(404).json({
+      errors: [
+        {
+          msg: "Can't verify username and password!"
+        }
+      ]
+    });
   }
 });
 

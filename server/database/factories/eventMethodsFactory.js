@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const EventSchema = require('../models/event');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function eventMethodsFactory(eventModelName) {
   if (isNull(eventModelName)) {
