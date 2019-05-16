@@ -1,24 +1,18 @@
 function checkDBMapping(eventsData, departmentsData, usersData) {
-  const eventsIds = [];
-  const departmentsIds = [];
-
-  eventsData.forEach(event => {
-    eventsIds.push(event.id);
-  });
-
-  departmentsData.forEach(department => {
-    departmentsIds.push(department.id);
-  });
+  const eventsIds = eventsData.map(event => event.id);
+  const departmentsIds = departmentsData.map(department => department.id);
 
   usersData.forEach(user => {
-    user.events.forEach(userEventId => {
+    user.events.forEach(userEventObj => {
       const eventIdMatches = eventsIds.find(eventId => {
-        return eventId === userEventId;
+        return eventId === userEventObj.eventId.toString();
       });
 
       if (!eventIdMatches)
         throw Error(
-          `User event Id ${userEventId} does not match to any arranged event Id`
+          `User event Id ${
+            userEventObj.eventId
+          } does not match to any arranged event Id`
         );
     });
 

@@ -13,7 +13,9 @@ const job = new CronJob('0 */50 * * * *', () => {
     controller.getAllDepartments(),
     controller.getAllUsers()
   ]).then(data => {
-    pairsGenerator(data); // <===  Функция генерации пар//
+    controller.removeEventPairs().then(() => {
+      pairsGenerator(data); // <===  Функция генерации пар//
+    });
   });
 });
 

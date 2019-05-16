@@ -17,6 +17,7 @@ module.exports = {
     callbackURL:
       'https://forge-development.herokuapp.com/auth/telegram/callback'
   },
-  jwtSecret: `${process.env.NODE_JWT_SECRET}`,
+  jwtSecret: process.env.NODE_JWT_SECRET,
+  telegramBotToken: process.env.NODE_TELEGRAM_TOKEN,
   frontendServer: 'http://random-coffee.fun'
 };
