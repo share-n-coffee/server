@@ -3,6 +3,7 @@ const authRoutes = require('../api/auth');
 const apiRoutes = require('../api/api');
 const config = require('../config/config');
 const checkSignature = require('../lib/checkTelegramSignature');
+const jwtAuth = require('../middleware/jwtAuth');
 
 const routesHandle = app => {
   app.get('/', (req, res) => {
@@ -46,7 +47,7 @@ const routesHandle = app => {
       });
   });
 
-  app.use('/api', apiRoutes);
+  app.use('/api', jwtAuth, apiRoutes);
   app.use('/api/auth', authRoutes);
 
   app.use((req, res) => {

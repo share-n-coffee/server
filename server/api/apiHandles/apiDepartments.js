@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(jwtAuth, (req, res) => {
+  .get((req, res) => {
     const DBController = new ClassDBController('department');
 
     console.log('deps');
@@ -18,7 +18,7 @@ router
       .then(departments => res.status(200).json(departments))
       .catch(error => res.status(404).send(error));
   })
-  .post(jwtAuth, adminAuth, (req, res) => {
+  .post(adminAuth, (req, res) => {
     const DBController = new ClassDBController('department');
 
     if (req.body.title) {
@@ -33,7 +33,7 @@ router
     }
   });
 
-router.route('/:id').get(jwtAuth, (req, res) => {
+router.route('/:id').get((req, res) => {
   const departmentId = req.params.id;
 
   if (ObjectId.isValid(departmentId)) {

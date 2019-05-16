@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(jwtAuth, (req, res) => {
+  .get((req, res) => {
     const DBController = new ClassDBController('user');
 
     if (Object.keys(req.query).length) {
@@ -26,7 +26,7 @@ router
         .catch(error => res.status(404).send(error));
     }
   })
-  .put(jwtAuth, adminAuth, (req, res) => {
+  .put(adminAuth, (req, res) => {
     if (
       ObjectId.isValid(req.body.userId) &&
       ObjectId.isValid(req.body.newDepartment)
@@ -45,7 +45,7 @@ router
     }
   });
 
-router.route('/:id').get(jwtAuth, (req, res) => {
+router.route('/:id').get((req, res) => {
   const DBController = new ClassDBController('user');
   const searchId = req.params.id;
   if (ObjectId.isValid(searchId)) {

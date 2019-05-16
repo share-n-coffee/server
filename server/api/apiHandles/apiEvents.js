@@ -6,7 +6,7 @@ const adminAuth = require('../../middleware/adminAuth');
 
 const router = express.Router();
 
-router.route('/').get(jwtAuth, (req, res) => {
+router.route('/').get((req, res) => {
   const DBController = new ClassDBController('event');
 
   DBController.getAllEvents()
@@ -14,7 +14,7 @@ router.route('/').get(jwtAuth, (req, res) => {
     .catch(error => res.status(404).send(error));
 });
 
-router.route('/:id').get(jwtAuth, (req, res) => {
+router.route('/:id').get((req, res) => {
   const eventId = req.params.id;
 
   if (ObjectId.isValid(eventId)) {
