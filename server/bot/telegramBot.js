@@ -69,5 +69,8 @@ module.exports = {
     bot
       .sendMessage(telegramChatId, message, replyObj)
       .catch(err => console.log(err.response.body));
+  },
+  mailing() {
+    // метод рассылки...
   }
 };
