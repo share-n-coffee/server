@@ -13,6 +13,7 @@ module.exports = app => {
    * It parses incoming requests with JSON payloads and is based on body-parser.
    */
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
   app.use(express.static('public'));
 
   // app.use(cors(config.corsOptions));
@@ -20,7 +21,7 @@ module.exports = app => {
     cors({
       origin: (origin, callback) => {
         if (!origin) return callback(null, true);
-        if (config.corsOptions.indexOf(origin) === -1) {
+        if (config.corsOptions.origins.indexOf(origin) === -1) {
           const msg =
             'The CORS policy for this site does not ' +
             'allow access from the specified Origin.';

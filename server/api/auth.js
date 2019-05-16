@@ -2,9 +2,11 @@ const express = require('express');
 
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const Users = require('../database/models/user');
+const UserSchema = require('../database/models/user');
 const config = require('../config/config');
 const auth = require('../middleware/auth');
+
+const Users = UserSchema('demo_user');
 
 // route Post api/auth/admin
 // eslint-disable-next-line consistent-return
@@ -15,6 +17,7 @@ router.post('/admin', async (req, res) => {
     const user = await Users.findOne({
       username
     });
+
     const checkPass = () => {
       if (password === user.admin.password) {
         return true;
@@ -60,7 +63,7 @@ router.post('/admin', async (req, res) => {
 // route GET api/auth/admin
 router.get('/admin', auth, async (req, res) => {
   try {
-    const user = await Users.findById(req.user.id).select('-admin.password');
+    const user = await Users.findById(req.user.id).select('admin.password');
     res.json(user);
   } catch (err) {
     console.error(err.message);

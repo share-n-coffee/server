@@ -38,7 +38,7 @@ const routesHandle = app => {
       failureRedirect: '/failed'
     }),
     (req, res) => {
-      const DBController = new ClassDBController();
+      const DBController = new ClassDBController('user');
 
       DBController.getUserByTelegramId(req.user.id)
         .then(user => {
@@ -62,7 +62,7 @@ const routesHandle = app => {
           } else {
             res.redirect(
               303,
-              `${config.frontendServer}/id/${user.telegramUserId}`
+              `${config.frontendServer}/?id=${user.telegramUserId}`
             );
           }
         })
@@ -79,6 +79,7 @@ const routesHandle = app => {
 
   app.use('/api', apiRoutes);
   app.use('/api/auth', authRoutes);
+
   app.use((req, res) => {
     res.render('404');
   });

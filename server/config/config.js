@@ -6,9 +6,11 @@ module.exports = {
   port: `${process.env.PORT || 3000}`,
   corsOptions: {
     origins: [
-      'https://forgeserver.herokuapp.com/',
-      'http://random-coffee.fun/',
-      'https://loori-r.github.io/share_coffee_frontend/'
+      'https://forgeserver.herokuapp.com',
+      'http://random-coffee.fun',
+      'https://loori-r.github.io',
+      'http://localhost:3000',
+      'http://127.0.0.1:5500'
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
@@ -20,5 +22,5 @@ module.exports = {
       'https://forge-development.herokuapp.com/auth/telegram/callback'
   },
   jwtSecret: 'baNaNa',
-  frontendServer: 'http://random-coffee.fun/'
+  frontendServer: 'http://random-coffee.fun'
 };

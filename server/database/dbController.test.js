@@ -3,10 +3,22 @@ const mongoose = require('mongoose');
 const { MongoClient } = require('mongodb');
 const config = require('./../config/config');
 const connectDatabase = require('../lib/connectDatabase.js');
-const demoUsers = require('./models/user.js');
-const demoEvents = require('./models/event.js');
-const demoDepartments = require('./models/department.js');
 const ClassController = require('./dbController.js');
+
+const userMethods = [
+  'getAllUsers',
+  'getUserByTelegramId',
+  'getUserById',
+  'putUserTelegramChatId',
+  'putUserDepartment',
+  'postNewUser'
+];
+const eventMethods = ['getAllEvents', 'getEventById'];
+const departmentMethods = [
+  'getDepartmentById',
+  'getAllDepartments',
+  'postNewDepartment'
+];
 
 const controller = new ClassController();
 const testData = {
@@ -25,6 +37,19 @@ describe('dbController tests', () => {
   afterAll(async () => {
     await mongoose.connection.close();
     console.log('tests done, May the Force be with you young Jedi');
+  });
+
+  test('Has all methods in default case', done => {
+    userMethods.forEach(method => {
+      expect(controller).toHaveProperty(method);
+    });
+    eventMethods.forEach(method => {
+      expect(controller).toHaveProperty(method);
+    });
+    departmentMethods.forEach(method => {
+      expect(controller).toHaveProperty(method);
+    });
+    done();
   });
 
   test('Get all Events', done => {
@@ -69,7 +94,7 @@ describe('dbController tests', () => {
     function cb(data) {
       testData.departmentId = data[0]['_id'];
 
-      expect(data).toHaveLength(5);
+      expect(data).toHaveLength(6);
       done();
     }
 
@@ -151,5 +176,156 @@ describe('dbController tests', () => {
     controller.postNewDepartment(newDepartmentParams).then(newDepartment => {
       cb(newDepartment);
     });
+  });
+});
+
+describe('dbController tests with "user" argument passed in', () => {
+  const userController = new ClassController('user');
+  it('config test', () => {
+    expect(userController).toBeTruthy();
+  });
+
+  test('Has all user methods', done => {
+    userMethods.forEach(method => {
+      expect(userController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no event methods', done => {
+    eventMethods.forEach(method => {
+      expect(userController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(userController).not.toHaveProperty(method);
+    });
+    done();
+  });
+});
+
+describe('dbController tests with "event" argument passed in', () => {
+  const eventController = new ClassController('event');
+  it('config test', () => {
+    expect(eventController).toBeTruthy();
+  });
+
+  test('Has no user methods', done => {
+    userMethods.forEach(method => {
+      expect(eventController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has all event methods', done => {
+    eventMethods.forEach(method => {
+      expect(eventController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(eventController).not.toHaveProperty(method);
+    });
+    done();
+  });
+});
+
+describe('dbController tests with "department" argument passed in', () => {
+  const departmentController = new ClassController('department');
+  it('config test', () => {
+    expect(departmentController).toBeTruthy();
+  });
+
+  test('Has no user methods', done => {
+    userMethods.forEach(method => {
+      expect(departmentController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no event methods', done => {
+    eventMethods.forEach(method => {
+      expect(departmentController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has all department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(departmentController).toHaveProperty(method);
+    });
+    done();
+  });
+});
+
+describe("dbController's argument should be a string", () => {
+  test('Number as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(42);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Array as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController([42]);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Undefined as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(undefined);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Null as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(null);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Boolean as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController(true);
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+  test('Object as an argument throws TypeError', done => {
+    function cb() {
+      return new ClassController({
+        'Bruce Willis': 'yipikaye, motherf*cker'
+      });
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+});
+
+describe('dbController takes wrong string argument', () => {
+  test('Should throw TypeError', done => {
+    function cb() {
+      return new ClassController('wg_forge_power!');
+    }
+    expect(cb).toThrowError(TypeError);
+    done();
+  });
+});
+
+describe('dbController takes over 1 argument', () => {
+  test('Should throw SyntaxError', done => {
+    function cb() {
+      return new ClassController('there', 'must', 'be', 'only', 'one');
+    }
+    expect(cb).toThrowError(SyntaxError);
+    done();
   });
 });

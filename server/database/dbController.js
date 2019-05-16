@@ -1,92 +1,44 @@
-const mongoose = require('mongoose');
-// const mongoose = require('mongoose').set('debug', true);
+const userMethodsFactory = require('./factories/userMethodsFactory');
+const eventMethodsFactory = require('./factories/eventMethodsFactory');
+const departmentMethodsFactory = require('./factories/departmentMethodsFactory');
+const randomizerMethodsFactory = require('./factories/randomizerMethodsFactory');
+const collection = require('./collection');
 
-const UserSchema = require('./../database/models/user');
-const EventSchema = require('./../database/models/event');
-const DepartmentSchema = require('./../database/models/department');
-
-class DBController {
-  constructor(
-    userModel = 'demo_user',
-    eventModel = 'demo_event',
-    departmentModel = 'demo_department'
-  ) {
-    this.Users = UserSchema(userModel);
-    this.Events = EventSchema(eventModel);
-    this.Departments = DepartmentSchema(departmentModel);
-  }
-
-  getAllUsers() {
-    return this.Users.find({}).exec();
-  }
-
-  getUserByTelegramId(id) {
-    return this.Users.findOne({ telegramUserId: id }).exec();
-  }
-
-  getUserById(id) {
-    return this.Users.findOne({ _id: id }).exec();
-  }
-
-  getAllEvents() {
-    return this.Events.find({}).exec();
-  }
-
-  getEventById(eventId) {
-    return this.Events.findOne({
-      _id: mongoose.Types.ObjectId(eventId)
-      // _id: eventId
-    }).exec();
-  }
-
-  getDepartmentById(departmentId) {
-    return this.Departments.findOne({
-      _id: mongoose.Types.ObjectId(departmentId)
-    }).exec();
-  }
-
-  getAllDepartments() {
-    return this.Departments.find({}).exec();
-  }
-
-  putUserDepartment(userId, department) {
-    return this.Users.findOneAndUpdate(
-      { _id: userId },
-      { $set: { department } },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
+function DBController(collectionName) {
+  if (arguments.length === 0) {
+    return Object.assign(
+      userMethodsFactory(collection.users),
+      eventMethodsFactory(collection.events),
+      departmentMethodsFactory(collection.departments),
+      randomizerMethodsFactory({
+        eventPairs: collection.eventPairs,
+        eventReserve: collection.eventReserve
+      })
     );
   }
-
-  putUserTelegramChatId(userId, telegramChatId) {
-    return this.Users.findOneAndUpdate(
-      { _id: userId },
-      { $set: { telegramChatId } },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
+  if (arguments.length === 1) {
+    if (typeof collectionName !== 'string') {
+      throw new TypeError('DBController argument should be a strind');
+    }
+    switch (collectionName) {
+      case 'user':
+        return userMethodsFactory(collection.users);
+      case 'event':
+        return eventMethodsFactory(collection.events);
+      case 'department':
+        return departmentMethodsFactory(collection.departments);
+      case 'randomizer':
+        return randomizerMethodsFactory({
+          eventPairs: collection.eventPairs,
+          eventReserve: collection.eventReserve
+        });
+      default:
+        throw new TypeError('Argument should be a collection name');
+    }
+  } else {
+    throw new SyntaxError(
+      'DBController constructor should have one or none arguments'
     );
-  }
-
-  postNewDepartment(department) {
-    const newDepartment = new this.Departments(department);
-
-    return new Promise((resolve, reject) => {
-      newDepartment.save((err, addedDepartment) => {
-        if (err) reject(err);
-        resolve(addedDepartment);
-      });
-    });
-  }
-
-  postNewUser(user) {
-    const newUser = new this.Users(user);
-
-    return new Promise((resolve, reject) => {
-      newUser.save((err, addedUser) => {
-        if (err) reject(err);
-        resolve(addedUser);
-      });
-    });
   }
 }
 

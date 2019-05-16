@@ -5,7 +5,7 @@ const ClassDBController = require('../../database/dbController');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const DBController = new ClassDBController();
+  const DBController = new ClassDBController('department');
 
   DBController.getAllDepartments()
     .then(departments =>
@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
   const departmentId = req.params.id;
 
   if (ObjectId.isValid(departmentId)) {
-    const DBController = new ClassDBController();
+    const DBController = new ClassDBController('department');
 
     DBController.getDepartmentById(departmentId)
       .then(department =>
@@ -37,7 +37,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const DBController = new ClassDBController();
+  const DBController = new ClassDBController('department');
 
   if (req.body.title) {
     DBController.postNewDepartment(req.body)

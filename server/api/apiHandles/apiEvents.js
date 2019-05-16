@@ -5,7 +5,7 @@ const ClassDBController = require('../../database/dbController');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const DBController = new ClassDBController();
+  const DBController = new ClassDBController('event');
 
   DBController.getAllEvents()
     .then(events =>
@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
   const eventId = req.params.id;
 
   if (ObjectId.isValid(eventId)) {
-    const DBController = new ClassDBController();
+    const DBController = new ClassDBController('event');
 
     DBController.getEventById(eventId)
       .then(event => {
