@@ -4,16 +4,22 @@ const mongoose = require('mongoose');
 const UserSchema = require('./../database/models/user');
 const EventSchema = require('./../database/models/event');
 const DepartmentSchema = require('./../database/models/department');
+const EventPairsSchema = require('./models/eventPairs');
+const EventReserveSchema = require('./models/eventReserve');
 
 class DBController {
   constructor(
     userModel = 'demo_user',
     eventModel = 'demo_event',
-    departmentModel = 'demo_department'
+    departmentModel = 'demo_department',
+    eventPairsModel = 'demo_eventPair',
+    eventReserveModel = 'demo_eventReserve'
   ) {
     this.Users = UserSchema(userModel);
     this.Events = EventSchema(eventModel);
     this.Departments = DepartmentSchema(departmentModel);
+    this.EventPairs = EventPairsSchema(eventPairsModel);
+    this.EventReserves = EventReserveSchema(eventReserveModel);
   }
 
   getAllUsers() {
@@ -87,6 +93,30 @@ class DBController {
         resolve(addedUser);
       });
     });
+  }
+
+  // методы для Рандомайзера //
+  updateEventPairs(eventPairsObj) {
+    const newEventPairsObj = new this.EventPairs(eventPairsObj);
+
+    return new Promise((resolve, reject) => {
+      newEventPairsObj.save((err, addedEventPairs) => {
+        if (err) reject(err);
+        resolve(addedEventPairs);
+      });
+    });
+  }
+
+  insertEventPairs(eventPairsObj) {
+    return this.EventPairs.insertMany(eventPairsObj, (err, data) =>
+      console.log('Данные добавлены')
+    );
+  }
+
+  removeEventPairs() {
+    return this.EventPairs.deleteMany({}, (err, data) =>
+      console.log('Данные удалены')
+    );
   }
 }
 
