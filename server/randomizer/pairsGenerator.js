@@ -1,7 +1,9 @@
 /* eslint-disable no-param-reassign */
 const checkDBMapping = require('./checkDBMapping');
 const checkUserFields = require('./checkUserFields');
+const DBController = require('../database/dbController');
 
+const controller = new DBController();
 function pairsGenerator(allData) {
   const eventsData = allData[0];
   const departmentsData = allData[1];
@@ -144,15 +146,16 @@ function pairsGenerator(allData) {
 
     confirmReservedUsers(); // проверяем возможность посещения событий для юзеров, добавленных в резерв
 
-    console.log('Generated Pairs:', generatedPairs);
-    console.log('Users Participation for current period:', usersParticipation);
-    console.log('Reserved Users for Events:', reservedUsers);
-    
+    // console.log('Generated Pairs:', generatedPairs);
+    // console.log('Users Participation for current period:', usersParticipation);
+    // console.log('Reserved Users for Events:', reservedUsers);
 
-    process.exit(0);
+    // process.exit(0);
+    return generatedPairs;
   }
 
-  generatePairs(); // вызов генерации пар
+  const result = generatePairs(); // вызов генерации пар
+  controller.insertEventPairs(result);
 }
 
 module.exports = pairsGenerator;
