@@ -59,7 +59,7 @@ router.post('/admin', async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(404).json({
+    res.status(403).json({
       errors: [
         {
           msg: "Can't verify username and password!"
@@ -76,7 +76,7 @@ router.get('/admin', auth, async (req, res) => {
     res.json(user);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(403).send('Access denied');
   }
 });
 

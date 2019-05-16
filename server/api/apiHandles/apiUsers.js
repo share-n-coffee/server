@@ -23,7 +23,7 @@ router
     } else {
       DBController.getAllUsers()
         .then(users => res.status(200).json(users))
-        .catch(error => res.status(422).send(error));
+        .catch(error => res.status(404).send(error));
     }
   })
   .put(jwtAuth, adminAuth, (req, res) => {
@@ -51,11 +51,11 @@ router.route('/:id').get(jwtAuth, (req, res) => {
   if (ObjectId.isValid(searchId)) {
     DBController.getUserById(searchId)
       .then(user => res.status(200).json(user))
-      .catch(error => res.status(422).send(error));
+      .catch(error => res.status(404).send(error));
   } else {
     DBController.getUserByTelegramId(searchId)
       .then(user => res.status(200).send(user))
-      .catch(error => res.status(422).send(error));
+      .catch(error => res.status(404).send(error));
   }
 });
 

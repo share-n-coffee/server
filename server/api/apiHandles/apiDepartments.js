@@ -15,13 +15,8 @@ router
     console.log(req.user);
 
     DBController.getAllDepartments()
-      .then(departments =>
-        res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(departments)
-      )
-      .catch(error => res.status(500).send(error));
+      .then(departments => res.status(200).json(departments))
+      .catch(error => res.status(404).send(error));
   })
   .post(jwtAuth, adminAuth, (req, res) => {
     const DBController = new ClassDBController('department');
@@ -30,12 +25,9 @@ router
       DBController.postNewDepartment(req.body)
         .then(data => data)
         .then(addedDepartment => {
-          res
-            .status(200)
-            .set('Content-Type', 'application/json')
-            .send(addedDepartment);
+          res.status(200).json(addedDepartment);
         })
-        .catch(error => res.status(422).send(error));
+        .catch(error => res.status(404).send(error));
     } else {
       res.status(400).send('Request body must at least "title" parameter!');
     }
@@ -48,12 +40,7 @@ router.route('/:id').get(jwtAuth, (req, res) => {
     const DBController = new ClassDBController('department');
 
     DBController.getDepartmentById(departmentId)
-      .then(department =>
-        res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(department)
-      )
+      .then(department => res.status(200).json(department))
       .catch(error => res.status(404).send(error));
   } else {
     res.status(404).send('Request query must be a valid ObjectId!');

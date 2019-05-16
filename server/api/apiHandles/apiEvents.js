@@ -10,13 +10,8 @@ router.route('/').get(jwtAuth, (req, res) => {
   const DBController = new ClassDBController('event');
 
   DBController.getAllEvents()
-    .then(events =>
-      res
-        .status(200)
-        .set('Content-Type', 'application/json')
-        .send(events)
-    )
-    .catch(error => res.status(500).send(error));
+    .then(events => res.status(200).json(events))
+    .catch(error => res.status(404).send(error));
 });
 
 router.route('/:id').get(jwtAuth, (req, res) => {
@@ -27,10 +22,7 @@ router.route('/:id').get(jwtAuth, (req, res) => {
 
     DBController.getEventById(eventId)
       .then(event => {
-        return res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(event);
+        return res.status(200).json(event);
       })
       .catch(error => res.status(404).send(error));
   } else {
