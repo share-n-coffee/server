@@ -2,7 +2,7 @@ const ClassDBController = require('../database/dbController');
 const authRoutes = require('../api/auth');
 const apiRoutes = require('../api/api');
 const config = require('../config/config');
-const checkSignature = require('../lib/checkTelegramSignature');
+const dataValidation = require('../lib/dataValidation');
 
 const routesHandle = app => {
   app.get('/', (req, res) => {
@@ -12,7 +12,7 @@ const routesHandle = app => {
     });
   });
 
-  app.get('/auth/telegram/callback', (req, res) => {
+  app.put('/auth/telegram/callback', dataValidation, (req, res) => {
     const DBController = new ClassDBController();
 
     DBController.getUserByTelegramId(req.user.id)
@@ -25,20 +25,14 @@ const routesHandle = app => {
             username: req.user.username,
             avatar: req.user.avatar
           })
-            .then(newUser => {
-              res.redirect(
-                303,
-                `${config.frontendServer}/id/${newUser.telegramUserId}`
-              );
+            .then(() => {
+              res.send(req.user.token);
             })
             .catch(err => {
               res.redirect(`${config.frontendServer}/error`);
             });
         } else {
-          res.redirect(
-            303,
-            `${config.frontendServer}/?id=${user.telegramUserId}`
-          );
+          res.send(req.user.token);
         }
       })
       .catch(err => {
