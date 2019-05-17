@@ -1,11 +1,10 @@
 const express = require('express');
-const passport = require('passport');
 const session = require('express-session');
 const cors = require('cors');
 const config = require('../config/config');
-const telegramStrategy = require('../passport/telegramStrategy');
-const passportInitializer = require('../lib/passportInitializer');
-const job = require('../randomizer/randController');
+const RandController = require('../randomizer/randController');
+RandController.checkAllData();
+RandController.selectEventForPairGenerating('5cd6f6c381371d297acb2fe0');
 
 module.exports = app => {
   /**
@@ -38,7 +37,4 @@ module.exports = app => {
       saveUninitialized: false
     })
   );
-  app.use(passport.initialize());
-  app.use(passport.session());
-  passportInitializer(passport, telegramStrategy);
 };

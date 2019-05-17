@@ -9,10 +9,13 @@ const eventPairsSchema = new Schema({
     required: true
   },
   //  cгенерированные пары
-  pairs: {
-    type: Array,
-    required: true
-  }
+  pairs: [
+    {
+      invitedUser1: { type: Number, required: true },
+      invitedUser2: { type: Number, required: true },
+      event: {}
+    }
+  ]
 });
 
 module.exports = modelName => mongoose.model(modelName, eventPairsSchema);
