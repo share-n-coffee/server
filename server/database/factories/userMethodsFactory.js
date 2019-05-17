@@ -54,6 +54,10 @@ function userMethodsFactory(userModelName) {
     });
   };
 
+  const getAllUsersByEventId = id => {
+    return Users.find({ 'events.eventId': id }).exec();
+  }
+
   const putUserBan = (user, banned) => {
     return Users.findOneAndUpdate(
       user,
@@ -70,6 +74,7 @@ function userMethodsFactory(userModelName) {
     putUserTelegramChatId,
     putUserDepartment,
     postNewUser,
+    getAllUsersByEventId,
     querySearch,
     putUserBan
   };
