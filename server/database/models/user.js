@@ -8,11 +8,6 @@ const UserSchema = new Schema({
     type: Number,
     required: true
   },
-  //  Телеграмовский идентификатор чата с пользователем (необходим для работы бота)
-  telegramChatId: {
-    type: Number,
-    required: false
-  },
   //  Ссылка на аватар пользователя
   avatar: {
     type: String,
@@ -48,11 +43,19 @@ const UserSchema = new Schema({
     }
   },
   //  Массив с событиями, на которые подписан пользователь
-  events: {
-    type: Array,
-    required: true,
-    default: []
-  },
+  events: [
+    {
+      eventId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false
+      },
+      status: {
+        type: String,
+        required: false,
+        default: 'free'
+      }
+    }
+  ],
   //  Отдел, в котором работает пользователь
   department: {
     type: mongoose.Schema.Types.ObjectId,
