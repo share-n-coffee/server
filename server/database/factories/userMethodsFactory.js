@@ -54,6 +54,15 @@ function userMethodsFactory(userModelName) {
     });
   };
 
+  const putUserBan = (user, banned) => {
+    return Users.findOneAndUpdate(
+      user,
+      { $set: { banned } },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
   return {
     getAllUsers,
     getUserByTelegramId,
@@ -61,7 +70,8 @@ function userMethodsFactory(userModelName) {
     putUserTelegramChatId,
     putUserDepartment,
     postNewUser,
-    querySearch
+    querySearch,
+    putUserBan
   };
 }
 

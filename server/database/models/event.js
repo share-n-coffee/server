@@ -26,7 +26,7 @@ const EventSchema = new Schema({
     type: Array,
     required: true
   },
-  event: {
+  options: {
     // Является ли событие повторяющимся
     cyclic: {
       type: Boolean,

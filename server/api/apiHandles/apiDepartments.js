@@ -11,9 +11,6 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('department');
 
-    console.log('deps');
-    console.log(req.user);
-
     DBController.getAllDepartments()
       .then(departments => res.status(200).json(departments))
       .catch(error => res.status(404).send(error));

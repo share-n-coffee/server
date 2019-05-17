@@ -48,7 +48,7 @@ const routesHandle = app => {
   });
 
   app.use('/api', jwtAuth, apiRoutes);
-  app.use('/api/auth', authRoutes);
+  app.use('/login', jwtAuth, authRoutes);
 
   app.use((req, res) => {
     res.render('404');

@@ -59,4 +59,25 @@ router.route('/:id').get((req, res) => {
   }
 });
 
+router.route('/ban/:userId').put(adminAuth, (req, res) => {
+  const searchId = req.params.userId;
+  const { ban } = req.body;
+
+  if (ban) {
+    const DBController = new ClassDBController('user');
+    let userQuery = { telegramUserId: searchId };
+
+    if (ObjectId.isValid(searchId)) {
+      userQuery = { _id: searchId };
+    }
+
+    DBController.putUserBan(userQuery, {
+      expired: ban.status ? 4102389828505 : 0,
+      ...ban
+    })
+      .then(user => res.status(200).json(user))
+      .catch(error => res.status(404).send(error));
+  }
+});
+
 module.exports = router;

@@ -4,7 +4,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const UserSchema = require('../database/models/user');
 const config = require('../config/config');
-const auth = require('../middleware/jwtAuth');
+const jwtAuth = require('../middleware/jwtAuth');
 
 const Users = UserSchema('demo_user');
 
@@ -70,7 +70,7 @@ router.post('/admin', async (req, res) => {
 });
 
 // route GET api/auth/admin
-router.get('/admin', auth, async (req, res) => {
+router.get('/admin', async (req, res) => {
   try {
     const user = await Users.findById(req.user.id).select('admin.password');
     res.json(user);
