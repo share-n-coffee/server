@@ -48,13 +48,18 @@ function userMethodsFactory(userModelName) {
     });
   };
 
+  const getAllUsersByEventId = id => {
+    return Users.find({ 'events.eventId': id }).exec();
+  };
+
   return {
     getAllUsers,
     getUserByTelegramId,
     getUserById,
     putUserTelegramChatId,
     putUserDepartment,
-    postNewUser
+    postNewUser,
+    getAllUsersByEventId
   };
 }
 
