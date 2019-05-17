@@ -20,7 +20,6 @@ router
 
     if (req.body.title) {
       DBController.postNewDepartment(req.body)
-        .then(data => data)
         .then(addedDepartment => {
           res.status(200).json(addedDepartment);
         })

@@ -15,13 +15,23 @@ function eventMethodsFactory(eventModelName) {
   const getEventById = eventId => {
     return Events.findOne({
       _id: mongoose.Types.ObjectId(eventId)
-      // _id: eventId
     }).exec();
+  };
+
+  const postNewEvent = event => {
+    const newEvent = new Events(event);
+    return new Promise((resolve, reject) => {
+      newEvent.save((err, addedEvent) => {
+        if (err) reject(err);
+        resolve(addedEvent);
+      });
+    });
   };
 
   return {
     getAllEvents,
-    getEventById
+    getEventById,
+    postNewEvent
   };
 }
 
