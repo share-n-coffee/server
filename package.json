@@ -4,11 +4,8 @@
   "description": "auth project",
   "main": "server.js",
   "scripts": {
-    "client-install": "npm install --prefix client",
-    "start": "node server.js",
+    "start": "cross-env NODE_ENV=production node server.js",
     "server": "nodemon server.js",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
     "lint": "eslint -c .eslintrc.js ./server/**/*.js",
     "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
     "format": "prettier --write \"server/**/*.js\"",
@@ -40,6 +37,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.2.4",
     "mongoose": "^5.5.4",
+    "node-telegram-bot-api": "^0.30.0",
     "passport": "^0.4.0",
     "passport-telegram": "^1.0.0",
     "winston": "^3.2.1",
@@ -61,9 +59,11 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm test"
+      "pre-commit": "lint-staged"
     }
+  },
+  "engines": {
+    "node": ">=8.0.0 <12.2.0"
   },
   "lint-staged": {
     "linters": {
