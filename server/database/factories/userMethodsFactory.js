@@ -1,14 +1,20 @@
 const UserSchema = require('../models/user');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function userMethodsFactory(userModelName) {
   if (isNull(userModelName)) {
     return {};
   }
+
   const Users = UserSchema(userModelName);
 
   const getAllUsers = () => {
     return Users.find({}).exec();
+  };
+
+  const querySearch = query => {
+    console.log(query);
+    return Users.find(query).exec();
   };
 
   const getUserByTelegramId = id => {
@@ -50,6 +56,15 @@ function userMethodsFactory(userModelName) {
 
   const getAllUsersByEventId = id => {
     return Users.find({ 'events.eventId': id }).exec();
+  }
+
+  const putUserBan = (user, banned) => {
+    return Users.findOneAndUpdate(
+      user,
+      { $set: { banned } },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
   };
 
   return {
@@ -59,7 +74,9 @@ function userMethodsFactory(userModelName) {
     putUserTelegramChatId,
     putUserDepartment,
     postNewUser,
-    getAllUsersByEventId
+    getAllUsersByEventId,
+    querySearch,
+    putUserBan
   };
 }
 

@@ -1,6 +1,6 @@
 const { createHash, createHmac } = require('crypto');
 
-const TOKEN = process.env.NODE_TOKEN;
+const TOKEN = process.env.NODE_TELEGRAM_TOKEN;
 
 const secret = createHash('sha256')
   .update(TOKEN)

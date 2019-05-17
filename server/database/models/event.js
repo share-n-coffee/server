@@ -21,12 +21,12 @@ const EventSchema = new Schema({
     required: true
   },
   //  Координаты места проведения
-  //  Формат: "7.1854773, 1.9979411"
+  //  Формат: [7.1854773, 1.9979411]
   location: {
     type: Array,
     required: true
   },
-  event: {
+  options: {
     // Является ли событие повторяющимся
     cyclic: {
       type: Boolean,
@@ -43,16 +43,16 @@ const EventSchema = new Schema({
     //  Если создаётся одиночное событие, то этот параметр ему выставляется сразу, один элементом массива
     nextDates: [
       {
-        type: Date,
+        type: Number,
         required: false
       }
     ]
   },
   //  Дата добавления события в БД
   created: {
-    type: Date,
-    required: true,
-    default: Date.now
+    type: Number,
+    default: new Date().getTime(),
+    required: false
   }
 });
 
