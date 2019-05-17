@@ -28,20 +28,14 @@ class RandController {
     const allUsers = await controller.getAllUsers();
 
     if (eventToBalance.active) {
-      pairsGenerator(eventToBalance, allUsers);
+      controller.removeEventPairs().then(() => {
+        pairsGenerator(eventToBalance, allUsers); // <===  Функция генерации пар//
+      });
     } else {
       throw Error('Event has been disabled');
     }
   }
 }
-
-/* const job = new CronJob('* * * * * *', () => {
-   controller.removeEventPairs().then(() => {
-      pairsGenerator(data); // <===  Функция генерации пар//
-    }); 
-});
-job.start();
-*/
 
 module.exports = RandController;
 // Тестовая попытка запуска рандомайзера //
