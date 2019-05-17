@@ -24,10 +24,11 @@ function generateEventUsersList(event, allUsers) {
 
 // генерируем пары для одиночного события
 function generateSingleEventPairs(event, allUsers) {
-  const finalPairsObjects = [];
+  const finalPairsObjects = []; // сам объект с парами текущего события для записи в базу
+  const usersStatusUpdate = []; // для запроса на обновление статусов пользователей
   const generatedPairs = [];
   const availableUsers = generateEventUsersList(event, allUsers); // собираем список всех свободных подписчиков события из всех отделов
-  // console.log(availableUsers);
+
   availableUsers.forEach(balancedUser => {
     let balancedUserStatus = balancedUser.events.find(userEvent => {
       return event.id.toString() === userEvent.eventId.toString();
@@ -70,9 +71,21 @@ function generateSingleEventPairs(event, allUsers) {
       generatedPairs.push(pair);
       balancedUser.events[balancedUserEventIndex].status = 'pending';
       user.events[userEventIndex].status = 'pending';
+
+      const balancedUserStatusUpdate = {};
+      balancedUserStatusUpdate[balancedUser.telegramUserId] = {
+        [event.id]: 'pending'
+      };
+      usersStatusUpdate.push(balancedUserStatusUpdate);
+
+      const userStatusUpdate = {};
+      userStatusUpdate[user.telegramUserId] = {
+        [event.id]: 'pending'
+      };
+      usersStatusUpdate.push(userStatusUpdate);
     });
   });
-
+  console.log(usersStatusUpdate);
   const eventPairs = {};
   eventPairs.eventId = event.id;
   eventPairs.pairs = generatedPairs;
