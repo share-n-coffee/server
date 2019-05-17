@@ -22,13 +22,13 @@ function randomizerMethodsFactory(modelNames) {
   };
 
   const insertEventPairs = eventPairsObj => {
-    return this.EventPairs.insertMany(eventPairsObj, (err, data) =>
+    return EventPairs.insertMany(eventPairsObj, (err, data) =>
       console.log('Данные добавлены')
     );
   };
 
   const removeEventPairs = () => {
-    return this.EventPairs.deleteMany({}, (err, data) =>
+    return EventPairs.deleteMany({}, (err, data) =>
       console.log('Данные удалены')
     );
   };
