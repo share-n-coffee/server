@@ -85,7 +85,7 @@ function generateSingleEventPairs(event, allUsers) {
       usersStatusUpdate.push(userStatusUpdate);
     });
   });
-  console.log(usersStatusUpdate);
+  // console.log(usersStatusUpdate); нужно вызывать метод обновления статусов
   const eventPairs = {};
   eventPairs.eventId = event.id;
   eventPairs.pairs = generatedPairs;

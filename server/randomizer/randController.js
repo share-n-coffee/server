@@ -5,8 +5,19 @@ const DBController = require('../database/dbController');
 const CronJob = require('cron').CronJob;
 const pairsGenerator = require('./pairsGenerator');
 const checkData = require('./checkDataCorrectness');
+const addNewPairs = require('./substitution');
 
 const controller = new DBController();
+const substitutionQueue = [];
+const incommingCyclicEventsStorage = [];
+
+const substitution = new CronJob('*/30 * * * * *', () => {
+  if (substitutionQueue.length !== 0) {
+    addNewPairs(substitutionQueue.pop());
+  }
+});
+
+substitution.start();
 
 class RandController {
   static checkAllData() {
@@ -35,7 +46,12 @@ class RandController {
       throw Error('Event has been disabled');
     }
   }
+
+  static makeSubstitution(eventId) {
+    substitutionQueue.unshift(eventId);
+  }
 }
 
+// RandController.makeSubstitution('5cd6f6c381371d297acb2fe0'); // метод для вызова ботом в случае отказа пользователя
+
 module.exports = RandController;
-// Тестовая попытка запуска рандомайзера //
