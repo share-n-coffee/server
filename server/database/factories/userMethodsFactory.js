@@ -66,6 +66,23 @@ function userMethodsFactory(userModelName) {
     );
   };
 
+  const saveNewUser = user => {
+    return new Promise((resolve, reject) => {
+      const newUser = new Users({
+        lastName: user.last_name,
+        firstName: user.first_name,
+        telegramUserId: user.id,
+        avatar: user.photo_url,
+        username: user.username
+      });
+
+      newUser.save((err, addedUser) => {
+        if (err) reject(err);
+        resolve(addedUser);
+      });
+    });
+  };
+
   return {
     getAllUsers,
     getUserByTelegramId,
@@ -75,7 +92,8 @@ function userMethodsFactory(userModelName) {
     postNewUser,
     getAllUsersByEventId,
     querySearch,
-    putUserBan
+    putUserBan,
+    saveNewUser
   };
 }
 
