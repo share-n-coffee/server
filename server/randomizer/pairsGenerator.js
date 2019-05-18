@@ -8,7 +8,7 @@ function pairsGenerator(event, allUsers) {
   function generateCyclicEventPairs() {}
 
   function checkTypeOfEvent() {
-    if (event.event.cyclic === false) {
+    if (event.options.cyclic === false) {
       // в новой схеме обращаться через options
       generateSingleEventPairs(event, allUsers);
     } else {
