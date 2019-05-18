@@ -1,56 +1,45 @@
 const express = require('express');
 const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('../../database/dbController');
+const jwtAuth = require('../../middleware/jwtAuth');
+const adminAuth = require('../../middleware/adminAuth');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const DBController = new ClassDBController();
+router
+  .route('/')
+  .get((req, res) => {
+    const DBController = new ClassDBController('department');
 
-  DBController.getAllDepartments()
-    .then(departments =>
-      res
-        .status(200)
-        .set('Content-Type', 'application/json')
-        .send(departments)
-    )
-    .catch(error => res.status(500).send(error));
-});
+    DBController.getAllDepartments()
+      .then(departments => res.status(200).json(departments))
+      .catch(error => res.status(404).send(error));
+  })
+  .post(adminAuth, (req, res) => {
+    const DBController = new ClassDBController('department');
 
-router.get('/:id', (req, res) => {
+    if (req.body.title) {
+      DBController.postNewDepartment(req.body)
+        .then(addedDepartment => {
+          res.status(200).json(addedDepartment);
+        })
+        .catch(error => res.status(404).send(error));
+    } else {
+      res.status(400).send('Request body must at least "title" parameter!');
+    }
+  });
+
+router.route('/:id').get((req, res) => {
   const departmentId = req.params.id;
 
   if (ObjectId.isValid(departmentId)) {
-    const DBController = new ClassDBController();
+    const DBController = new ClassDBController('department');
 
     DBController.getDepartmentById(departmentId)
-      .then(department =>
-        res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(department)
-      )
-      .catch(error => res.status(422).send(error));
+      .then(department => res.status(200).json(department))
+      .catch(error => res.status(404).send(error));
   } else {
-    res.status(400).send('Request query must be a valid ObjectId!');
-  }
-});
-
-router.post('/', (req, res) => {
-  const DBController = new ClassDBController();
-
-  if (req.body.title) {
-    DBController.postNewDepartment(req.body)
-      .then(data => data)
-      .then(addedDepartment => {
-        res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(addedDepartment);
-      })
-      .catch(error => res.status(422).send(error));
-  } else {
-    res.status(400).send('Request body must at least "title" parameter!');
+    res.status(404).send('Request query must be a valid ObjectId!');
   }
 });
 

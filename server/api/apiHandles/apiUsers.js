@@ -1,80 +1,76 @@
 const express = require('express');
 const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('./../../database/dbController');
+const jwtAuth = require('../../middleware/jwtAuth');
+const adminAuth = require('../../middleware/adminAuth');
+const userIdValidation = require('../../middleware/userIdValidation');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const DBController = new ClassDBController();
+router.route('/').get((req, res) => {
+  const DBController = new ClassDBController('user');
+  let fields = null;
 
-  DBController.getAllUsers()
-    .then(users =>
-      res
-        .status(200)
-        .set('Content-Type', 'application/json')
-        .send(users)
-    )
-    .catch(error => res.status(422).send(error));
-});
-
-router.get('/:id', (req, res) => {
-  const DBController = new ClassDBController();
-  const searchId = req.params.id;
-
-  if (ObjectId.isValid(searchId)) {
-    DBController.getUserById(searchId)
-      .then(user =>
-        res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(user)
-      )
-      .catch(error => res.status(422).send(error));
-  } else {
-    DBController.getUserByTelegramId(searchId)
-      .then(user =>
-        res
-          .status(200)
-          .set('Content-Type', 'application/json')
-          .send(user)
-      )
-      .catch(error => res.status(422).send(error));
+  if (req.query.getFields) {
+    fields = req.query.getFields.replace(/,/g, ' ');
+    delete req.query.getFields;
   }
+
+  DBController.querySearch(req.query, fields)
+    .then(results => res.status(200).json(results))
+    .catch(error => res.status(404));
 });
 
-router.put('/', (req, res) => {
-  if (
-    ObjectId.isValid(req.body.userId) &&
-    (ObjectId.isValid(req.body.newDepartment) || req.body.newTelegramChatId)
-  ) {
-    const DBController = new ClassDBController();
+router
+  .route('/:userId', userIdValidation)
+  .get((req, res) => {
+    const DBController = new ClassDBController('user');
+    let fields = null;
 
-    if (ObjectId.isValid(req.body.newDepartment)) {
-      DBController.putUserDepartment(req.body.userId, req.body.newDepartment)
-        .then(user =>
-          res
-            .status(200)
-            .set('Content-Type', 'application/json')
-            .send(user)
-        )
-        .catch(error => res.status(422).send(error));
-    } else {
-      DBController.putUserTelegramChatId(
-        req.body.userId,
-        req.body.newTelegramChatId
-      )
-        .then(user =>
-          res
-            .status(200)
-            .set('Content-Type', 'application/json')
-            .send(user)
-        )
-        .catch(error => res.status(422).send(error));
+    if (Object.keys(req.query).length && req.query.getFields) {
+      fields = req.query.getFields.replace(/,/g, ' ');
     }
-  } else {
-    res.status(400).send(`
-      Request body must have valid "userId" AND ("newDepartment" OR "newTelegramChatId") parameters!
-    `);
+
+    DBController.getUserById(req.params.userId, fields)
+      .then(user => res.status(200).json(user))
+      .catch(error => res.status(404).send(error));
+
+    // if (Object.keys(req.query).length) {
+
+    //   DBController.querySearch(req.query)
+    //     .then(results => res.status(200).json(results))
+    //     .catch(error => res.status(404));
+    // } else {
+    //   DBController.getUserById(req.params.userId)
+    //     .then(user => res.status(200).json(user))
+    //     .catch(error => res.status(404).send(error));
+    // }
+  })
+  .put((req, res) => {
+    if (ObjectId.isValid(req.body.newDepartment)) {
+      const DBController = new ClassDBController('user');
+      DBController.putUserDepartment(req.params.userId, req.body.newDepartment)
+        .then(user => res.status(200).json(user))
+        .catch(error => res.status(404).send(error));
+    } else {
+      res.status(404).send("New Department's id is not valid ObjectId!");
+    }
+  });
+
+router.route('/ban/:userId', userIdValidation).put(adminAuth, (req, res) => {
+  const searchId = req.params.userId;
+  const { ban } = req.body;
+
+  if (ban) {
+    const DBController = new ClassDBController('user');
+    const userQuery = { _id: searchId };
+
+    DBController.putUserBan(userQuery, {
+      expired: ban.status ? 4102389828505 : 0,
+      ...ban
+    })
+      .then(user => res.status(200).json(user))
+      .catch(error => res.status(404).send(error));
   }
 });
 

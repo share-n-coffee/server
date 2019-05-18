@@ -1,8 +1,9 @@
 const ClassDBController = require('../database/dbController');
-const authRoutes = require('../api/auth');
+const authRoutes = require('../api/apiAuth');
 const apiRoutes = require('../api/api');
 const config = require('../config/config');
-const dataValidation = require('../lib/dataValidation');
+const checkSignature = require('../lib/checkTelegramSignature');
+const jwtAuth = require('../middleware/jwtAuth');
 
 const routesHandle = app => {
   app.get('/', (req, res) => {
@@ -12,7 +13,7 @@ const routesHandle = app => {
     });
   });
 
-  app.put('/auth/telegram/callback', dataValidation, (req, res) => {
+  app.put('/auth/telegram/callback', (req, res) => {
     const DBController = new ClassDBController();
 
     DBController.getUserByTelegramId(req.user.id)
@@ -40,8 +41,9 @@ const routesHandle = app => {
       });
   });
 
-  app.use('/api', apiRoutes);
-  app.use('/api/auth', authRoutes);
+  app.use('/api', jwtAuth, apiRoutes);
+  app.use('/login', authRoutes);
+
   app.use((req, res) => {
     res.render('404');
   });

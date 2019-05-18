@@ -21,12 +21,17 @@ const EventSchema = new Schema({
     required: true
   },
   //  Координаты места проведения
-  //  Формат: "7.1854773, 1.9979411"
+  //  Формат: [7.1854773, 1.9979411]
   location: {
     type: Array,
     required: true
   },
-  event: {
+  //  Адррес места проведения
+  address: {
+    type: String,
+    required: false
+  },
+  options: {
     // Является ли событие повторяющимся
     cyclic: {
       type: Boolean,
@@ -39,18 +44,20 @@ const EventSchema = new Schema({
       type: Number,
       required: false
     },
-    //  Дата следующего события, пересчитывается отдельным скриптом перед работой рандомайзера
-    //  Если создаётся одиночное событие, то этот параметр ему выставляется сразу
-    nextDate: {
-      type: Date,
-      required: true
-    }
+    //  Даты следующих событий, пересчитывается отдельным скриптом перед работой рандомайзера
+    //  Если создаётся одиночное событие, то этот параметр ему выставляется сразу, один элементом массива
+    nextDates: [
+      {
+        type: Number,
+        required: false
+      }
+    ]
   },
   //  Дата добавления события в БД
   created: {
-    type: Date,
-    required: true,
-    default: Date.now
+    type: Number,
+    default: new Date().getTime(),
+    required: false
   }
 });
 

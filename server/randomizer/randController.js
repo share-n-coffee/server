@@ -4,20 +4,54 @@ const DBController = require('../database/dbController');
 // eslint-disable-next-line prefer-destructuring
 const CronJob = require('cron').CronJob;
 const pairsGenerator = require('./pairsGenerator');
+const checkData = require('./checkDataCorrectness');
+const addNewPairs = require('./substitution');
 
 const controller = new DBController();
+const substitutionQueue = [];
+const incommingCyclicEventsStorage = [];
 
-const job = new CronJob('0 */50 * * * *', () => {
-  Promise.all([
-    controller.getAllEvents(),
-    controller.getAllDepartments(),
-    controller.getAllUsers()
-  ]).then(data => {
-    controller.removeEventPairs().then(() => {
-      pairsGenerator(data); // <===  Функция генерации пар//
-    });
-  });
+const substitution = new CronJob('*/30 * * * * *', () => {
+  if (substitutionQueue.length !== 0) {
+    addNewPairs(substitutionQueue.pop());
+  }
 });
 
-module.exports = job.start();
-// Тестовая попытка запуска рандомайзера //
+substitution.start();
+
+class RandController {
+  static checkAllData() {
+    Promise.all([
+      controller.getAllEvents(),
+      controller.getAllDepartments(),
+      controller.getAllUsers()
+    ])
+      .then(allData => {
+        checkData(allData);
+      })
+      .catch(error => {
+        throw Error(error);
+      });
+  }
+
+  static async selectEventForPairGenerating(eventId) {
+    const eventToBalance = await controller.getEventById(eventId);
+    const allUsers = await controller.getAllUsers();
+
+    if (eventToBalance.active) {
+      controller.removeEventPairs().then(() => {
+        pairsGenerator(eventToBalance, allUsers); // <===  Функция генерации пар//
+      });
+    } else {
+      throw Error('Event has been disabled');
+    }
+  }
+
+  static makeSubstitution(eventId) {
+    substitutionQueue.unshift(eventId);
+  }
+}
+
+// RandController.makeSubstitution('5cd6f6c381371d297acb2fe0'); // метод для вызова ботом в случае отказа пользователя
+
+module.exports = RandController;
