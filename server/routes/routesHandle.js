@@ -1,5 +1,5 @@
 const ClassDBController = require('../database/dbController');
-const authRoutes = require('../api/auth');
+const authRoutes = require('../api/apiAuth');
 const apiRoutes = require('../api/api');
 const config = require('../config/config');
 const checkSignature = require('../lib/checkTelegramSignature');
