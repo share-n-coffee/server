@@ -7,15 +7,10 @@ RandController.checkAllData();
 RandController.selectEventForPairGenerating('5cd6f6c381371d297acb2fe0');
 
 module.exports = app => {
-  /**
-   * express.json() is a built-in middleware function in Express.
-   * It parses incoming requests with JSON payloads and is based on body-parser.
-   */
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.static('public'));
 
-  // app.use(cors(config.corsOptions));
   app.use(
     cors({
       origin: (origin, callback) => {
