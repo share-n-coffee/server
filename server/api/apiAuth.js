@@ -100,14 +100,31 @@ router.route('/').put((req, res) => {
     });
   }
 
+  let returnData;
   Users.findOne({
     username: reqUser.username
-  }).then(user => {
+  }).then(async user => {
     if (!user) {
-      saveNewUser(reqUser).then(addedUser => res.json(addedUser));
+      returnData = await saveNewUser(reqUser);
     } else {
-      res.json(user);
+      returnData = user;
     }
+
+    jwt.sign(
+      {
+        user: returnData
+      },
+      config.jwtSecret,
+      {
+        expiresIn: 60 * 60 * 24 * 7
+      },
+      (err, token) => {
+        if (err) throw err;
+        res.json({
+          token
+        });
+      }
+    );
   });
 });
 
