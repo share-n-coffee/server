@@ -29,6 +29,7 @@ function randomizerMethodsFactory(modelNames) {
         if (err) reject(err);
         resolve(addedEventPair);
       });
+      console.log(`Пары к событию ${eventPairsObj.eventId} добавлены.`);
     });
   };
 
@@ -42,11 +43,19 @@ function randomizerMethodsFactory(modelNames) {
     return EventPairs.findOne({ eventId: id }).exec();
   };
 
+  const insertPair = (id, pairObject) => {
+    return EventPairs.findOneAndUpdate(
+      { eventId: id },
+      { $push: { pairs: pairObject } }
+    );
+  };
+
   return {
     updateEventPairs,
     insertEventPairs,
     removeEventPairs,
-    getEventPairsById
+    getEventPairsById,
+    insertPair
   };
 }
 
