@@ -34,17 +34,6 @@ router
     DBController.getUserById(req.params.userId, fields)
       .then(user => res.status(200).json(user))
       .catch(error => res.status(404).send(error));
-
-    // if (Object.keys(req.query).length) {
-
-    //   DBController.querySearch(req.query)
-    //     .then(results => res.status(200).json(results))
-    //     .catch(error => res.status(404));
-    // } else {
-    //   DBController.getUserById(req.params.userId)
-    //     .then(user => res.status(200).json(user))
-    //     .catch(error => res.status(404).send(error));
-    // }
   })
   .put((req, res) => {
     if (ObjectId.isValid(req.body.newDepartment)) {

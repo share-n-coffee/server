@@ -16,21 +16,8 @@ function userMethodsFactory(userModelName) {
     return Users.find(query, fields).exec();
   };
 
-  const getUserByTelegramId = id => {
-    return Users.findOne({ telegramUserId: id }).exec();
-  };
-
   const getUserById = (id, fields = null) => {
     return Users.findOne({ _id: id }, fields).exec();
-  };
-
-  const putUserTelegramChatId = (userId, telegramChatId) => {
-    return Users.findOneAndUpdate(
-      { _id: userId },
-      { $set: { telegramChatId } },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
-    );
   };
 
   const putUserDepartment = (userId, department) => {
@@ -85,9 +72,7 @@ function userMethodsFactory(userModelName) {
 
   return {
     getAllUsers,
-    getUserByTelegramId,
     getUserById,
-    putUserTelegramChatId,
     putUserDepartment,
     postNewUser,
     getAllUsersByEventId,
