@@ -1,7 +1,7 @@
 const express = require('express');
+const crypto = require('crypto');
 const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('./../../database/dbController');
-const jwtAuth = require('../../middleware/jwtAuth');
 const adminAuth = require('../../middleware/adminAuth');
 const objectIdValidation = require('../../middleware/objectIdValidation');
 
@@ -36,13 +36,33 @@ router
       .catch(error => res.status(404).send(error));
   })
   .put((req, res) => {
-    if (ObjectId.isValid(req.body.newDepartment)) {
-      const DBController = new ClassDBController('user');
-      DBController.putUserDepartment(req.params.userId, req.body.newDepartment)
+    const DBController = new ClassDBController('user');
+
+    if (req.body.newDepartment) {
+      if (ObjectId.isValid(req.body.newDepartment)) {
+        DBController.updateUser(req.params.userId, {
+          department: req.body.newDepartment
+        })
+          .then(user => res.status(200).json(user))
+          .catch(error => res.status(404).send(error));
+      }
+
+      res.status(404).send("New Department's id is not valid ObjectId!");
+    }
+
+    if (req.body.admin) {
+      if (req.body.admin.password) {
+        req.body.admin.password = crypto
+          .createHash('md5')
+          .update(req.body.admin.password)
+          .digest('hex');
+      }
+
+      DBController.updateUser(req.params.userId, {
+        admin: req.body.admin
+      })
         .then(user => res.status(200).json(user))
         .catch(error => res.status(404).send(error));
-    } else {
-      res.status(404).send("New Department's id is not valid ObjectId!");
     }
   });
 

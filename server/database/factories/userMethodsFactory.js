@@ -20,15 +20,6 @@ function userMethodsFactory(userModelName) {
     return Users.findOne({ _id: id }, fields).exec();
   };
 
-  const putUserDepartment = (userId, department) => {
-    return Users.findOneAndUpdate(
-      { _id: userId },
-      { $set: { department } },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
-    );
-  };
-
   const postNewUser = user => {
     const newUser = new Users(user);
 
@@ -70,15 +61,24 @@ function userMethodsFactory(userModelName) {
     });
   };
 
+  const updateUser = (userId, newProps) => {
+    return Users.findOneAndUpdate(
+      { _id: userId },
+      { $set: newProps },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
   return {
     getAllUsers,
     getUserById,
-    putUserDepartment,
     postNewUser,
     getAllUsersByEventId,
     querySearch,
     putUserBan,
-    saveNewUser
+    saveNewUser,
+    updateUser
   };
 }
 
