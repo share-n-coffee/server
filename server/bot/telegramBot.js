@@ -12,12 +12,33 @@ const botConfig = {
   inviteText: 'Поздравляем, ты отправляешься на встречу:',
   remindText: 'Напоминаем тебе про встречу:',
   acceptText: 'Я иду!',
-  declineText: 'Не в этот раз :('
+  declineText: 'Не в этот раз :(',
+  acceptReply: 'Очень круто, что ты подтвердил, не опаздывай!',
+  declineReply: 'Очень жаль, что ты отклонил, увидимся в другой раз!'
 };
 
 const getEventDescription = event => {
   return `${event.title}${'\n'}${event.description}`;
 };
+
+// Реагируем на ответы пользователя
+bot.on('callback_query', callbackQuery => {
+  const { text, chat, message_id } = callbackQuery.message;
+  let updatedMessage = `${text}${'\n\n\n'}`;
+
+  if (callbackQuery.data === 'accept') {
+    updatedMessage += `${botConfig.acceptReply}`;
+  } else {
+    updatedMessage += `${botConfig.declineReply}`;
+  }
+
+  bot
+    .editMessageText(updatedMessage, {
+      chat_id: chat.id,
+      message_id
+    })
+    .catch(err => logger.error(err.response.body.description));
+});
 
 module.exports = {
   notify(notifyType, user, event) {
