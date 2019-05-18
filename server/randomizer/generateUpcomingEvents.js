@@ -1,4 +1,5 @@
 const express = require('express');
+const connectDatabase = require('../../server/lib/connectDatabase');
 const ClassDBController = require('../database/dbController');
 
 const app = express();
@@ -21,6 +22,7 @@ function generateUpcomingEvents(period = 'month') {
 
 // module.exports = generateUpcomingEvents;
 
+connectDatabase();
 app.listen(port, err => {
   if (err) throw err;
   console.log(`> Ready on http://localhost:${port}`);
