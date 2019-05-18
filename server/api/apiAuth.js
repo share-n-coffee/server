@@ -97,7 +97,7 @@ router.route('/').put((req, res) => {
 
       newUser.save((err, addedUser) => {
         // if (err) res.send(err);
-        res.json(addedUser);
+        res.json(user);
       });
     } else {
       res.json(user);
