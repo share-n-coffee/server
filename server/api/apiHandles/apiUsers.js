@@ -3,7 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('./../../database/dbController');
 const jwtAuth = require('../../middleware/jwtAuth');
 const adminAuth = require('../../middleware/adminAuth');
-const userIdValidation = require('../../middleware/userIdValidation');
+const objectIdValidation = require('../../middleware/objectIdValidation');
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.route('/').get((req, res) => {
 });
 
 router
-  .route('/:userId', userIdValidation)
+  .route('/:userId', objectIdValidation)
   .get((req, res) => {
     const DBController = new ClassDBController('user');
     let fields = null;
@@ -46,7 +46,7 @@ router
     }
   });
 
-router.route('/ban/:userId', userIdValidation).put(adminAuth, (req, res) => {
+router.route('/ban/:userId', objectIdValidation).put(adminAuth, (req, res) => {
   const searchId = req.params.userId;
   const { ban } = req.body;
 

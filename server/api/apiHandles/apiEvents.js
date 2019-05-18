@@ -25,20 +25,31 @@ router
       .catch(error => res.status(404).send(error));
   });
 
-router.route('/:id').get((req, res) => {
-  const eventId = req.params.id;
+router
+  .route('/:id')
+  .get((req, res) => {
+    const eventId = req.params.id;
 
-  if (ObjectId.isValid(eventId)) {
+    if (ObjectId.isValid(eventId)) {
+      const DBController = new ClassDBController('event');
+
+      DBController.getEventById(eventId)
+        .then(event => {
+          return res.status(200).json(event);
+        })
+        .catch(error => res.status(404).send(error));
+    } else {
+      res.status(404).send('Request query must be a valid ObjectId!');
+    }
+  })
+  .put((req, res) => {
     const DBController = new ClassDBController('event');
 
-    DBController.getEventById(eventId)
-      .then(event => {
-        return res.status(200).json(event);
+    DBController.updateEvent(req.params.id, req.body)
+      .then(updatedEvent => {
+        res.status(200).json(updatedEvent);
       })
       .catch(error => res.status(404).send(error));
-  } else {
-    res.status(404).send('Request query must be a valid ObjectId!');
-  }
-});
+  });
 
 module.exports = router;
