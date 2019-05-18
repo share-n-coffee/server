@@ -2,7 +2,9 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const config = require('../config/config');
-const job = require('../randomizer/randController');
+const RandController = require('../randomizer/randController');
+RandController.checkAllData();
+RandController.selectEventForPairGenerating('5cd6f6c381371d297acb2fe0');
 
 module.exports = app => {
   app.use(express.json());
