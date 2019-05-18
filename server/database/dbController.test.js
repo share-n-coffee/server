@@ -26,7 +26,9 @@ const departmentMethods = [
 const randomizerMethods = [
   'updateEventPairs',
   'insertEventPairs',
-  'removeEventPairs'
+  'removeEventPairs',
+  'getEventPairsById',
+  'insertPair'
 ];
 
 const controller = new ClassController();
