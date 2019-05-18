@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
+const logger = require('../logger');
 
 const bot = new TelegramBot(telegramBotToken, { polling: true });
 
@@ -68,7 +69,7 @@ module.exports = {
 
     bot
       .sendMessage(telegramChatId, message, replyObj)
-      .catch(err => console.log(err.response.body));
+      .catch(err => logger.error(err.response.body.description));
   },
   mailing() {
     // метод рассылки...
