@@ -56,7 +56,6 @@ router.route('/').put((req, res) => {
   }).then(async takenUser => {
     const DBController = new ClassDBController('user');
     const user = takenUser || (await DBController.saveNewUser(reqUser));
-    console.log(user);
     res.json({ token: createJWT(createPayload(user)) });
   });
 });
