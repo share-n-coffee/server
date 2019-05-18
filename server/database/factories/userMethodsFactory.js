@@ -8,21 +8,20 @@ function userMethodsFactory(userModelName) {
 
   const Users = UserSchema(userModelName);
 
-  const getAllUsers = () => {
-    return Users.find({}).exec();
+  const getAllUsers = (fields = null) => {
+    return Users.find({}, fields).exec();
   };
 
-  const querySearch = query => {
-    console.log(query);
-    return Users.find(query).exec();
+  const querySearch = (query, fields = null) => {
+    return Users.find(query, fields).exec();
   };
 
   const getUserByTelegramId = id => {
     return Users.findOne({ telegramUserId: id }).exec();
   };
 
-  const getUserById = id => {
-    return Users.findOne({ _id: id }).exec();
+  const getUserById = (id, fields = null) => {
+    return Users.findOne({ _id: id }, fields).exec();
   };
 
   const putUserTelegramChatId = (userId, telegramChatId) => {
@@ -56,7 +55,7 @@ function userMethodsFactory(userModelName) {
 
   const getAllUsersByEventId = id => {
     return Users.find({ 'events.eventId': id }).exec();
-  }
+  };
 
   const putUserBan = (user, banned) => {
     return Users.findOneAndUpdate(

@@ -9,30 +9,42 @@ const router = express.Router();
 
 router.route('/').get((req, res) => {
   const DBController = new ClassDBController('user');
+  let fields = null;
 
-  if (Object.keys(req.query).length) {
-    /*
-     *  Enable query search
-     *  example: /api/users?firstName=Washington
-     *  if query didn't find anything, it's return empty array
-     */
-    DBController.querySearch(req.query)
-      .then(results => res.status(200).json(results))
-      .catch(error => res.status(404));
-  } else {
-    DBController.getAllUsers()
-      .then(users => res.status(200).json(users))
-      .catch(error => res.status(404).send(error));
+  if (req.query.getFields) {
+    fields = req.query.getFields.replace(/,/g, ' ');
+    delete req.query.getFields;
   }
+
+  DBController.querySearch(req.query, fields)
+    .then(results => res.status(200).json(results))
+    .catch(error => res.status(404));
 });
 
 router
   .route('/:userId', userIdValidation)
   .get((req, res) => {
     const DBController = new ClassDBController('user');
-    DBController.getUserById(req.params.userId)
+    let fields = null;
+
+    if (Object.keys(req.query).length && req.query.getFields) {
+      fields = req.query.getFields.replace(/,/g, ' ');
+    }
+
+    DBController.getUserById(req.params.userId, fields)
       .then(user => res.status(200).json(user))
       .catch(error => res.status(404).send(error));
+
+    // if (Object.keys(req.query).length) {
+
+    //   DBController.querySearch(req.query)
+    //     .then(results => res.status(200).json(results))
+    //     .catch(error => res.status(404));
+    // } else {
+    //   DBController.getUserById(req.params.userId)
+    //     .then(user => res.status(200).json(user))
+    //     .catch(error => res.status(404).send(error));
+    // }
   })
   .put((req, res) => {
     if (ObjectId.isValid(req.body.newDepartment)) {
