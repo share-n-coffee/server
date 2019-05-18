@@ -1,130 +1,63 @@
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
 
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const UserSchema = require('../database/models/user');
 const config = require('../config/config');
-const jwtAuth = require('../middleware/jwtAuth');
+const ClassDBController = require('../database/dbController');
 
 const Users = UserSchema('demo_user');
+const tokenLifeTime = 60 * 60 * 24 * 7;
 
-// route Post api/auth/admin
-// eslint-disable-next-line consistent-return
-router.post('/admin', async (req, res) => {
+function createJWT(data) {
+  return jwt.sign({ data }, config.jwtSecret, { expiresIn: tokenLifeTime });
+}
+
+function createPayload(user) {
+  return {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    department: user.department,
+    avatar: user.avatar,
+    banned: user.banned,
+    isAdmin: user.admin.isAdmin
+  };
+}
+
+router.route('/admin').post(async (req, res) => {
   const { username, password } = req.body;
 
-  try {
-    const user = await Users.findOne({
-      username
-    });
+  const user = await Users.findOne({
+    username
+  });
 
-    const checkPass = () => {
-      if (password === user.admin.password) {
-        return true;
-      }
-      return false;
-    };
-
-    if (!user || !checkPass()) {
-      return res.status(403).json({
-        errors: [
-          {
-            msg: 'Invalid Username or Password!'
-          }
-        ]
-      });
-    }
-
-    const payload = {
-      user: {
-        // eslint-disable-next-line no-underscore-dangle
-        _id: user._id,
-        telegramUserId: user.telegramUserId,
-        admin: user.admin
-      }
-    };
-
-    jwt.sign(
-      payload,
-      config.jwtSecret,
-      {
-        expiresIn: 60 * 60 * 24
-      },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          token
-        });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.status(403).json({
+  if (!user || !user.admin.isAdmin || password !== user.admin.password) {
+    return res.status(403).json({
       errors: [
         {
-          msg: "Can't verify username and password!"
+          msg: !user.admin.isAdmin
+            ? "You don't have permissions!"
+            : 'Invalid Username or Password!'
         }
       ]
     });
   }
-});
 
-// route GET api/auth/admin
-router.get('/admin', async (req, res) => {
-  try {
-    const user = await Users.findById(req.user.id).select('admin.password');
-    res.json(user);
-  } catch (err) {
-    console.error(err.message);
-    res.status(403).send('Access denied');
-  }
+  return res.json({ token: createJWT(createPayload(user)) });
 });
 
 router.route('/').put((req, res) => {
   const reqUser = req.body;
 
-  function saveNewUser(user) {
-    return new Promise((resolve, reject) => {
-      const newUser = new Users({
-        lastName: user.last_name,
-        firstName: user.first_name,
-        telegramUserId: user.id,
-        avatar: user.photo_url,
-        username: user.username
-      });
-
-      newUser.save((err, addedUser) => {
-        if (err) reject(err);
-        resolve(addedUser);
-      });
-    });
-  }
-
-  let returnData;
   Users.findOne({
-    username: reqUser.username
-  }).then(async user => {
-    if (!user) {
-      returnData = await saveNewUser(reqUser);
-    } else {
-      returnData = user;
-    }
-
-    jwt.sign(
-      {
-        user: returnData
-      },
-      config.jwtSecret,
-      {
-        expiresIn: 60 * 60 * 24 * 7
-      },
-      (err, token) => {
-        if (err) throw err;
-        res.json({
-          token
-        });
-      }
-    );
+    telegramUserId: reqUser.id
+  }).then(async takenUser => {
+    const DBController = new ClassDBController('user');
+    const user = takenUser || (await DBController.saveNewUser(reqUser));
+    console.log(user);
+    res.json({ token: createJWT(createPayload(user)) });
   });
 });
 
