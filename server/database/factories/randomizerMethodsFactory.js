@@ -1,6 +1,6 @@
 const EventPairsSchema = require('../models/eventPairs');
 const EventReserveSchema = require('../models/eventReserve');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function randomizerMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
