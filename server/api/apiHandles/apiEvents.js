@@ -1,7 +1,6 @@
 const express = require('express');
 const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('../../database/dbController');
-const jwtAuth = require('../../middleware/jwtAuth');
 const adminAuth = require('../../middleware/adminAuth');
 
 const router = express.Router();
@@ -15,7 +14,7 @@ router
       .then(events => res.status(200).json(events))
       .catch(error => res.status(404).send(error));
   })
-  .post((req, res) => {
+  .post(adminAuth, (req, res) => {
     const DBController = new ClassDBController('event');
 
     DBController.postNewEvent(req.body)
@@ -25,20 +24,31 @@ router
       .catch(error => res.status(404).send(error));
   });
 
-router.route('/:id').get((req, res) => {
-  const eventId = req.params.id;
+router
+  .route('/:id')
+  .get((req, res) => {
+    const eventId = req.params.id;
 
-  if (ObjectId.isValid(eventId)) {
+    if (ObjectId.isValid(eventId)) {
+      const DBController = new ClassDBController('event');
+
+      DBController.getEventById(eventId)
+        .then(event => {
+          return res.status(200).json(event);
+        })
+        .catch(error => res.status(404).send(error));
+    } else {
+      res.status(404).send('Request query must be a valid ObjectId!');
+    }
+  })
+  .put(adminAuth, (req, res) => {
     const DBController = new ClassDBController('event');
 
-    DBController.getEventById(eventId)
-      .then(event => {
-        return res.status(200).json(event);
+    DBController.updateEvent(req.params.id, req.body)
+      .then(updatedEvent => {
+        res.status(200).json(updatedEvent);
       })
       .catch(error => res.status(404).send(error));
-  } else {
-    res.status(404).send('Request query must be a valid ObjectId!');
-  }
-});
+  });
 
 module.exports = router;
