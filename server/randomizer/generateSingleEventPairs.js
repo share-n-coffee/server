@@ -66,7 +66,7 @@ function generateSingleEventPairs(event, allUsers) {
         location: event.location,
         title: event.title,
         description: event.description,
-        date: event.event.nextDate // в новой схеме обращаться через options к первому элементу массива nextDates
+        date: event.options.nextDate // в новой схеме обращаться через options к первому элементу массива nextDates
       };
       generatedPairs.push(pair);
       balancedUser.events[balancedUserEventIndex].status = 'pending';
@@ -85,7 +85,7 @@ function generateSingleEventPairs(event, allUsers) {
       usersStatusUpdate.push(userStatusUpdate);
     });
   });
-  // console.log(usersStatusUpdate); нужно вызывать метод обновления статусов
+  // console.log(usersStatusUpdate); //нужно вызывать метод обновления статусов
   const eventPairs = {};
   eventPairs.eventId = event.id;
   eventPairs.pairs = generatedPairs;
