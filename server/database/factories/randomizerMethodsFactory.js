@@ -33,7 +33,16 @@ function randomizerMethodsFactory(modelNames) {
     );
   };
 
-  return { updateEventPairs, insertEventPairs, removeEventPairs };
+  const getEventPairsById = id => {
+    return EventPairs.findOne({ eventId: id }).exec();
+  };
+
+  return {
+    updateEventPairs,
+    insertEventPairs,
+    removeEventPairs,
+    getEventPairsById
+  };
 }
 
 module.exports = randomizerMethodsFactory;
