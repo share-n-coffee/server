@@ -83,25 +83,48 @@ router.get('/admin', async (req, res) => {
 router.route('/').put((req, res) => {
   const reqUser = req.body;
 
-  Users.findOne({
-    username: reqUser.username
-  }).then(user => {
-    if (!user) {
+  function saveNewUser(user) {
+    return new Promise((resolve, reject) => {
       const newUser = new Users({
-        lastName: reqUser.last_name,
-        firstName: reqUser.first_name,
-        telegramUserId: reqUser.id,
-        avatar: reqUser.photo_url,
-        username: reqUser.username
+        lastName: user.last_name,
+        firstName: user.first_name,
+        telegramUserId: user.id,
+        avatar: user.photo_url,
+        username: user.username
       });
 
       newUser.save((err, addedUser) => {
-        // if (err) res.send(err);
-        res.json(addedUser);
+        if (err) reject(err);
+        resolve(addedUser);
       });
+    });
+  }
+
+  let returnData;
+  Users.findOne({
+    username: reqUser.username
+  }).then(async user => {
+    if (!user) {
+      returnData = await saveNewUser(reqUser);
     } else {
-      res.json(user);
+      returnData = user;
     }
+
+    jwt.sign(
+      {
+        user: returnData
+      },
+      config.jwtSecret,
+      {
+        expiresIn: 60 * 60 * 24 * 7
+      },
+      (err, token) => {
+        if (err) throw err;
+        res.json({
+          token
+        });
+      }
+    );
   });
 });
 
