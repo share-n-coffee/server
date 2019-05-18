@@ -94,15 +94,12 @@ router.route('/').put((req, res) => {
         avatar: reqUser.photo_url,
         username: reqUser.username
       });
-      return new Promise((resolve, reject) => {
-        newUser.save((err, addedUser) => {
-          if (err) reject(err);
-          resolve(newUser);
-        });
+
+      newUser.save((err, addedUser) => {
+        if (err) res.send(err);
+        res.json(newUser);
       });
     }
-
-    return res.send('ok');
   });
 
   res.send('ok');
