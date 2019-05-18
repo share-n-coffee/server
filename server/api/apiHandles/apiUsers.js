@@ -3,6 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('./../../database/dbController');
 const jwtAuth = require('../../middleware/jwtAuth');
 const adminAuth = require('../../middleware/adminAuth');
+const userIdValidation = require('../../middleware/userIdValidation');
 
 const router = express.Router();
 
@@ -26,23 +27,17 @@ router.route('/').get((req, res) => {
 });
 
 router
-  .route('/:userId', (req, res, next) => {
-    req.userId = req.params.userId;
-    if (!ObjectId.isValid(req.userId)) {
-      res.status(404).send("User's id is not valid ObjectId!");
-    }
-    next();
-  })
+  .route('/:userId', userIdValidation)
   .get((req, res) => {
     const DBController = new ClassDBController('user');
-    DBController.getUserById(req.userId)
+    DBController.getUserById(req.params.userId)
       .then(user => res.status(200).json(user))
       .catch(error => res.status(404).send(error));
   })
-  .put(adminAuth, (req, res) => {
+  .put((req, res) => {
     if (ObjectId.isValid(req.body.newDepartment)) {
       const DBController = new ClassDBController('user');
-      DBController.putUserDepartment(req.body.userId, req.body.newDepartment)
+      DBController.putUserDepartment(req.params.userId, req.body.newDepartment)
         .then(user => res.status(200).json(user))
         .catch(error => res.status(404).send(error));
     } else {
@@ -50,17 +45,13 @@ router
     }
   });
 
-router.route('/ban/:userId').put(adminAuth, (req, res) => {
+router.route('/ban/:userId', userIdValidation).put(adminAuth, (req, res) => {
   const searchId = req.params.userId;
   const { ban } = req.body;
 
   if (ban) {
     const DBController = new ClassDBController('user');
-    let userQuery = { telegramUserId: searchId };
-
-    if (ObjectId.isValid(searchId)) {
-      userQuery = { _id: searchId };
-    }
+    const userQuery = { _id: searchId };
 
     DBController.putUserBan(userQuery, {
       expired: ban.status ? 4102389828505 : 0,
