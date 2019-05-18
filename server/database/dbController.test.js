@@ -2,26 +2,31 @@
 const mongoose = require('mongoose');
 const { MongoClient } = require('mongodb');
 const config = require('./../config/config');
-const connectDatabase = require('../lib/connectDatabase.js');
-const ClassController = require('./dbController.js');
+const connectDatabase = require('../lib/connectDatabase');
+const ClassController = require('./dbController');
+const collectionConfig = require('./collection');
 
 const userMethods = [
   'getAllUsers',
-  'getUserByTelegramId',
   'getUserById',
-  'putUserTelegramChatId',
-  'putUserDepartment',
   'postNewUser',
   'getAllUsersByEventId',
   'querySearch',
-  'putUserBan'
+  'putUserBan',
+  'saveNewUser',
+  'updateUser'
 ];
-
-const eventMethods = ['getAllEvents', 'getEventById', 'postNewEvent'];
+const eventMethods = [
+  'getAllEvents',
+  'getEventById',
+  'postNewEvent',
+  'updateEvent'
+];
 const departmentMethods = [
   'getDepartmentById',
   'getAllDepartments',
-  'postNewDepartment'
+  'postNewDepartment',
+  'updateDepartment'
 ];
 const randomizerMethods = [
   'updateEventPairs',
@@ -90,7 +95,7 @@ describe('dbController tests', () => {
           .db('demoproject')
           .collection('demo_users')
           .find({})
-          .count((errr, mongoUsersCount) => {
+          .count((error, mongoUsersCount) => {
             client.close();
             controller.getAllUsers().then(controllerUsers => {
               cb(controllerUsers, mongoUsersCount);
@@ -101,28 +106,39 @@ describe('dbController tests', () => {
   });
 
   test('Get all Departments', done => {
-    function cb(data) {
-      testData.departmentId = data[0]['_id'];
+    function cb(controllerDepartments, mongoDepartmentsCount) {
+      testData.departmentId = controllerDepartments[0]['_id'];
 
-      expect(data).toHaveLength(6);
+      expect(controllerDepartments).toHaveLength(mongoDepartmentsCount);
       done();
     }
-
-    controller.getAllDepartments().then(department => {
-      cb(department);
-    });
+    MongoClient.connect(
+      config.database,
+      (err, client) => {
+        client
+          .db('demoproject')
+          .collection('demo_departments')
+          .find({})
+          .count((error, mongoDepartmentsCount) => {
+            client.close();
+            controller.getAllDepartments().then(controllerDepartments => {
+              cb(controllerDepartments, mongoDepartmentsCount);
+            });
+          });
+      }
+    );
   });
 
-  test('GET User by telegram id', done => {
-    function cb(user) {
-      expect(user).toHaveProperty('username');
-      done();
-    }
+  // test('GET User by telegram id', done => {
+  //   function cb(user) {
+  //     expect(user).toHaveProperty('username');
+  //     done();
+  //   }
 
-    controller.getUserByTelegramId(testData.userTelegramId).then(user => {
-      cb(user);
-    });
-  });
+  //   controller.getUserById(testData.userTelegramId).then(user => {
+  //     cb(user);
+  //   });
+  // });
 
   test('GET User by _id', done => {
     function cb(user) {
@@ -191,8 +207,14 @@ describe('dbController tests', () => {
 
 describe('dbController tests with "user" argument passed in', () => {
   const userController = new ClassController('user');
+  const controllerMethods = Object.keys(userController);
   it('config test', () => {
     expect(userController).toBeTruthy();
+  });
+
+  test('Has valid quantity of user methods', done => {
+    expect(controllerMethods.length).toEqual(userMethods.length);
+    done();
   });
 
   test('Has all user methods', done => {
@@ -215,12 +237,25 @@ describe('dbController tests with "user" argument passed in', () => {
     });
     done();
   });
+
+  test('Has no randomizer methods', done => {
+    randomizerMethods.forEach(method => {
+      expect(userController).not.toHaveProperty(method);
+    });
+    done();
+  });
 });
 
 describe('dbController tests with "event" argument passed in', () => {
   const eventController = new ClassController('event');
+  const controllerMethods = Object.keys(eventController);
   it('config test', () => {
     expect(eventController).toBeTruthy();
+  });
+
+  test('Has valid quantity of event methods', done => {
+    expect(controllerMethods.length).toEqual(eventMethods.length);
+    done();
   });
 
   test('Has no user methods', done => {
@@ -243,12 +278,25 @@ describe('dbController tests with "event" argument passed in', () => {
     });
     done();
   });
+
+  test('Has no randomizer methods', done => {
+    randomizerMethods.forEach(method => {
+      expect(eventController).not.toHaveProperty(method);
+    });
+    done();
+  });
 });
 
 describe('dbController tests with "department" argument passed in', () => {
   const departmentController = new ClassController('department');
+  const controllerMethods = Object.keys(departmentController);
   it('config test', () => {
     expect(departmentController).toBeTruthy();
+  });
+
+  test('Has valid quantity of department methods', done => {
+    expect(controllerMethods.length).toEqual(departmentMethods.length);
+    done();
   });
 
   test('Has no user methods', done => {
@@ -268,6 +316,54 @@ describe('dbController tests with "department" argument passed in', () => {
   test('Has all department methods', done => {
     departmentMethods.forEach(method => {
       expect(departmentController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no randomizer methods', done => {
+    randomizerMethods.forEach(method => {
+      expect(departmentController).not.toHaveProperty(method);
+    });
+    done();
+  });
+});
+
+describe('dbController tests with "randomizer" argument passed in', () => {
+  const randomizerController = new ClassController('randomizer');
+  const controllerMethods = Object.keys(randomizerController);
+  it('config test', () => {
+    expect(randomizerController).toBeTruthy();
+  });
+
+  test('Has valid quantity of randomizer methods', done => {
+    expect(controllerMethods.length).toEqual(randomizerMethods.length);
+    done();
+  });
+
+  test('Has no user methods', done => {
+    userMethods.forEach(method => {
+      expect(randomizerController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no event methods', done => {
+    eventMethods.forEach(method => {
+      expect(randomizerController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(randomizerController).not.toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has all randomizer methods', done => {
+    randomizerMethods.forEach(method => {
+      expect(randomizerController).toHaveProperty(method);
     });
     done();
   });
