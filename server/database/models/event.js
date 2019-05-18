@@ -26,6 +26,11 @@ const EventSchema = new Schema({
     type: Array,
     required: true
   },
+  //  Адррес места проведения
+  address: {
+    type: String,
+    required: false
+  },
   options: {
     // Является ли событие повторяющимся
     cyclic: {
