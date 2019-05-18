@@ -96,10 +96,16 @@ router.route('/').put((req, res) => {
       });
 
       newUser.save((err, addedUser) => {
-        res.json(addedUser);
+        // res.json(addedUser);
+        res.json({
+          text: 'addedUser'
+        });
       });
     } else {
-      res.json(user);
+      // res.json(user);
+      res.json({
+        text: 'findedUser'
+      });
     }
   });
 });
