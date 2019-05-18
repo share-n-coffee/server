@@ -88,17 +88,19 @@ router.route('/').put((req, res) => {
   }).then(user => {
     if (!user) {
       const newUser = new Users({
-        last_name: reqUser.last_name,
-        first_name: reqUser.first_name,
+        lastName: reqUser.last_name,
+        firstName: reqUser.first_name,
         telegramUserId: reqUser.id,
         avatar: reqUser.photo_url,
         username: reqUser.username
       });
 
       newUser.save((err, addedUser) => {
-        if (err) res.send(err);
-        res.json(newUser);
+        // if (err) res.send(err);
+        res.json(addedUser);
       });
+    } else {
+      res.json(user);
     }
   });
 });
