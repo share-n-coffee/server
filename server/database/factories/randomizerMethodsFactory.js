@@ -22,9 +22,14 @@ function randomizerMethodsFactory(modelNames) {
   };
 
   const insertEventPairs = eventPairsObj => {
-    return EventPairs.insertMany(eventPairsObj, (err, data) =>
-      console.log('Данные добавлены')
-    );
+    const newEventPair = new EventPairs(eventPairsObj);
+
+    return new Promise((resolve, reject) => {
+      newEventPair.save((err, addedEventPair) => {
+        if (err) reject(err);
+        resolve(addedEventPair);
+      });
+    });
   };
 
   const removeEventPairs = () => {
@@ -33,7 +38,16 @@ function randomizerMethodsFactory(modelNames) {
     );
   };
 
-  return { updateEventPairs, insertEventPairs, removeEventPairs };
+  const getEventPairsById = id => {
+    return EventPairs.findOne({ eventId: id }).exec();
+  };
+
+  return {
+    updateEventPairs,
+    insertEventPairs,
+    removeEventPairs,
+    getEventPairsById
+  };
 }
 
 module.exports = randomizerMethodsFactory;
