@@ -48,7 +48,7 @@ router.post('/admin', async (req, res) => {
       payload,
       config.jwtSecret,
       {
-        expiresIn: 3600
+        expiresIn: 60 * 60 * 24
       },
       (err, token) => {
         if (err) throw err;
@@ -78,6 +78,34 @@ router.get('/admin', async (req, res) => {
     console.error(err.message);
     res.status(403).send('Access denied');
   }
+});
+
+router.route('/').put((req, res) => {
+  const reqUser = req.body;
+
+  Users.findOne({
+    username: reqUser.username
+  }).then(user => {
+    if (!user) {
+      const newUser = new Users({
+        last_name: reqUser.last_name,
+        first_name: reqUser.first_name,
+        telegramUserId: reqUser.id,
+        avatar: reqUser.photo_url,
+        username: reqUser.username
+      });
+      return new Promise((resolve, reject) => {
+        newUser.save((err, addedUser) => {
+          if (err) reject(err);
+          resolve(newUser);
+        });
+      });
+    }
+
+    return res.send('ok');
+  });
+
+  res.send('ok');
 });
 
 module.exports = router;
