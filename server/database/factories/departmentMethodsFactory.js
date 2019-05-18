@@ -28,10 +28,20 @@ function departmentMethodsFactory(departmentModelName) {
     });
   };
 
+  const updateDepartment = (departmentId, newProps) => {
+    return Departments.findOneAndUpdate(
+      { _id: departmentId },
+      { $set: newProps },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
   return {
     getDepartmentById,
     getAllDepartments,
-    postNewDepartment
+    postNewDepartment,
+    updateDepartment
   };
 }
 
