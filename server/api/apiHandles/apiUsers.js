@@ -51,6 +51,12 @@ router
     }
 
     if (req.body.admin) {
+      if (!req.user.admin.isAdmin) {
+        res.status(403).json({
+          errors: [{ msg: 'Forbidden – Access denied' }]
+        });
+      }
+
       if (req.body.admin.password) {
         req.body.admin.password = crypto
           .createHash('md5')

@@ -38,7 +38,7 @@ router
       .then(department => res.status(200).json(department))
       .catch(error => res.status(404).send(error));
   })
-  .put((req, res) => {
+  .put(adminAuth, (req, res) => {
     const DBController = new ClassDBController('department');
     DBController.updateDepartment(req.params.id, req.body)
       .then(updatedDepartment => {
