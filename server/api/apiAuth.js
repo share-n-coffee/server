@@ -101,8 +101,6 @@ router.route('/').put((req, res) => {
       });
     }
   });
-
-  res.send('ok');
 });
 
 module.exports = router;
