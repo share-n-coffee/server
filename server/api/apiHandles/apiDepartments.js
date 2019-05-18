@@ -1,5 +1,4 @@
 const express = require('express');
-const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('../../database/dbController');
 const adminAuth = require('../../middleware/adminAuth');
 const objectIdValidation = require('./../../middleware/objectIdValidation');
