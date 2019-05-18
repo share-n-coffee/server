@@ -1,234 +1,264 @@
-# Random Coffee API documentation
+# API FAQ
 
-### Советую всем, кто будет работать с API, установить программу Postman, в которой можно сразу же и проверить работу API
-
-[А по этой ссылке доступна свежая версия документации API](https://documenter.getpostman.com/view/7419944/S1Lx1ouZ)
-
-#
-#
-#
-
-- USERS
-  - [GET all Users](#get-all-users)
-  - [GET info about User](#get-info-about-user)
-  - [PUT user Department](#put-user-department)
-- EVENTS
-  - [GET all Events](#get-all-events)
-  - [GET info about one Event](#get-info-about-one-event)
-- Departments
-  - [GET all departments](#get-all-departments)
-- Admin
-  - [ADMIN LOGIN](#admin-login)
+## Оглавление:
+  - [Документация](#Документация-Postman)
+  - [Важные моменты](#Важные-моменты)
+  - [Пример запроса](#Пример-запроса)
+  - [Пользователи](#Пользователи)
+    - [Получить список всех пользователей](#Получить-список-всех-пользователей)
+    - [Получить отфильтрованный список всех пользователей](#Получить-отфильтрованный-список-всех-пользователей)
+    - [Получить пользователя по id](#Получить-пользователя-по-id)
+    - [Бан пользователя](#Бан-пользователя)
+    - [Назначение пользователю отдела](#Назначение-пользователю-отдела)
+  - [События](#События)
+    - [Получить список всех событий](#Получить-список-всех-событий)
+  - [Отделы](#Отделы)
+    - [Получить список всех отделов](#Получить-список-всех-отделов)
 
 #
 
-## GET INFO ABOUT USER
-
-> **user_telegram_id** – Telegram идентификатор пользователя
-
-```properties
-GET /api/users/{user_telegram_ID}
-```
-
-### RESPONSE CLASS (STATUS 200)
-```json
-{
-  "id_telegram": "541419431",
-  "avatar": "https://randomuser.me/api/portraits/men/16.jpg",
-  "first_name": "hugh",
-  "last_name": "gonzales",
-  "username": "smallmeercat345",
-  "department": null,
-  "isBanned": false,
-  "events": [],
-  "birthday": "1965-07-24T00:48:01Z",
-  "gender": "male",
-  "created": "2019-05-07T12:26:19.895Z",
-  "logs": {
-    "acceptedEvents": [],
-    "visitedEvents": [],
-    "bans": []
-  },
-  "admin": {
-    "isAdmin": false,
-    "password": null
-  }
-}
-```
+## Документация Postman
+  - по [этой ссылке](https://www.getpostman.com/downloads/) можно скачать программу Postman для теста запросов к api
+  - а по [этой ссылке](https://documenter.getpostman.com/view/7419944/S1Lx1ouZ?version=latest) находится самая свежая документация по api, которую можно подтянуть в Postman и протестировать
 
 #
 
-## GET ALL USERS
+## ***Важные моменты***
+  - При успешном выполнении запроса возвращается status = 200, statusText = "OK"
+  - Любой поиск по идентификатору (кроме заданных самостоятельно) необходимо осуществлять по полю _id, который автоматически присвоен mongodb
 
-> Возвращает всех юзеров в виде массива объектов
+#
 
-```properties
-GET /api/users/
-```
-
-### RESPONSE CLASS (STATUS 200)
-```json
-[
-  {
-    "id_telegram": "541419431",
-    "avatar": "https://randomuser.me/api/portraits/men/16.jpg",
-    "first_name": "hugh",
-    "last_name": "gonzales",
-    "username": "smallmeercat345",
-    "department": null,
-    "isBanned": false,
-    "events": [],
-    "birthday": "1965-07-24T00:48:01Z",
-    "gender": "male",
-    "created": "2019-05-07T12:26:19.895Z",
-    "logs": {
-      "acceptedEvents": [],
-      "visitedEvents": [],
-      "bans": []
+## Пример запроса
+  ```javascript
+  axios({
+    // Указываем метод и url согласно документации
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/users/',
+    headers: {
+      //  Здесь передаётся токен, полученный пользователем при аутентификации на сайте
+      //  Без указания данного заголовка с действующих токеном, доступ к api будет заблокирован
+      Authorization: `Bearer ${token}`
     },
-    "admin": {
-      "isAdmin": false,
-      "password": null
+
+    //  Можно задать параметры поиска
+    params: {
+      
+      //  Например, найти всех пользователей по определнному отделу
+      department: '5cd6f6c381371d297acb2fd0'
+
+      //  Также можно запросить только определенные поля из выборки
+      //  Поля разделяются запятыми _без_ пробелов
+      getFields: 'firstName,lastName,username'
     }
-  },
-  {
-    ...
-  },
-  {
-    ...
-  }
-]
-```
-
+  })
+  .then(data => {
+    //  Получаемые данные
+    //  Если наш запрос отработал без ошибки, но ничего не нашёл, то здесь вернётся пустой массив
+    console.log(data);
+  })
+  .catch(err => {
+    //  Если что-то пошло не так, получим объект ошибки
+    console.error(err);
+  });
+  ```
 #
 
-## GET ALL EVENTS
+## Пользователи
+- #### Получить список всех пользователей
+  > Отправляем GET запрос на /api/users/
 
-> Возвращает все события из БД в виде массива
+  > **Ответ**: массив пользователей
+  ```javascript
+  axios({
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/users/',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  .then(users => {
+    console.log(users);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
 
-```properties
-GET /api/events/
-```
+- #### Получить отфильтрованный список всех пользователей
+  > Отправляем GET запрос на /api/users/{{filter_query}}
 
-### RESPONSE CLASS (STATUS 200)
-```json
-[
-  {
-    "_id": "5cd17bb3892885c8f3000509",
-    "id": 1,
-    "title": "Kaya University",
-    "description": "Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.\n\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.",
-    "location": "7.1854773, 1.9979411",
-    "type": "amet",
-    "created": "2019-05-07T14:31:15.569Z"
-  },
-  {
-    ...
-  },
-  {
-    ...
-  },
-  {
-    ...
-  }
-]
-```
+  > **Ответ**: массив пользователей, совпадающих заданным условиям
 
-#
+  > **Пример**: запрашиваем всех пользователей по определенному отделу
+  ```javascript
+  axios({
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/users/?department=5cd6f6c381371d297acb2fd3',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  .then(users => {
+    console.log(users);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
 
-## GET INFO ABOUT ONE EVENT
+- #### Получить определенные поля всех пользователей
+  > Отправляем GET запрос на /api/users/{{get_fields}}
 
-> **event_id** – *_id* идентификатор события из mongodb
+  > **Ответ**: массив объектов, состоящих из заданных свойств пользователей
+  ```javascript
+  axios({
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/users/',
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    params: {
+      getFields: 'firstName,lastName,username'
+    }
+  })
+  .then(users => {
+    console.log(users);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
 
-```properties
-GET /api/events/{event_id}
-```
+- #### Получить список всех пользователей
+  > Отправляем GET запрос на /api/users/
 
-### RESPONSE CLASS (STATUS 200)
-```json
-{
-  "_id": "5cd17bb3892885c8f3000509",
-  "id": 1,
-  "title": "Kaya University",
-  "description": "Praesent blandit. Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede.\n\nMorbi porttitor lorem id ligula. Suspendisse ornare consequat lectus. In est risus, auctor sed, tristique in, tempus sit amet, sem.",
-  "location": "7.1854773, 1.9979411",
-  "type": "amet",
-  "created": "2019-05-07T14:31:15.569Z"
-}
-```
+  > **Ответ**: массив пользователей
+  ```javascript
+  axios({
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/users/',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    console.log(res);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
 
-#
+- #### Получить пользователя по id
+  > Отправляем GET запрос на /api/users/{id}\
+  > где {id} – _id идентификатор пользователя
+
+  > **Ответ:** объект пользователя
+
+  > Подробнее о возможностях запроса написано  документацииe
+  ```javascript
+  axios({
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/users/5cdd48ea200cc7007d863294',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    console.log(res);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
+- #### Бан пользователя
+  > Отправляем PUT запрос на /api/users/{{user_id}}
+
+  > **Ответ:** обновленный объект пользователя
+  ```javascript
+  axios({
+    method: "put",
+    url: "https://forge-development.herokuapp.com/api/users/",
+     headers: {
+      Authorization: `Bearer ${token}`
+    },
+    data: {
+      "ban": {
+        "status": true,
+        "expired": 1558082186482
+      }
+    }
+  })
+  .then(user => {
+    console.log(user);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
+
+- #### Назначение пользователю отдела
+  > Отправляем PUT запрос на /api/users/{{user_id}}
+
+  > **Ответ:** обновленный объект пользователя
+  ```javascript
+  axios({
+    method: "put",
+    url: "https://forge-development.herokuapp.com/api/users/",
+     headers: {
+      Authorization: `Bearer ${token}`
+    },
+    data: {
+    	"newDepartment": "5cd6f6c381371d297acb2fd0"
+    }
+  })
+  .then(user => {
+    console.log(user);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
 
 
-## GET ALL DEPARTMENTS
+## События
+- #### Получить список всех событий
+  > Отправляем GET запрос на /api/events/
+  ```javascript
+  axios({
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/events/',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    console.log(res);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
 
-> Возвращает все отделы из БД в виде массива
-
-```properties
-GET /api/departments/
-```
-
-### RESPONSE CLASS (STATUS 200)
-```json
-[
-  {
-    "_id": "5cd1795af34ec4fa8e2bd3ab",
-    "id": 42,
-    "title": "Accounts",
-    "description": "Qui sed consequat, pork loin deserunt boudin nulla proident.  Incididunt velit bacon ad, strip steak capicola venison consectetur magna aute flank esse laboris.  Shoulder ground round doner boudin.  Quis sed nostrud, hamburger chicken magna duis boudin et aliquip corned beef buffalo turkey leberkas nulla.  Tenderloin tongue nisi eu ham hock.",
-    "created": "2019-05-07T12:24:17.266Z"
-  },
-  {
-    ...
-  },
-  {
-    ...
-  },
-  {
-    ...
-  }
-]
-```
-
-#
-
-## PUT USER DEPARTMENT
-
-> При первом входе пользователя в аккаунт, отправляем запрос с выбранным отделом
-
-> **user_telegram_id** – Telegram идентификатор пользователя
-
-> **department_id** – *_id* идентификатор отдела из mongodb
-
-```properties
-PUT /api/users/{user_telegram_ID}/{department_id}
-```
-
-### RESPONSE CLASS (STATUS 200)
-```json
-{
-  "id_telegram": "541419431",
-  "avatar": "https://randomuser.me/api/portraits/men/16.jpg",
-  "first_name": "hugh",
-  "last_name": "gonzales",
-  "username": "smallmeercat345",
-  "department": ObjectId("5cd1795af34ec4fa8e2bd3ac"),
-  "isBanned": false,
-  "events": [],
-  "birthday": "1965-07-24T00:48:01Z",
-  "gender": "male",
-  "created": "2019-05-07T12:26:19.895Z",
-  "logs": {
-    "acceptedEvents": [],
-    "visitedEvents": [],
-    "bans": []
-  },
-  "admin": {
-    "isAdmin": false,
-    "password": null
-  }
-}
-```
+## Отделы
+- #### Получить список всех отделов
+  > отправляем GET запрос на /api/departments/
+  ```javascript
+  axios({
+    method: 'get',
+    url: 'https://forge-development.herokuapp.com/api/departments/',
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+  .then(res => {
+    console.log(res);
+  })
+  .catch(err => {
+    console.error(err);
+  });
+  ```
 
 
 
@@ -266,6 +296,6 @@ POST /api/auth/admin
 ```properties
 GET /api/auth/admin
 {
-  "x-auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWNkMTc1YWM0NGMyOWY2YmM3ZGJjMGExIn0sImlhdCI6MTU1NzI3NzUyMSwiZXhwIjoxNTU3MjgxMTIxfQ.g2LVARhT6k36XzUej0A6jNolneSjj3yq6lWW7IRNgzw"
+  "Authorization": " Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNWNkMTc1YWM0NGMyOWY2YmM3ZGJjMGExIn0sImlhdCI6MTU1NzI3NzUyMSwiZXhwIjoxNTU3MjgxMTIxfQ.g2LVARhT6k36XzUej0A6jNolneSjj3yq6lWW7IRNgzw"
 }
 ```

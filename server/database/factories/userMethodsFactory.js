@@ -1,22 +1,27 @@
 const UserSchema = require('../models/user');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function userMethodsFactory(userModelName) {
   if (isNull(userModelName)) {
     return {};
   }
+
   const Users = UserSchema(userModelName);
 
-  const getAllUsers = () => {
-    return Users.find({}).exec();
+  const getAllUsers = (fields = null) => {
+    return Users.find({}, fields).exec();
+  };
+
+  const querySearch = (query, fields = null) => {
+    return Users.find(query, fields).exec();
   };
 
   const getUserByTelegramId = id => {
     return Users.findOne({ telegramUserId: id }).exec();
   };
 
-  const getUserById = id => {
-    return Users.findOne({ _id: id }).exec();
+  const getUserById = (id, fields = null) => {
+    return Users.findOne({ _id: id }, fields).exec();
   };
 
   const putUserTelegramChatId = (userId, telegramChatId) => {
@@ -48,13 +53,29 @@ function userMethodsFactory(userModelName) {
     });
   };
 
+  const getAllUsersByEventId = id => {
+    return Users.find({ 'events.eventId': id }).exec();
+  };
+
+  const putUserBan = (user, banned) => {
+    return Users.findOneAndUpdate(
+      user,
+      { $set: { banned } },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
   return {
     getAllUsers,
     getUserByTelegramId,
     getUserById,
     putUserTelegramChatId,
     putUserDepartment,
-    postNewUser
+    postNewUser,
+    getAllUsersByEventId,
+    querySearch,
+    putUserBan
   };
 }
 
