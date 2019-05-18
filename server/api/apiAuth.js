@@ -83,22 +83,30 @@ router.get('/admin', async (req, res) => {
 router.route('/').put((req, res) => {
   const reqUser = req.body;
 
+  function saveNewUser(user) {
+    return new Promise((resolve, reject) => {
+      const newUser = new Users({
+        lastName: user.last_name,
+        firstName: user.first_name,
+        telegramUserId: user.id,
+        avatar: user.photo_url,
+        username: user.username
+      });
+
+      newUser.save((err, addedUser) => {
+        if (err) reject(err);
+        resolve(addedUser);
+      });
+    });
+  }
+
   Users.findOne({
     username: reqUser.username
   }).then(user => {
     if (!user) {
-      const newUser = new Users({
-        last_name: reqUser.last_name,
-        first_name: reqUser.first_name,
-        telegramUserId: reqUser.id,
-        avatar: reqUser.photo_url,
-        username: reqUser.username
-      });
-
-      newUser.save((err, addedUser) => {
-        if (err) res.send(err);
-        res.json(newUser);
-      });
+      saveNewUser(reqUser).then(addedUser => res.json(addedUser));
+    } else {
+      res.json(user);
     }
   });
 });
