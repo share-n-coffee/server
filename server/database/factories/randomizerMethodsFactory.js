@@ -33,9 +33,9 @@ function randomizerMethodsFactory(modelNames) {
     });
   };
 
-  const removeEventPairs = () => {
-    return EventPairs.deleteMany({}, (err, data) =>
-      console.log('Данные удалены')
+  const removeEventPairByEventId = id => {
+    return EventPairs.deleteOne({ eventId: id }, (err, data) =>
+      console.log(`Event c Id ${id} удален из Бд(eventPairs)`)
     );
   };
 
@@ -50,12 +50,20 @@ function randomizerMethodsFactory(modelNames) {
     );
   };
 
+  const removePair = (id, pairId) => {
+    return EventPairs.findOneAndUpdate(
+      { eventId: id },
+      { $pull: { pairs: { _id: pairId } } }
+    );
+  };
+
   return {
     updateEventPairs,
     insertEventPairs,
-    removeEventPairs,
+    removeEventPairByEventId,
     getEventPairsById,
-    insertPair
+    insertPair,
+    removePair
   };
 }
 
