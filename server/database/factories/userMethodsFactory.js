@@ -70,6 +70,35 @@ function userMethodsFactory(userModelName) {
     );
   };
 
+  const setEventStatus = users => {
+    const userTelegramIds = [];
+    const userEventIds = [];
+    const userEventStatuses = [];
+    users.forEach(user => {
+      userTelegramIds.push(Object.keys(user)[0]);
+      const userEvents = Object.values(user)[0];
+      userEventIds.push(Object.keys(userEvents)[0]);
+      userEventStatuses.push(Object.values(userEvents)[0]);
+    });
+    const uniqueUserEventIds = new Set(userEventIds);
+    const uniqueUserEventStatuses = new Set(userEventStatuses);
+    if (uniqueUserEventIds.size === 1 && uniqueUserEventStatuses.size === 1) {
+      const userEventId = userEventIds[0];
+      const userStatus = userEventStatuses[0];
+      return Users.updateMany({
+        telegramId: { $in: userTelegramIds }
+      })
+        .set(`events.$.${userEventId}`, userStatus)
+        .exec();
+    }
+    const usersToSetStatus = users.map((user, i) => {
+      return Users.updateOne({ telegramId: userTelegramIds[i] })
+        .set(`events.$.${userEventIds[i]}`, userEventStatuses[i])
+        .exec();
+    });
+    return Promise.all(usersToSetStatus);
+  };
+
   return {
     getAllUsers,
     getUserById,
@@ -78,7 +107,8 @@ function userMethodsFactory(userModelName) {
     querySearch,
     putUserBan,
     saveNewUser,
-    updateUser
+    updateUser,
+    setEventStatus
   };
 }
 

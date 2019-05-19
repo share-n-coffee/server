@@ -2,6 +2,7 @@
 const express = require('express');
 const connectDatabase = require('../../server/lib/connectDatabase');
 const ClassDBController = require('../database/dbController');
+const logger = require('../logger');
 
 const app = express();
 const port = 9000;
@@ -116,5 +117,5 @@ app.listen(port, err => {
       console.log(eventss);
       console.log(generateUpcomingEvents());
     })
-    .catch(error => console.log(error));
+    .catch(error => logger.error(error));
 });

@@ -39,15 +39,16 @@ router
     const DBController = new ClassDBController('user');
 
     if (req.body.newDepartment) {
+      console.log(req.body.newDepartment);
       if (ObjectId.isValid(req.body.newDepartment)) {
         DBController.updateUser(req.params.userId, {
           department: req.body.newDepartment
         })
           .then(user => res.status(200).json(user))
           .catch(error => res.status(404).send(error));
+      } else {
+        res.status(404).send("New Department's id is not valid ObjectId!");
       }
-
-      res.status(404).send("New Department's id is not valid ObjectId!");
     }
 
     if (req.body.admin) {
