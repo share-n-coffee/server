@@ -18,7 +18,7 @@ const logger = createLogger({
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
     }),
-    format.printf(info => `${info.timestamp} ${info.level}: ${info.message}`)
+    format.label({ label: path.basename(process.mainModule.filename) })
   ),
   transports: [dailyRotateFileTransport]
 });
@@ -29,8 +29,10 @@ if (env === 'development') {
       level: 'info',
       format: format.combine(
         format.colorize(),
+        format.label({ label: path.basename(process.mainModule.filename) }),
         format.printf(
-          info => `${info.timestamp} ${info.level}: ${info.message}`
+          info =>
+            `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`
         )
       )
     })
