@@ -5,6 +5,7 @@ const middlewares = require('./server/middleware/middleware');
 const routesHandle = require('./server/routes/routesHandle');
 const connectDatabase = require('./server/lib/connectDatabase');
 const setViewEngine = require('./server/lib/setViewEngine');
+const bot = require('./server/bot/telegramBot');
 
 const port = process.env.PORT || 3000;
 const dev = process.env.NODE_ENV !== 'production';

@@ -1,6 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
 const logger = require('../logger');
+const DBController = require('../database/dbController');
 
 const bot = new TelegramBot(telegramBotToken, { polling: true });
 
@@ -23,7 +24,7 @@ const getEventDescription = event => {
 
 // Реагируем на ответы пользователя
 bot.on('callback_query', callbackQuery => {
-  const { text, chat, message_id } = callbackQuery.message;
+  const { text, chat, messageId } = callbackQuery.message;
   let updatedMessage = `${text}${'\n\n\n'}`;
 
   if (callbackQuery.data === 'accept') {
@@ -35,7 +36,7 @@ bot.on('callback_query', callbackQuery => {
   bot
     .editMessageText(updatedMessage, {
       chat_id: chat.id,
-      message_id
+      messageId
     })
     .catch(err => logger.error(err.response.body.description));
 });
@@ -91,8 +92,10 @@ module.exports = {
     bot
       .sendMessage(telegramChatId, message, replyObj)
       .catch(err => logger.error(err.response.body.description));
-  },
-  mailing() {
-    // метод рассылки...
   }
+};
+const controller = new DBController('randomizer');
+module.exports.mailing = async function(eventId) {
+  const eventPairs = await controller.getEventPairsById(eventId);
+  console.log('обьект', eventPairs);
 };
