@@ -22,7 +22,7 @@ router.route('/').get((req, res) => {
 });
 
 router
-  .route('/:userId', objectIdValidation)
+  .route('/:id', objectIdValidation)
   .get((req, res) => {
     const DBController = new ClassDBController('user');
     let fields = null;
@@ -31,7 +31,7 @@ router
       fields = req.query.getFields.replace(/,/g, ' ');
     }
 
-    DBController.getUserById(req.params.userId, fields)
+    DBController.getUserById(req.params.id, fields)
       .then(user => res.status(200).json(user))
       .catch(error => res.status(404).send(error));
   })
@@ -41,7 +41,7 @@ router
     if (req.body.newDepartment) {
       console.log(req.body.newDepartment);
       if (ObjectId.isValid(req.body.newDepartment)) {
-        DBController.updateUser(req.params.userId, {
+        DBController.updateUser(req.params.id, {
           department: req.body.newDepartment
         })
           .then(user => res.status(200).json(user))
@@ -65,7 +65,7 @@ router
           .digest('hex');
       }
 
-      DBController.updateUser(req.params.userId, {
+      DBController.updateUser(req.params.id, {
         admin: req.body.admin
       })
         .then(user => res.status(200).json(user))
@@ -73,8 +73,8 @@ router
     }
   });
 
-router.route('/ban/:userId', objectIdValidation).put(adminAuth, (req, res) => {
-  const searchId = req.params.userId;
+router.route('/ban/:id', objectIdValidation).put(adminAuth, (req, res) => {
+  const searchId = req.params.id;
   const { ban } = req.body;
 
   if (ban) {
