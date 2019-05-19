@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const DepartmentSchema = require('../models/department');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function departmentMethodsFactory(departmentModelName) {
   if (isNull(departmentModelName)) {
@@ -28,10 +28,20 @@ function departmentMethodsFactory(departmentModelName) {
     });
   };
 
+  const updateDepartment = (departmentId, newProps) => {
+    return Departments.findOneAndUpdate(
+      { _id: departmentId },
+      { $set: newProps },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
   return {
     getDepartmentById,
     getAllDepartments,
-    postNewDepartment
+    postNewDepartment,
+    updateDepartment
   };
 }
 

@@ -2,44 +2,44 @@ const userMethodsFactory = require('./factories/userMethodsFactory');
 const eventMethodsFactory = require('./factories/eventMethodsFactory');
 const departmentMethodsFactory = require('./factories/departmentMethodsFactory');
 const randomizerMethodsFactory = require('./factories/randomizerMethodsFactory');
-const collection = require('./collection');
+const collectionConfig = require('./collection');
 
-function DBController(collectionName) {
+function DBController(...collectionNames) {
+  const methodNames = ['user', 'event', 'department', 'randomizer'];
+  let collections;
   if (arguments.length === 0) {
-    return Object.assign(
-      userMethodsFactory(collection.users),
-      eventMethodsFactory(collection.events),
-      departmentMethodsFactory(collection.departments),
-      randomizerMethodsFactory({
-        eventPairs: collection.eventPairs,
-        eventReserve: collection.eventReserve
-      })
-    );
+    collections = methodNames;
+  } else {
+    collections = collectionNames;
   }
-  if (arguments.length === 1) {
-    if (typeof collectionName !== 'string') {
-      throw new TypeError('DBController argument should be a strind');
-    }
+
+  const switchFactory = collectionName => {
     switch (collectionName) {
       case 'user':
-        return userMethodsFactory(collection.users);
+        return userMethodsFactory(collectionConfig.users);
       case 'event':
-        return eventMethodsFactory(collection.events);
+        return eventMethodsFactory(collectionConfig.events);
       case 'department':
-        return departmentMethodsFactory(collection.departments);
+        return departmentMethodsFactory(collectionConfig.departments);
       case 'randomizer':
         return randomizerMethodsFactory({
-          eventPairs: collection.eventPairs,
-          eventReserve: collection.eventReserve
+          eventPairs: collectionConfig.eventPairs,
+          eventReserve: collectionConfig.eventReserve
         });
       default:
-        throw new TypeError('Argument should be a collection name');
+        return {};
     }
-  } else {
-    throw new SyntaxError(
-      'DBController constructor should have one or none arguments'
-    );
-  }
+  };
+
+  return collections.reduce((result, collection) => {
+    if (typeof collection !== 'string') {
+      throw new TypeError('DBController argument should be a strind');
+    }
+    if (!methodNames.includes(collection)) {
+      throw SyntaxError(`arguments should be from list: ${methodNames}`);
+    }
+    return Object.assign(result, switchFactory(collection));
+  }, {});
 }
 
 module.exports = DBController;

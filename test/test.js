@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { MongoClient } = require('mongodb');
 const config = require('../server/config/config');
 
@@ -14,9 +15,7 @@ describe('insert', () => {
   beforeAll(async () => {
     connection = await MongoClient.connect(
       config.database,
-      {
-        useNewUrlParser: true
-      }
+      { useNewUrlParser: true }
     );
     db = await connection.db('demoproject');
   });

@@ -5,8 +5,9 @@ const middlewares = require('./server/middleware/middleware');
 const routesHandle = require('./server/routes/routesHandle');
 const connectDatabase = require('./server/lib/connectDatabase');
 const setViewEngine = require('./server/lib/setViewEngine');
+const checkEnvironment = require('./server/lib/checkEnvironment');
+const config = require('./server/config/config');
 
-const port = process.env.PORT || 3000;
 const dev = process.env.NODE_ENV !== 'production';
 
 const app = express();
@@ -19,7 +20,10 @@ middlewares(app);
 
 routesHandle(app);
 
-app.listen(port, err => {
-  if (err) throw err;
-  console.log(`> Ready on http://localhost:${port}`);
-});
+checkEnvironment(
+  config,
+  app.listen(config.port, err => {
+    if (err) throw err;
+    console.log(`> Ready on http://localhost:${config.port}`);
+  })
+);

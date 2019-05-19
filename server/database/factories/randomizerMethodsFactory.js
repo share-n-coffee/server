@@ -1,6 +1,6 @@
 const EventPairsSchema = require('../models/eventPairs');
 const EventReserveSchema = require('../models/eventReserve');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function randomizerMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
@@ -22,9 +22,15 @@ function randomizerMethodsFactory(modelNames) {
   };
 
   const insertEventPairs = eventPairsObj => {
-    return EventPairs.insertMany(eventPairsObj, (err, data) =>
-      console.log('Данные добавлены')
-    );
+    const newEventPair = new EventPairs(eventPairsObj);
+
+    return new Promise((resolve, reject) => {
+      newEventPair.save((err, addedEventPair) => {
+        if (err) reject(err);
+        resolve(addedEventPair);
+      });
+      console.log(`Пары к событию ${eventPairsObj.eventId} добавлены.`);
+    });
   };
 
   const removeEventPairs = () => {
@@ -33,7 +39,24 @@ function randomizerMethodsFactory(modelNames) {
     );
   };
 
-  return { updateEventPairs, insertEventPairs, removeEventPairs };
+  const getEventPairsById = id => {
+    return EventPairs.findOne({ eventId: id }).exec();
+  };
+
+  const insertPair = (id, pairObject) => {
+    return EventPairs.findOneAndUpdate(
+      { eventId: id },
+      { $push: { pairs: pairObject } }
+    );
+  };
+
+  return {
+    updateEventPairs,
+    insertEventPairs,
+    removeEventPairs,
+    getEventPairsById,
+    insertPair
+  };
 }
 
 module.exports = randomizerMethodsFactory;
