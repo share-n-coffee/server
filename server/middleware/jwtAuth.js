@@ -9,21 +9,27 @@ module.exports = (req, res, next) => {
 
   if (!token) {
     return res.status(403).json({
-      errors: [
-        {
-          msg: 'There is no token, authorization denied'
-        }
-      ]
+      errors: [{ msg: 'There is no token, authorization denied' }]
     });
   }
 
-  try {
-    const decoded = jwt.verify(token, config.jwtSecret);
-    req.user = decoded.user;
-    next();
-  } catch (err) {
-    res.status(403).json({
-      errors: [{ msg: 'Token is not valid!' }]
-    });
-  }
+  jwt.verify(token, config.jwtSecret, (err, decoded) => {
+    if (err) {
+      res.status(403).json({
+        errors: [{ msg: 'Token is not valid!' }]
+      });
+    } else {
+      const endDate = decoded.exp * 1000;
+      const currentDate = new Date().getTime();
+
+      if (endDate - currentDate <= 0) {
+        res.status(403).json({
+          errors: [{ msg: 'Your token is expired!' }]
+        });
+      } else {
+        req.user = decoded.data;
+        next();
+      }
+    }
+  });
 };

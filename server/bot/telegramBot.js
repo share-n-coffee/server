@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
 const logger = require('../logger');

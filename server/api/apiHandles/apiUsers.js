@@ -1,9 +1,9 @@
 const express = require('express');
+const crypto = require('crypto');
 const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('./../../database/dbController');
-const jwtAuth = require('../../middleware/jwtAuth');
 const adminAuth = require('../../middleware/adminAuth');
-const userIdValidation = require('../../middleware/userIdValidation');
+const objectIdValidation = require('../../middleware/objectIdValidation');
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.route('/').get((req, res) => {
 });
 
 router
-  .route('/:userId', userIdValidation)
+  .route('/:userId', objectIdValidation)
   .get((req, res) => {
     const DBController = new ClassDBController('user');
     let fields = null;
@@ -34,30 +34,45 @@ router
     DBController.getUserById(req.params.userId, fields)
       .then(user => res.status(200).json(user))
       .catch(error => res.status(404).send(error));
-
-    // if (Object.keys(req.query).length) {
-
-    //   DBController.querySearch(req.query)
-    //     .then(results => res.status(200).json(results))
-    //     .catch(error => res.status(404));
-    // } else {
-    //   DBController.getUserById(req.params.userId)
-    //     .then(user => res.status(200).json(user))
-    //     .catch(error => res.status(404).send(error));
-    // }
   })
   .put((req, res) => {
-    if (ObjectId.isValid(req.body.newDepartment)) {
-      const DBController = new ClassDBController('user');
-      DBController.putUserDepartment(req.params.userId, req.body.newDepartment)
+    const DBController = new ClassDBController('user');
+
+    if (req.body.newDepartment) {
+      if (ObjectId.isValid(req.body.newDepartment)) {
+        DBController.updateUser(req.params.userId, {
+          department: req.body.newDepartment
+        })
+          .then(user => res.status(200).json(user))
+          .catch(error => res.status(404).send(error));
+      }
+
+      res.status(404).send("New Department's id is not valid ObjectId!");
+    }
+
+    if (req.body.admin) {
+      if (!req.user.admin.isAdmin) {
+        res.status(403).json({
+          errors: [{ msg: 'Forbidden – Access denied' }]
+        });
+      }
+
+      if (req.body.admin.password) {
+        req.body.admin.password = crypto
+          .createHash('md5')
+          .update(req.body.admin.password)
+          .digest('hex');
+      }
+
+      DBController.updateUser(req.params.userId, {
+        admin: req.body.admin
+      })
         .then(user => res.status(200).json(user))
         .catch(error => res.status(404).send(error));
-    } else {
-      res.status(404).send("New Department's id is not valid ObjectId!");
     }
   });
 
-router.route('/ban/:userId', userIdValidation).put(adminAuth, (req, res) => {
+router.route('/ban/:userId', objectIdValidation).put(adminAuth, (req, res) => {
   const searchId = req.params.userId;
   const { ban } = req.body;
 

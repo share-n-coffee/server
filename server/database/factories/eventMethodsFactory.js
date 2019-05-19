@@ -28,10 +28,20 @@ function eventMethodsFactory(eventModelName) {
     });
   };
 
+  const updateEvent = (eventId, newProps) => {
+    return Events.findOneAndUpdate(
+      { _id: eventId },
+      { $set: newProps },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
   return {
     getAllEvents,
     getEventById,
-    postNewEvent
+    postNewEvent,
+    updateEvent
   };
 }
 
