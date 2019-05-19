@@ -50,12 +50,20 @@ function randomizerMethodsFactory(modelNames) {
     );
   };
 
+  const removePair = (id, pairId) => {
+    return EventPairs.findOneAndUpdate(
+      { eventId: id },
+      { $pull: { pairs: { _id: pairId } } }
+    );
+  };
+
   return {
     updateEventPairs,
     insertEventPairs,
     removeEventPairByEventId,
     getEventPairsById,
-    insertPair
+    insertPair,
+    removePair
   };
 }
 
