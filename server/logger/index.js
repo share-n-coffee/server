@@ -11,6 +11,16 @@ const dailyRotateFileTransport = new transports.DailyRotateFile({
   format: format.json()
 });
 
+const consoleTransport = new transports.Console({
+  level: 'info',
+  format: format.combine(
+    format.colorize(),
+    format.printf(
+      info => `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`
+    )
+  )
+});
+
 const logger = createLogger({
   // уровень логирования в зависимости от окружения
   level: env === 'development' ? 'verbose' : 'warn',
@@ -24,19 +34,7 @@ const logger = createLogger({
 });
 
 if (env === 'development') {
-  logger.add(
-    new transports.Console({
-      level: 'info',
-      format: format.combine(
-        format.colorize(),
-        format.label({ label: path.basename(process.mainModule.filename) }),
-        format.printf(
-          info =>
-            `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`
-        )
-      )
-    })
-  );
+  logger.add(consoleTransport);
 }
 
 module.exports = {
