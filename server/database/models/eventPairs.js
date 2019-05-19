@@ -14,7 +14,7 @@ const eventPairsSchema = new Schema({
       invitedUser1: { type: Number, required: true },
       invitedUser2: { type: Number, required: true },
       event: {},
-      date: { type: Number, required: true }
+      date: { type: Number, required: false }
     }
   ]
 });
