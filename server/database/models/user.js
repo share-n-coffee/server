@@ -6,7 +6,7 @@ const UserSchema = new Schema({
   //  Телеграмовский идентификатор пользователя
   telegramUserId: {
     type: Number,
-    required: true
+    required: false
   },
   //  Ссылка на аватар пользователя
   avatar: {

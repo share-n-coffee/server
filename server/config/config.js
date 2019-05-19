@@ -12,12 +12,7 @@ module.exports = {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
   },
-  telegramAuth: {
-    clientID: `${process.env.NODE_TELEGRAM_ID}`,
-    clientSecret: `${process.env.NODE_TELEGRAM_SECRET}`,
-    callbackURL:
-      'https://forge-development.herokuapp.com/auth/telegram/callback'
-  },
+  telegramToken: process.env.NODE_TELEGRAM_TOKEN,
   jwtSecret: process.env.NODE_JWT_SECRET,
   telegramBotToken: process.env.NODE_TELEGRAM_TOKEN,
   frontendServer: 'http://random-coffee.fun'
