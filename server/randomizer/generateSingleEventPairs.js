@@ -91,7 +91,7 @@ function generateSingleEventPairs(event, allUsers) {
   eventPairs.pairs = generatedPairs;
   finalPairsObjects.push(eventPairs);
 
-  controller.insertEventPairs(finalPairsObjects);
+  controller.insertEventPairs(eventPairs);
   // здесь нужно вызывать бота для передачи id события
 }
 
