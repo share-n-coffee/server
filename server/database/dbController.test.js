@@ -14,7 +14,8 @@ const userMethods = [
   'querySearch',
   'putUserBan',
   'saveNewUser',
-  'updateUser'
+  'updateUser',
+  'setEventStatus'
 ];
 const eventMethods = [
   'getAllEvents',
@@ -31,9 +32,10 @@ const departmentMethods = [
 const randomizerMethods = [
   'updateEventPairs',
   'insertEventPairs',
-  'removeEventPairs',
+  'removeEventPairByEventId',
   'getEventPairsById',
-  'insertPair'
+  'insertPair',
+  'removePair'
 ];
 
 const controller = new ClassController();
