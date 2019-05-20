@@ -6,7 +6,7 @@ const UserSchema = new Schema({
   //  Телеграмовский идентификатор пользователя
   telegramUserId: {
     type: Number,
-    required: true
+    required: false
   },
   //  Ссылка на аватар пользователя
   avatar: {
@@ -37,9 +37,9 @@ const UserSchema = new Schema({
     },
     //  Если забанен, когда истекает срок бана
     expired: {
-      type: Date,
-      required: false,
-      default: null
+      type: Number,
+      default: 0,
+      required: false
     }
   },
   //  Массив с событиями, на которые подписан пользователь
@@ -64,9 +64,9 @@ const UserSchema = new Schema({
   },
   //  Дата создания аккаунта (дата первой авторизации через телегу)
   created: {
-    type: Date,
-    required: true,
-    default: Date.now
+    type: Number,
+    default: new Date().getTime(),
+    required: false
   },
   //  Здесь хранятся все действия пользователя
   logs: {
@@ -78,12 +78,12 @@ const UserSchema = new Schema({
         event: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Event',
-          required: true
+          required: false
         },
         //  Действие пользователя ("subscribe"/"unsubscribe") (подписка/отписка)
         action: {
           type: String,
-          required: true
+          required: false
         }
       }
     ],
@@ -95,12 +95,12 @@ const UserSchema = new Schema({
         event: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Event',
-          required: true
+          required: false
         },
         //  Действие пользователя ("accept"/"decline") (подтвердил/отклонил)
         action: {
           type: String,
-          required: true
+          required: false
         }
       }
     ],
@@ -111,12 +111,12 @@ const UserSchema = new Schema({
         event: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Event',
-          required: true
+          required: false
         },
         //  Дата посещения
         date: {
-          type: Date,
-          required: true
+          type: Number,
+          required: false
         }
       }
     ],
@@ -125,13 +125,13 @@ const UserSchema = new Schema({
       {
         //  Дата бана
         startDate: {
-          type: Date,
-          required: true
+          type: Number,
+          required: false
         },
         //  Дата окончания бана
         endDate: {
-          type: Date,
-          required: true
+          type: Number,
+          required: false
         }
       }
     ]
@@ -149,6 +149,20 @@ const UserSchema = new Schema({
       type: String,
       required: false,
       default: null
+    }
+  },
+  tokens: {
+    origin: {
+      type: String,
+      required: false
+    },
+    expiredAt: {
+      type: Number,
+      required: false
+    },
+    refresh: {
+      type: String,
+      required: false
     }
   }
 });

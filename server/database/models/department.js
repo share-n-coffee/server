@@ -15,9 +15,9 @@ const DepartmentSchema = new Schema({
   },
   //  Дата создания
   created: {
-    type: Date,
-    required: true,
-    default: Date.now
+    type: Number,
+    default: new Date().getTime(),
+    required: false
   }
 });
 

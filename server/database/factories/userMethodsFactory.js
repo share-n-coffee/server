@@ -1,40 +1,27 @@
 const UserSchema = require('../models/user');
-const isNull = require('./isNull');
+const isNull = require('../../utilities/isNull');
 
 function userMethodsFactory(userModelName) {
   if (isNull(userModelName)) {
     return {};
   }
+
   const Users = UserSchema(userModelName);
 
-  const getAllUsers = () => {
-    return Users.find({}).exec();
+  const getAllUsers = (fields = null) => {
+    return Users.find({}, fields).exec();
   };
 
-  const getUserByTelegramId = id => {
-    return Users.findOne({ telegramUserId: id }).exec();
+  const querySearch = (query, fields = null) => {
+    return Users.find(query, fields).exec();
   };
 
-  const getUserById = id => {
-    return Users.findOne({ _id: id }).exec();
+  const getUserById = (id, fields = null) => {
+    return Users.findOne({ _id: id }, fields).exec();
   };
 
-  const putUserTelegramChatId = (userId, telegramChatId) => {
-    return Users.findOneAndUpdate(
-      { _id: userId },
-      { $set: { telegramChatId } },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
-    );
-  };
-
-  const putUserDepartment = (userId, department) => {
-    return Users.findOneAndUpdate(
-      { _id: userId },
-      { $set: { department } },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
-    );
+  const getUserByTelegramUserId = (telegramUserId, fields = null) => {
+    return Users.findOne({ telegramUserId }, fields).exec();
   };
 
   const postNewUser = user => {
@@ -48,13 +35,85 @@ function userMethodsFactory(userModelName) {
     });
   };
 
+  const getAllUsersByEventId = id => {
+    return Users.find({ 'events.eventId': id }).exec();
+  };
+
+  const putUserBan = (user, banned) => {
+    return Users.findOneAndUpdate(
+      user,
+      { $set: { banned } },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
+  const saveNewUser = user => {
+    return new Promise((resolve, reject) => {
+      const newUser = new Users({
+        lastName: user.last_name,
+        firstName: user.first_name,
+        telegramUserId: user.id,
+        avatar: user.photo_url,
+        username: user.username
+      });
+
+      newUser.save((err, addedUser) => {
+        if (err) reject(err);
+        resolve(addedUser);
+      });
+    });
+  };
+
+  const updateUser = (userId, newProps) => {
+    return Users.findOneAndUpdate(
+      { _id: userId },
+      { $set: newProps },
+      { useFindAndModify: false, new: true },
+      (err, data) => data
+    );
+  };
+
+  const setEventStatus = users => {
+    const userTelegramIds = [];
+    const userEventIds = [];
+    const userEventStatuses = [];
+    users.forEach(user => {
+      userTelegramIds.push(Object.keys(user)[0]);
+      const userEvents = Object.values(user)[0];
+      userEventIds.push(Object.keys(userEvents)[0]);
+      userEventStatuses.push(Object.values(userEvents)[0]);
+    });
+    const uniqueUserEventIds = new Set(userEventIds);
+    const uniqueUserEventStatuses = new Set(userEventStatuses);
+    if (uniqueUserEventIds.size === 1 && uniqueUserEventStatuses.size === 1) {
+      const userEventId = userEventIds[0];
+      const userStatus = userEventStatuses[0];
+      return Users.updateMany({
+        telegramId: { $in: userTelegramIds }
+      })
+        .set(`events.$.${userEventId}`, userStatus)
+        .exec();
+    }
+    const usersToSetStatus = users.map((user, i) => {
+      return Users.updateOne({ telegramId: userTelegramIds[i] })
+        .set(`events.$.${userEventIds[i]}`, userEventStatuses[i])
+        .exec();
+    });
+    return Promise.all(usersToSetStatus);
+  };
+
   return {
     getAllUsers,
-    getUserByTelegramId,
     getUserById,
-    putUserTelegramChatId,
-    putUserDepartment,
-    postNewUser
+    getUserByTelegramUserId,
+    postNewUser,
+    getAllUsersByEventId,
+    querySearch,
+    putUserBan,
+    saveNewUser,
+    updateUser,
+    setEventStatus
   };
 }
 
