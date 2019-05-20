@@ -91,11 +91,15 @@ module.exports = {
         message += `${notifyType}`;
     }
 
-    /* bot
+    bot
       .sendMessage(telegramUserId, message, replyObj)
+      .then(data => {
+        console.log(
+          `Пользователь ${data.chat.first_name} ${data.chat.last_name} c id 
+          ${data.chat.id} оповещен в Telegram ${data.date.toString()}`
+        );
+      })
       .catch(err => logger.error(err.response.body.description));
-    */
-    console.log(`Пользователь ${telegramUserId} получил сообщение ${message}`);
   },
   mailing(eventId) {
     controller
@@ -103,6 +107,7 @@ module.exports = {
       .then(eventPair => {
         eventPair.pairs.forEach(pair => {
           const { invitedUser1, invitedUser2, event } = pair;
+
           controller
             .getUserByTelegramUserId(invitedUser1)
             .then(user => this.notify('invite', user, event))
