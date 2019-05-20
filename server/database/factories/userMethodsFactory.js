@@ -113,6 +113,10 @@ function userMethodsFactory(userModelName) {
       userEventIds.push(Object.keys(userEvents)[0]);
       userEventStatuses.push(Object.values(userEvents)[0]);
     });
+
+    // console.log('userTelegramIds: ', userTelegramIds);
+    // console.log('userEventIds: ', userEventIds);
+    // console.log('userEventStatuses: ', userEventStatuses);
     // const uniqueUserEventIds = new Set(userEventIds);
     // const uniqueUserEventStatuses = new Set(userEventStatuses);
     // if (uniqueUserEventIds.size === 1 && uniqueUserEventStatuses.size === 1) {
@@ -125,12 +129,30 @@ function userMethodsFactory(userModelName) {
     //     .exec();
     // }
     const usersToSetStatus = users.map((user, i) => {
-      return Users.updateOne({ telegramId: userTelegramIds[i] })
-        .set(`events.$.${userEventIds[i]}`, userEventStatuses[i])
-        .exec();
+      return Users.updateOne(
+        {
+          telegramId: userTelegramIds[i],
+          events: {
+            $elemMatch: {
+              eventId: `${userEventIds[i]}`
+            }
+          }
+        },
+        {
+          $set: {
+            'events.$.status': `${userEventStatuses[i]}`
+          }
+        }
+      ).exec();
     });
     return Promise.all(usersToSetStatus);
   };
+
+  // db.collection.update(
+  //   { 'items': { '$elemMatch': { 'itemName': 'Name 1' }}},
+  //   { '$set': { 'items.$.itemName': 'New Name' }},
+  //   { 'multi': true }
+  // )
 
   return {
     getAllUsers,
