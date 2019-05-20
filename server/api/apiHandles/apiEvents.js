@@ -9,7 +9,7 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('event');
 
-    DBController.getAllEvents()
+    DBController.getAllEvents(req.sorting)
       .then(events => res.status(200).json(events))
       .catch(error => res.status(404).send(error));
   })

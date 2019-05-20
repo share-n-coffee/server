@@ -8,8 +8,8 @@ function eventMethodsFactory(eventModelName) {
   }
   const Events = EventSchema(eventModelName);
 
-  const getAllEvents = () => {
-    return Events.find({}).exec();
+  const getAllEvents = sorting => {
+    return Events.find({}, null, sorting).exec();
   };
 
   const getEventById = eventId => {

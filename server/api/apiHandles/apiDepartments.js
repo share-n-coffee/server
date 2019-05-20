@@ -10,7 +10,7 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('department');
 
-    DBController.getAllDepartments()
+    DBController.getAllDepartments(req.sorting)
       .then(departments => res.status(200).json(departments))
       .catch(error => res.status(404).send(error));
   })

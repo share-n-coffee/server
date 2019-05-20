@@ -8,12 +8,12 @@ function userMethodsFactory(userModelName) {
 
   const Users = UserSchema(userModelName);
 
-  const getAllUsers = (fields = null) => {
-    return Users.find({}, fields).exec();
+  const getAllUsers = (fields = null, sorting) => {
+    return Users.find({}, fields, sorting).exec();
   };
 
-  const querySearch = (query, fields = null) => {
-    return Users.find(query, fields).exec();
+  const querySearch = (query, fields = null, sorting) => {
+    return Users.find(query, fields, sorting).exec();
   };
 
   const getUserById = (id, fields = null) => {
@@ -31,8 +31,8 @@ function userMethodsFactory(userModelName) {
     });
   };
 
-  const getAllUsersByEventId = id => {
-    return Users.find({ 'events.eventId': id }).exec();
+  const getAllUsersByEventId = (id, fields = {}, sorting = {}) => {
+    return Users.find({ 'events.eventId': id }, fields, sorting).exec();
   };
 
   const putUserBan = (user, banned) => {

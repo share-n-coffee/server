@@ -14,8 +14,8 @@ function departmentMethodsFactory(departmentModelName) {
     }).exec();
   };
 
-  const getAllDepartments = () => {
-    return Departments.find({}).exec();
+  const getAllDepartments = sorting => {
+    return Departments.find({}, null, sorting).exec();
   };
 
   const postNewDepartment = department => {

@@ -40,7 +40,7 @@ const EventSchema = new Schema({
     },
     //  День недели, начиная с воскресенья, в который проводится событие
     //  Для одиночного события – не имеет значения
-    regularity: {
+    dayOfWeek: {
       type: Number,
       required: false
     },
@@ -51,7 +51,12 @@ const EventSchema = new Schema({
         type: Number,
         required: false
       }
-    ]
+    ],
+    //  Количество посещений одним человеком
+    visits: {
+      type: Number,
+      default: 1
+    }
   },
   //  Дата добавления события в БД
   created: {

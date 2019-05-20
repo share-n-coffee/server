@@ -16,7 +16,7 @@ router.route('/').get((req, res) => {
     delete req.query.getFields;
   }
 
-  DBController.querySearch(req.query, fields)
+  DBController.querySearch(req.query, fields, req.sorting)
     .then(results => res.status(200).json(results))
     .catch(error => res.status(404));
 });
@@ -31,7 +31,7 @@ router
       fields = req.query.getFields.replace(/,/g, ' ');
     }
 
-    DBController.getUserById(req.params.id, fields)
+    DBController.getUserById(req.params.id, fields, req.sorting)
       .then(user => res.status(200).json(user))
       .catch(error => res.status(404).send(error));
   })
