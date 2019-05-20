@@ -24,12 +24,61 @@ async function generateEventUsersList(event) {
   return usersList;
 }
 
-// генерируем пары для одиночного события
-async function generateSingleEventPairs(event) {
+// генерируем пары для циклического события
+async function generateCyclicEventPairs(event) {
   const usersStatusUpdate = []; // для запроса на обновление статусов пользователей
-  const generatedPairs = [];
+  const generatedPairs = []; // сформированные пары
+  const availableDates = [];
+  const usersParticipation = {}; // для регулирования ежемесячного участия
   const availableUsers = await generateEventUsersList(event); // собираем список всех свободных подписчиков события из всех отделов
 
+  function generateUsersParticipation(visits = 1) {
+    availableUsers.forEach(user => {
+      usersParticipation[user.telegramUserId] = {
+        username: user.username,
+        visitsRemain: visits
+      };
+    });
+  }
+
+  generateUsersParticipation(); // генерируем вспомогательный массив юзеров
+
+  console.log(new Date(event.options.nextDates[3]));
+
+  // console.log(usersParticipation);
+
+  // console.log(event);
+
+  function checkAvailableDatesForPairs() {
+    const currentDate = new Date();
+    event.options.nextDates.forEach(date => {
+      const sheduleDate = new Date(date);
+      const diff = sheduleDate - currentDate;
+      if (diff > 24 * 60 * 60 * 1000) {
+        availableDates.push(sheduleDate);
+      }
+    });
+  }
+
+  checkAvailableDatesForPairs();
+
+  function datesGenerator() {
+    let dateIndex = 0;
+    return function chooseDateForPair() {
+      const datesCount = availableDates.length;
+      const chosenDate = availableDates[dateIndex];
+      if (dateIndex >= datesCount - 1) {
+        dateIndex = 0;
+      } else {
+        dateIndex += 1;
+      }
+      return chosenDate;
+    };
+  }
+
+  const chooseDateForPair = datesGenerator();
+
+  console.log(availableDates);
   availableUsers.forEach(balancedUser => {
     let balancedUserStatus = balancedUser.events.find(userEvent => {
       return event.id.toString() === userEvent.eventId.toString();
@@ -67,7 +116,7 @@ async function generateSingleEventPairs(event) {
         location: event.location,
         title: event.title,
         description: event.description,
-        date: event.options.nextDate[0]
+        date: chooseDateForPair()
       };
       generatedPairs.push(pair);
       balancedUser.events[balancedUserEventIndex].status = 'pending';
@@ -86,6 +135,7 @@ async function generateSingleEventPairs(event) {
       usersStatusUpdate.push(userStatusUpdate);
     });
   });
+
   console.log(usersStatusUpdate);
   await controller.setEventStatus(usersStatusUpdate).catch(error => {
     console.log(error);
@@ -100,4 +150,4 @@ async function generateSingleEventPairs(event) {
   bot.mailing(event.id);
 }
 
-module.exports = generateSingleEventPairs;
+module.exports = generateCyclicEventPairs;
