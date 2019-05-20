@@ -1,17 +1,19 @@
 /* eslint-disable no-param-reassign */
 const DBController = require('../database/dbController');
+const bot = require('../bot/telegramBot');
 
 const controller = new DBController();
 
-function generateEventUsersList(event, allUsers) {
+async function generateEventUsersList(event) {
   const usersList = [];
-
-  allUsers.forEach(user => {
+  const eventUsers = await controller
+    .getAllUsersByEventId(event.id)
+    .catch(error => {
+      console.log(error);
+    });
+  eventUsers.forEach(user => {
     const availableUser = user.events.find(userEvent => {
-      return (
-        event.id.toString() === userEvent.eventId.toString() &&
-        userEvent.status === 'free'
-      );
+      return userEvent.status === 'free';
     });
 
     if (availableUser) {
@@ -23,11 +25,10 @@ function generateEventUsersList(event, allUsers) {
 }
 
 // генерируем пары для одиночного события
-function generateSingleEventPairs(event, allUsers) {
-  const finalPairsObjects = []; // сам объект с парами текущего события для записи в базу
+async function generateSingleEventPairs(event) {
   const usersStatusUpdate = []; // для запроса на обновление статусов пользователей
   const generatedPairs = [];
-  const availableUsers = generateEventUsersList(event, allUsers); // собираем список всех свободных подписчиков события из всех отделов
+  const availableUsers = await generateEventUsersList(event); // собираем список всех свободных подписчиков события из всех отделов
 
   availableUsers.forEach(balancedUser => {
     let balancedUserStatus = balancedUser.events.find(userEvent => {
@@ -85,14 +86,18 @@ function generateSingleEventPairs(event, allUsers) {
       usersStatusUpdate.push(userStatusUpdate);
     });
   });
-  // console.log(usersStatusUpdate); //нужно вызывать метод обновления статусов
+  console.log(usersStatusUpdate);
+  await controller.setEventStatus(usersStatusUpdate).catch(error => {
+    console.log(error);
+  });
+
   const eventPairs = {};
   eventPairs.eventId = event.id;
   eventPairs.pairs = generatedPairs;
-  finalPairsObjects.push(eventPairs);
 
-  controller.insertEventPairs(eventPairs);
-  // здесь нужно вызывать бота для передачи id события
+  await controller.insertEventPairs(eventPairs);
+
+  bot.mailing(event.id);
 }
 
 module.exports = generateSingleEventPairs;
