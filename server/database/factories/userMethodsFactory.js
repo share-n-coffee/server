@@ -71,34 +71,20 @@ function userMethodsFactory(userModelName) {
   };
 
   const setEventStatus = users => {
-    const userTelegramIds = [];
+    const telegramUserIds = [];
     const userEventIds = [];
     const userEventStatuses = [];
     users.forEach(user => {
-      userTelegramIds.push(Object.keys(user)[0]);
+      telegramUserIds.push(Object.keys(user)[0]);
       const userEvents = Object.values(user)[0];
       userEventIds.push(Object.keys(userEvents)[0]);
       userEventStatuses.push(Object.values(userEvents)[0]);
     });
 
-    // console.log('userTelegramIds: ', userTelegramIds);
-    // console.log('userEventIds: ', userEventIds);
-    // console.log('userEventStatuses: ', userEventStatuses);
-    // const uniqueUserEventIds = new Set(userEventIds);
-    // const uniqueUserEventStatuses = new Set(userEventStatuses);
-    // if (uniqueUserEventIds.size === 1 && uniqueUserEventStatuses.size === 1) {
-    //   const userEventId = userEventIds[0];
-    //   const userStatus = userEventStatuses[0];
-    //   return Users.updateMany({
-    //     telegramId: { $in: userTelegramIds }
-    //   })
-    //     .set(`events.$.${userEventId}`, userStatus)
-    //     .exec();
-    // }
     const usersToSetStatus = users.map((user, i) => {
       return Users.updateOne(
         {
-          telegramId: userTelegramIds[i],
+          telegramUserId: telegramUserIds[i],
           events: {
             $elemMatch: {
               eventId: `${userEventIds[i]}`
@@ -114,12 +100,6 @@ function userMethodsFactory(userModelName) {
     });
     return Promise.all(usersToSetStatus);
   };
-
-  // db.collection.update(
-  //   { 'items': { '$elemMatch': { 'itemName': 'Name 1' }}},
-  //   { '$set': { 'items.$.itemName': 'New Name' }},
-  //   { 'multi': true }
-  // )
 
   return {
     getAllUsers,
