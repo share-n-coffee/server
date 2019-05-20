@@ -39,7 +39,6 @@ router
     const DBController = new ClassDBController('user');
 
     if (req.body.newDepartment) {
-      console.log(req.body.newDepartment);
       if (ObjectId.isValid(req.body.newDepartment)) {
         DBController.updateUser(req.params.id, {
           department: req.body.newDepartment
@@ -48,6 +47,16 @@ router
           .catch(error => res.status(404).send(error));
       } else {
         res.status(404).send("New Department's id is not valid ObjectId!");
+      }
+    }
+
+    if (req.body.eventId) {
+      if (ObjectId.isValid(req.body.eventId)) {
+        DBController.updateUsersEvents(req.params.id, req.body.eventId, 'add')
+          .then(user => res.status(200).json(user))
+          .catch(error => res.status(404).send(error));
+      } else {
+        res.status(404).send("New Event's _id is not valid ObjectId!");
       }
     }
 
@@ -70,6 +79,23 @@ router
       })
         .then(user => res.status(200).json(user))
         .catch(error => res.status(404).send(error));
+    }
+  })
+  .delete((req, res) => {
+    const DBController = new ClassDBController('user');
+
+    if (req.body.eventId) {
+      if (ObjectId.isValid(req.body.eventId)) {
+        DBController.updateUsersEvents(
+          req.params.id,
+          req.body.eventId,
+          'remove'
+        )
+          .then(user => res.status(200).json(user))
+          .catch(error => res.status(404).send(error));
+      } else {
+        res.status(404).send("New Event's _id is not valid ObjectId!");
+      }
     }
   });
 
