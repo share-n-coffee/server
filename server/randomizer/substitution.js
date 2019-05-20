@@ -93,12 +93,11 @@ async function addNewPairs(eventId) {
       });
     });
     console.log(usersStatusUpdate);
-    await generatedPairs.forEach(pair => {
-      controller.insertPair(event.id, pair);
+    generatedPairs.forEach(async function addPair(pair) {
+      await controller.insertPair(event.id, pair);
     });
     console.log(generatedPairs);
 
-    // нужно вызвать метод добавления объектов пар в массив пар конкретного события
     // здесь нужно вызывать бота для передачи id события
     if (generatedPairs.length !== 0) {
       console.log(`new pairs to event ${eventId} added`);
