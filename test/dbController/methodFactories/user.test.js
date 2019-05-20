@@ -18,7 +18,7 @@ const userMethods = [
   'setEventStatus'
 ];
 
-const controller = new ClassController();
+const controller = new ClassController('user');
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
@@ -34,18 +34,6 @@ describe('dbController tests', () => {
   afterAll(async () => {
     await mongoose.connection.close();
     console.log('tests done, May the Force be with you young Jedi');
-  });
-
-  test('Get all Events', done => {
-    function cb(data) {
-      testData.eventId = data[0]['_id'];
-      expect(data).toHaveLength(5);
-      done();
-    }
-
-    controller.getAllEvents().then(events => {
-      cb(events);
-    });
   });
 
   test('Get all Users', done => {
@@ -74,17 +62,6 @@ describe('dbController tests', () => {
     );
   });
 
-  // test('GET User by telegram id', done => {
-  //   function cb(user) {
-  //     expect(user).toHaveProperty('username');
-  //     done();
-  //   }
-
-  //   controller.getUserById(testData.userTelegramId).then(user => {
-  //     cb(user);
-  //   });
-  // });
-
   test('GET User by _id', done => {
     function cb(user) {
       expect(user).toHaveProperty('username');
@@ -95,4 +72,29 @@ describe('dbController tests', () => {
       cb(user);
     });
   });
+  /*
+  test('Query search', done => {
+    const query = { department: '5cd6f6c381371d297acb2fd3' };
+    const fields = { firstName: 1, lastName: 1 };
+    function cb(controllerUser, mongoUser) {
+      expect(controllerUser).toEqual(mongoUser);
+      done();
+    }
+
+    MongoClient.connect(
+      config.database,
+      (err, client) => {
+        client
+          .db('demoproject')
+          .collection('demo_users')
+          .find(query, fields, (error, mongoUser) => {
+            client.close();
+            controller.querySearch(query, fields).then(controllerUser => {
+              cb(controllerUser, mongoUser);
+            });
+          });
+      }
+    );
+  });
+  */
 });

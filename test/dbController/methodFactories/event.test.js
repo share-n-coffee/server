@@ -6,7 +6,7 @@ const connectDatabase = require('../../../server/lib/connectDatabase');
 const ClassController = require('../../../server/database/dbController');
 // const collectionConfig = require('./collection');
 
-const controller = new ClassController();
+const controller = new ClassController('event');
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
@@ -25,15 +25,27 @@ describe('dbController tests', () => {
   });
 
   test('Get all Events', done => {
-    function cb(data) {
-      testData.eventId = data[0]['_id'];
-      expect(data).toHaveLength(5);
+    function cb(controllerEvents, mongoEventsCount) {
+      testData.eventId = controllerEvents[0]['_id'];
+
+      expect(controllerEvents).toHaveLength(mongoEventsCount);
       done();
     }
-
-    controller.getAllEvents().then(events => {
-      cb(events);
-    });
+    MongoClient.connect(
+      config.database,
+      (err, client) => {
+        client
+          .db('demoproject')
+          .collection('demo_events')
+          .find({})
+          .count((error, mongoEventsCount) => {
+            client.close();
+            controller.getAllEvents().then(controllerEvents => {
+              cb(controllerEvents, mongoEventsCount);
+            });
+          });
+      }
+    );
   });
 
   test('GET Event by _id', done => {
