@@ -47,7 +47,7 @@ bot.on('callback_query', callbackQuery => {
 
 module.exports = {
   notify(notifyType, user, event) {
-    const { firstName, telegramChatId } = user;
+    const { firstName, telegramUserId } = user;
     let message = `Привет, ${firstName}😉!${'\n'}`;
     let replyObj;
     switch (notifyType) {
@@ -91,36 +91,33 @@ module.exports = {
         message += `${notifyType}`;
     }
 
-    /* bot
-      .sendMessage(telegramChatId, message, replyObj)
+    bot
+      .sendMessage(telegramUserId, message, replyObj)
+      .then(data => {
+        console.log(
+          `Пользователь ${data.chat.first_name} ${data.chat.last_name} c id 
+          ${data.chat.id} оповещен в Telegram ${data.date.toString()}`
+        );
+      })
       .catch(err => logger.error(err.response.body.description));
-    */
-    console.log(`Пользователь ${telegramChatId} получил сообщение ${message}`);
   },
-  async mailing(eventId) {
-    try {
-      const { pairs } = await controller.getEventPairsById(eventId);
-      pairs.forEach(pair => {
-        const { invitedUser1, invitedUser2, event } = pair;
-        this.notify(
-          'invite',
-          {
-            firstName: 'User',
-            telegramChatId: invitedUser1
-          },
-          event
-        );
-        this.notify(
-          'invite',
-          {
-            firstName: 'User',
-            telegramChatId: invitedUser2
-          },
-          event
-        );
-      });
-    } catch (error) {
-      logger.error(error);
-    }
+  mailing(eventId) {
+    controller
+      .getEventPairsById(eventId)
+      .then(eventPair => {
+        eventPair.pairs.forEach(pair => {
+          const { invitedUser1, invitedUser2, event } = pair;
+
+          controller
+            .getUserByTelegramUserId(invitedUser1)
+            .then(user => this.notify('invite', user, event))
+            .catch(error => logger.error(error));
+          controller
+            .getUserByTelegramUserId(invitedUser2)
+            .then(user => this.notify('invite', user, event))
+            .catch(error => logger.error(error));
+        });
+      })
+      .catch(error => logger.error(error));
   }
 };

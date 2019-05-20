@@ -20,6 +20,10 @@ function userMethodsFactory(userModelName) {
     return Users.findOne({ _id: id }, fields).exec();
   };
 
+  const getUserByTelegramUserId = (telegramUserId, fields = null) => {
+    return Users.findOne({ telegramUserId }, fields).exec();
+  };
+
   const postNewUser = user => {
     const newUser = new Users(user);
 
@@ -102,6 +106,7 @@ function userMethodsFactory(userModelName) {
   return {
     getAllUsers,
     getUserById,
+    getUserByTelegramUserId,
     postNewUser,
     getAllUsersByEventId,
     querySearch,
