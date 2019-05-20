@@ -4,13 +4,13 @@ const generateSingleEventPairs = require('./generateSingleEventPairs');
 
 const controller = new DBController();
 
-function pairsGenerator(event, allUsers) {
+function pairsGenerator(event) {
   function generateCyclicEventPairs() {}
 
   function checkTypeOfEvent() {
     if (event.options.cyclic === false) {
       // в новой схеме обращаться через options
-      generateSingleEventPairs(event, allUsers);
+      generateSingleEventPairs(event);
     } else {
       generateCyclicEventPairs();
     }

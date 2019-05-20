@@ -84,17 +84,17 @@ function userMethodsFactory(userModelName) {
       userEventIds.push(Object.keys(userEvents)[0]);
       userEventStatuses.push(Object.values(userEvents)[0]);
     });
-    const uniqueUserEventIds = new Set(userEventIds);
-    const uniqueUserEventStatuses = new Set(userEventStatuses);
-    if (uniqueUserEventIds.size === 1 && uniqueUserEventStatuses.size === 1) {
-      const userEventId = userEventIds[0];
-      const userStatus = userEventStatuses[0];
-      return Users.updateMany({
-        telegramId: { $in: userTelegramIds }
-      })
-        .set(`events.$.${userEventId}`, userStatus)
-        .exec();
-    }
+    // const uniqueUserEventIds = new Set(userEventIds);
+    // const uniqueUserEventStatuses = new Set(userEventStatuses);
+    // if (uniqueUserEventIds.size === 1 && uniqueUserEventStatuses.size === 1) {
+    //   const userEventId = userEventIds[0];
+    //   const userStatus = userEventStatuses[0];
+    //   return Users.updateMany({
+    //     telegramId: { $in: userTelegramIds }
+    //   })
+    //     .set(`events.$.${userEventId}`, userStatus)
+    //     .exec();
+    // }
     const usersToSetStatus = users.map((user, i) => {
       return Users.updateOne({ telegramId: userTelegramIds[i] })
         .set(`events.$.${userEventIds[i]}`, userEventStatuses[i])
