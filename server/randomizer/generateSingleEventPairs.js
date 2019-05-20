@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const DBController = require('../database/dbController');
+const bot = require('../bot/telegramBot');
 
 const controller = new DBController();
 
@@ -96,7 +97,7 @@ async function generateSingleEventPairs(event) {
 
   await controller.insertEventPairs(eventPairs);
 
-  // здесь нужно вызывать бота для передачи id события
+  bot.mailing(event.id);
 }
 
 module.exports = generateSingleEventPairs;

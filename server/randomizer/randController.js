@@ -8,7 +8,7 @@ const checkData = require('./checkDataCorrectness');
 const addNewPairs = require('./substitution');
 
 const controller = new DBController();
-const substitutionQueue = ['5cd6f6c381371d297acb2fe0'];
+const substitutionQueue = [];
 const incommingCyclicEventsStorage = [];
 
 const substitution = new CronJob('*/30 * * * * *', () => {
@@ -42,7 +42,7 @@ class RandController {
       });
 
     if (eventToBalance.active) {
-      await controller.removeEventPairByEventId(eventId);
+      await controller.removeAllEventPairsByEventId(eventId);
       pairsGenerator(eventToBalance); // <===  Функция генерации пар//
     } else {
       throw Error('Event has been disabled');
