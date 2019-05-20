@@ -6,17 +6,14 @@ const controller = new DBController();
 
 async function addNewPairs(eventId) {
   const eventToBalance = await controller.getEventById(eventId);
-  const allUsers = await controller.getAllUsers(); // подписчиков нужно нормальным методом брать сразу для текущего события, когда он будет
+  const allUsers = await controller.getAllUsersByEventId(eventId);
 
   function generateEventUsersList(event) {
     const usersList = [];
 
     allUsers.forEach(user => {
       const availableUser = user.events.find(userEvent => {
-        return (
-          event.id.toString() === userEvent.eventId.toString() &&
-          userEvent.status === 'free'
-        );
+        return userEvent.status === 'free';
       });
 
       if (availableUser) {
@@ -28,7 +25,7 @@ async function addNewPairs(eventId) {
   }
 
   // генерируем дополнительные пары
-  function generateAdditionalPairs(event) {
+  async function generateAdditionalPairs(event) {
     const usersStatusUpdate = []; // для запроса на обновление статусов пользователей
     const generatedPairs = []; // сформированные дополнительные пары для добавления
     const availableUsers = generateEventUsersList(event); // собираем список всех свободных подписчиков события из всех отделов
@@ -76,7 +73,7 @@ async function addNewPairs(eventId) {
           location: event.location,
           title: event.title,
           description: event.description,
-          date: event.event.nextDate // в новой схеме обращаться через options к первому элементу массива nextDates
+          date: event.options.nextDate
         };
         generatedPairs.push(pair);
         balancedUser.events[balancedUserEventIndex].status = 'pending';
@@ -96,9 +93,11 @@ async function addNewPairs(eventId) {
       });
     });
     console.log(usersStatusUpdate);
+    generatedPairs.forEach(async function addPair(pair) {
+      await controller.insertPair(event.id, pair);
+    });
     console.log(generatedPairs);
 
-    // нужно вызвать метод добавления объектов пар в массив пар конкретного события
     // здесь нужно вызывать бота для передачи id события
     if (generatedPairs.length !== 0) {
       console.log(`new pairs to event ${eventId} added`);

@@ -10,16 +10,6 @@ function randomizerMethodsFactory(modelNames) {
   const EventReserve = EventReserveSchema(modelNames.eventReserve);
 
   // методы для Рандомайзера //
-  const updateEventPairs = eventPairsObj => {
-    const newEventPairsObj = new this.EventPairs(eventPairsObj);
-
-    return new Promise((resolve, reject) => {
-      newEventPairsObj.save((err, addedEventPairs) => {
-        if (err) reject(err);
-        resolve(addedEventPairs);
-      });
-    });
-  };
 
   const insertEventPairs = eventPairsObj => {
     const newEventPair = new EventPairs(eventPairsObj);
@@ -33,7 +23,7 @@ function randomizerMethodsFactory(modelNames) {
     });
   };
 
-  const removeEventPairByEventId = id => {
+  const removeAllEventPairsByEventId = id => {
     return EventPairs.deleteOne({ eventId: id }, (err, data) =>
       console.log(`Event c Id ${id} удален из Бд(eventPairs)`)
     );
@@ -46,21 +36,22 @@ function randomizerMethodsFactory(modelNames) {
   const insertPair = (id, pairObject) => {
     return EventPairs.findOneAndUpdate(
       { eventId: id },
-      { $push: { pairs: pairObject } }
+      { $push: { pairs: pairObject } },
+      { useFindAndModify: false, new: true }
     );
   };
 
   const removePair = (id, pairId) => {
     return EventPairs.findOneAndUpdate(
       { eventId: id },
-      { $pull: { pairs: { _id: pairId } } }
+      { $pull: { pairs: { _id: pairId } } },
+      { useFindAndModify: false, new: true }
     );
   };
 
   return {
-    updateEventPairs,
     insertEventPairs,
-    removeEventPairByEventId,
+    removeAllEventPairsByEventId,
     getEventPairsById,
     insertPair,
     removePair
