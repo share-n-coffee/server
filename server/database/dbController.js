@@ -1,11 +1,22 @@
 const userMethodsFactory = require('./factories/userMethodsFactory');
-const eventMethodsFactory = require('./factories/eventMethodsFactory');
+const topicMethodsFactory = require('./factories/topicMethodsFactory');
 const departmentMethodsFactory = require('./factories/departmentMethodsFactory');
-const randomizerMethodsFactory = require('./factories/randomizerMethodsFactory');
+const eventMethodsFactory = require('./factories/eventMethodsFactory');
+const subscriberMethodsFactory = require('./factories/subscriberMethodsFactory');
+const substitutionMethodsFactory = require('./factories/substitutionMethodsFactory');
+const logMethodsFactory = require('./factories/logMethodsFactory');
 const collectionConfig = require('./collection');
 
 function DBController(...collectionNames) {
-  const methodNames = ['user', 'event', 'department', 'randomizer'];
+  const methodNames = [
+    'user',
+    'topic',
+    'department',
+    'event',
+    'subscriber',
+    'substitution',
+    'log'
+  ];
   let collections;
   if (arguments.length === 0) {
     collections = methodNames;
@@ -16,16 +27,19 @@ function DBController(...collectionNames) {
   const switchFactory = collectionName => {
     switch (collectionName) {
       case 'user':
-        return userMethodsFactory(collectionConfig.users);
-      case 'event':
-        return eventMethodsFactory(collectionConfig.events);
+        return userMethodsFactory(collectionConfig.user);
+      case 'topic':
+        return eventMethodsFactory(collectionConfig.topic);
       case 'department':
         return departmentMethodsFactory(collectionConfig.departments);
-      case 'randomizer':
-        return randomizerMethodsFactory({
-          eventPairs: collectionConfig.eventPairs,
-          eventReserve: collectionConfig.eventReserve
-        });
+      case 'event':
+        return eventMethodsFactory(collectionConfig.event);
+      case 'subscriber':
+        return subscriberMethodsFactory(collectionConfig.subscriber);
+      case 'substitution':
+        return substitutionMethodsFactory(collectionConfig.substitution);
+      case 'log':
+        return logMethodsFactory(collectionConfig.log);
       default:
         return {};
     }
