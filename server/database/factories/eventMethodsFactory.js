@@ -37,11 +37,26 @@ function eventMethodsFactory(eventModelName) {
     );
   };
 
+  const deleteDate = (topicId, timestamp) => {
+    return Events.findOneAndUpdate(
+      {
+        _id: topicId,
+        'options.nextDates': timestamp
+      },
+      { $pull: { 'options.nextDates': timestamp } },
+      { useFindAndModify: false, new: true },
+      err => {
+        if (err) console.log(err);
+      }
+    );
+  };
+
   return {
     getAllEvents,
     getEventById,
     postNewEvent,
-    updateEvent
+    updateEvent,
+    deleteDate
   };
 }
 

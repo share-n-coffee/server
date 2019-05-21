@@ -5,7 +5,7 @@ const randomizerMethodsFactory = require('./factories/randomizerMethodsFactory')
 const collectionConfig = require('./collection');
 
 function DBController(...collectionNames) {
-  const methodNames = ['user', 'event', 'department', 'randomizer'];
+  const methodNames = ['user', 'event', 'department', 'randomizer', 'test'];
   let collections;
   if (arguments.length === 0) {
     collections = methodNames;
@@ -17,6 +17,8 @@ function DBController(...collectionNames) {
     switch (collectionName) {
       case 'user':
         return userMethodsFactory(collectionConfig.users);
+      case 'test':
+        return eventMethodsFactory(collectionConfig.test);
       case 'event':
         return eventMethodsFactory(collectionConfig.events);
       case 'department':

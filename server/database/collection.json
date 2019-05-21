@@ -3,5 +3,6 @@
   "events": "demo_event",
   "departments": "demo_department",
   "eventPairs": "demo_eventpair",
-  "eventReserve": "demo_eventreserve"
+  "eventReserve": "demo_eventreserve",
+  "test": "tests"
 }
