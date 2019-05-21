@@ -1,18 +1,16 @@
 /* eslint-disable no-param-reassign */
 const DBController = require('../database/dbController');
 const generateSingleEventPairs = require('./generateSingleEventPairs');
+const generateCyclicEventPairs = require('./generateCyclicEventPairs');
 
 const controller = new DBController();
 
-function pairsGenerator(event, allUsers) {
-  function generateCyclicEventPairs() {}
-
+function pairsGenerator(event) {
   function checkTypeOfEvent() {
     if (event.options.cyclic === false) {
-      // в новой схеме обращаться через options
-      generateSingleEventPairs(event, allUsers);
+      generateSingleEventPairs(event);
     } else {
-      generateCyclicEventPairs();
+      generateCyclicEventPairs(event);
     }
   }
 

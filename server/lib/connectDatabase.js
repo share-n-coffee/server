@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const logger = require('../logger');
 const config = require('../config/config');
 
 const connectDatabase = () => {
@@ -14,7 +15,7 @@ const connectDatabase = () => {
       console.log('Database is connected');
     })
     .catch(error => {
-      console.log(`Can not connect to the database ${error}`);
+      logger.error(error.toString());
     });
 };
 

@@ -20,6 +20,10 @@ function userMethodsFactory(userModelName) {
     return Users.findOne({ _id: id }, fields).exec();
   };
 
+  const getUserByTelegramUserId = (telegramUserId, fields = null) => {
+    return Users.findOne({ telegramUserId }, fields).exec();
+  };
+
   const postNewUser = user => {
     const newUser = new Users(user);
 
@@ -70,6 +74,35 @@ function userMethodsFactory(userModelName) {
     );
   };
 
+  const updateUsersEvents = (userId, eventId, operation) => {
+    return new Promise((resolve, reject) => {
+      Users.findById(userId, (err, findedUser) => {
+        if (err) reject(err);
+
+        const user = findedUser;
+        const containEvent = user.events.some(
+          event => event.eventId.toString() === eventId
+        );
+
+        if (operation === 'add' && !containEvent) {
+          user.events.push({
+            status: 'free',
+            eventId
+          });
+        } else {
+          user.events = user.events.filter(
+            event => event.eventId.toString() !== eventId
+          );
+        }
+
+        user.save((saveErr, updatedUser) => {
+          if (saveErr) reject(saveErr);
+          resolve(updatedUser);
+        });
+      });
+    });
+  };
+
   const setEventStatus = users => {
     const telegramUserIds = [];
     const userEventIds = [];
@@ -104,13 +137,15 @@ function userMethodsFactory(userModelName) {
   return {
     getAllUsers,
     getUserById,
+    getUserByTelegramUserId,
     postNewUser,
     getAllUsersByEventId,
     querySearch,
     putUserBan,
     saveNewUser,
     updateUser,
-    setEventStatus
+    setEventStatus,
+    updateUsersEvents
   };
 }
 
