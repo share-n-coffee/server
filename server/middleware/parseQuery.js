@@ -1,5 +1,13 @@
 module.exports = (req, res, next) => {
   req.sorting = {};
+  req.fields = null;
+
+  console.log(req.query);
+
+  if (req.query.getFields) {
+    req.fields = req.query.getFields.replace(/,/g, ' ');
+    delete req.query.getFields;
+  }
 
   if (req.query.sortBy) {
     req.sorting.sort = {};
@@ -12,6 +20,8 @@ module.exports = (req, res, next) => {
 
     delete req.query.sortBy;
   }
+
+  console.log(req.query);
 
   next();
 };

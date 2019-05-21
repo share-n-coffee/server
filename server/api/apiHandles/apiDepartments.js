@@ -11,7 +11,7 @@ router
     const DBController = new ClassDBController('department');
 
     DBController.getAllDepartments(req.sorting)
-      .then(departments => res.status(200).json(departments))
+      .then(departments => res.status(200).json({ data: departments }))
       .catch(error => res.status(404).send(error));
   })
   .post(adminAuth, (req, res) => {
@@ -20,7 +20,7 @@ router
     if (req.body.title) {
       DBController.postNewDepartment(req.body)
         .then(addedDepartment => {
-          res.status(200).json(addedDepartment);
+          res.status(200).json({ data: addedDepartment });
         })
         .catch(error => res.status(404).send(error));
     } else {
@@ -34,14 +34,15 @@ router
     const DBController = new ClassDBController('department');
 
     DBController.getDepartmentById(req.params.id)
-      .then(department => res.status(200).json(department))
+      .then(department => res.status(200).json({ data: department }))
       .catch(error => res.status(404).send(error));
   })
   .put(adminAuth, (req, res) => {
     const DBController = new ClassDBController('department');
+
     DBController.updateDepartment(req.params.id, req.body)
       .then(updatedDepartment => {
-        res.status(200).json(updatedDepartment);
+        res.status(200).json({ data: updatedDepartment });
       })
       .catch(error => res.status(404).send(error));
   });

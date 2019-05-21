@@ -9,15 +9,9 @@ const router = express.Router();
 
 router.route('/').get((req, res) => {
   const DBController = new ClassDBController('user');
-  let fields = null;
 
-  if (req.query.getFields) {
-    fields = req.query.getFields.replace(/,/g, ' ');
-    delete req.query.getFields;
-  }
-
-  DBController.querySearch(req.query, fields, req.sorting)
-    .then(results => res.status(200).json(results))
+  DBController.querySearch(req.query, req.fields, req.sorting)
+    .then(results => res.status(200).json({ data: results }))
     .catch(error => res.status(404));
 });
 
@@ -25,14 +19,9 @@ router
   .route('/:id', objectIdValidation)
   .get((req, res) => {
     const DBController = new ClassDBController('user');
-    let fields = null;
 
-    if (Object.keys(req.query).length && req.query.getFields) {
-      fields = req.query.getFields.replace(/,/g, ' ');
-    }
-
-    DBController.getUserById(req.params.id, fields, req.sorting)
-      .then(user => res.status(200).json(user))
+    DBController.querySearch({ _id: req.params.id }, req.fields, req.sorting)
+      .then(user => res.status(200).json({ data: user }))
       .catch(error => res.status(404).send(error));
   })
   .put((req, res) => {
@@ -43,7 +32,7 @@ router
         DBController.updateUser(req.params.id, {
           department: req.body.newDepartment
         })
-          .then(user => res.status(200).json(user))
+          .then(user => res.status(200).json({ data: user }))
           .catch(error => res.status(404).send(error));
       } else {
         res.status(404).send("New Department's id is not valid ObjectId!");
@@ -53,7 +42,7 @@ router
     if (req.body.eventId) {
       if (ObjectId.isValid(req.body.eventId)) {
         DBController.updateUsersEvents(req.params.id, req.body.eventId, 'add')
-          .then(user => res.status(200).json(user))
+          .then(user => res.status(200).json({ data: user }))
           .catch(error => res.status(404).send(error));
       } else {
         res.status(404).send("New Event's _id is not valid ObjectId!");
@@ -77,7 +66,7 @@ router
       DBController.updateUser(req.params.id, {
         admin: req.body.admin
       })
-        .then(user => res.status(200).json(user))
+        .then(user => res.status(200).json({ data: user }))
         .catch(error => res.status(404).send(error));
     }
   })
@@ -91,7 +80,7 @@ router
           req.body.eventId,
           'remove'
         )
-          .then(user => res.status(200).json(user))
+          .then(user => res.status(200).json({ data: user }))
           .catch(error => res.status(404).send(error));
       } else {
         res.status(404).send("New Event's _id is not valid ObjectId!");
@@ -111,7 +100,7 @@ router.route('/ban/:id', objectIdValidation).put(adminAuth, (req, res) => {
       expired: ban.status ? 4102389828505 : 0,
       ...ban
     })
-      .then(user => res.status(200).json(user))
+      .then(user => res.status(200).json({ data: user }))
       .catch(error => res.status(404).send(error));
   }
 });
