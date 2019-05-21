@@ -29,7 +29,7 @@ function DBController(...collectionNames) {
       case 'user':
         return userMethodsFactory(collectionConfig.user);
       case 'topic':
-        return eventMethodsFactory(collectionConfig.topic);
+        return topicMethodsFactory(collectionConfig.topic);
       case 'department':
         return departmentMethodsFactory(collectionConfig.departments);
       case 'event':
