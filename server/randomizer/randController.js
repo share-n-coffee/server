@@ -35,13 +35,15 @@ class RandController {
   }
 
   static async selectEventForPairGenerating(eventId) {
-    const eventToBalance = await controller.getEventById(eventId);
-    const allUsers = await controller.getAllUsers();
+    const eventToBalance = await controller
+      .getEventById(eventId)
+      .catch(error => {
+        console.log(error);
+      });
 
     if (eventToBalance.active) {
-      controller.removeEventPairs().then(() => {
-        pairsGenerator(eventToBalance, allUsers); // <===  Функция генерации пар//
-      });
+      await controller.removeAllEventPairsByEventId(eventId);
+      pairsGenerator(eventToBalance); // <===  Функция генерации пар//
     } else {
       throw Error('Event has been disabled');
     }
