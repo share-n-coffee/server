@@ -1,7 +1,9 @@
 {
-  "users": "demo_user",
-  "events": "demo_event",
-  "departments": "demo_department",
-  "eventPairs": "demo_eventpair",
-  "eventReserve": "demo_eventreserve"
+  "user": "demo_user",
+  "topic": "demo_topic",
+  "department": "demo_department",
+  "event": "demo_event",
+  "subscriber": "demo_subscriber",
+  "substitution": "demo_substitution",
+  "log": "demo_log"
 }
