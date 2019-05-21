@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 // Функция принимает объект event и генерирует события на следущий месяц и заносит их в event.options.nexDates
-function generateUpcomingEvents({ options, created }) {
+function generateUpcomingDatesByTopic({ options, created }) {
   // 00:00:00 первого числа следующего месяца
   const firstDayNextMonth = new Date(
     new Date(created).getFullYear(),
@@ -21,7 +21,7 @@ function generateUpcomingEvents({ options, created }) {
 
   const findDates = timestamp => {
     let currentTime = timestamp;
-    if (timestamp > endOfMonth) {
+    if (currentTime > endOfMonth) {
       return options.nextDates;
     }
     const currentDay = new Date(currentTime).getDay();
@@ -42,4 +42,4 @@ function generateUpcomingEvents({ options, created }) {
   findDates(firstDayNextMonth.getTime());
 }
 
-module.exports = generateUpcomingEvents;
+module.exports = generateUpcomingDatesByTopic;
