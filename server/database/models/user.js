@@ -47,6 +47,7 @@ const UserSchema = new Schema({
     {
       topicId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'Topic',
         required: false
       }
     }
@@ -56,6 +57,7 @@ const UserSchema = new Schema({
     {
       eventId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'Topic',
         required: false
       }
     }
@@ -85,20 +87,6 @@ const UserSchema = new Schema({
       type: String,
       required: false,
       default: null
-    }
-  },
-  tokens: {
-    origin: {
-      type: String,
-      required: false
-    },
-    expiredAt: {
-      type: Number,
-      required: false
-    },
-    refresh: {
-      type: String,
-      required: false
     }
   }
 });

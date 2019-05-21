@@ -31,32 +31,34 @@ const TopicSchema = new Schema({
     type: String,
     required: false
   },
-  options: {
-    // Является ли событие повторяющимся
-    cyclic: {
-      type: Boolean,
-      required: true,
-      default: false
-    },
-    //  День недели, начиная с воскресенья, в который проводится событие
-    //  Для одиночного события – не имеет значения
-    regularity: {
-      type: Number,
-      required: false
-    },
-    //  Даты следующих событий, пересчитывается отдельным скриптом перед работой рандомайзера
-    //  Если создаётся одиночное событие, то этот параметр ему выставляется сразу, один элементом массива
-    nextDates: [
-      {
-        type: Number,
-        required: false
-      }
-    ]
+  // Является ли событие повторяющимся
+  cyclic: {
+    type: Boolean,
+    required: true,
+    default: false
   },
+  //  День недели, начиная с воскресенья, в который проводится событие
+  //  Для одиночного события – не имеет значения
+  weekDay: {
+    type: Number,
+    required: false
+  },
+  // Время, когда будут проходить ивенты
+  time: {
+    type: Number,
+    required: false
+  },
+  //  Даты следующих событий, пересчитывается отдельным скриптом перед работой рандомайзера
+  //  Если создаётся одиночное событие, то этот параметр ему выставляется сразу, один элементом массива
   //  Дата добавления события в БД
   created: {
     type: Number,
     default: new Date().getTime(),
+    required: false
+  },
+  // Дата последней генерации ивентов
+  lastEventsCreationDate: {
+    type: Number,
     required: false
   }
 });
