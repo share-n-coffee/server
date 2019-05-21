@@ -42,17 +42,21 @@ const UserSchema = new Schema({
       required: false
     }
   },
-  //  Массив с событиями, на которые подписан пользователь
+  // Массив с топиками, на которые подписан пользователь
+  topics: [
+    {
+      topicId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: false
+      }
+    }
+  ],
+  //  Массив с событиями, в которых участвует пользователь
   events: [
     {
       eventId: {
         type: mongoose.Schema.Types.ObjectId,
         required: false
-      },
-      status: {
-        type: String,
-        required: false,
-        default: 'free'
       }
     }
   ],
@@ -67,74 +71,6 @@ const UserSchema = new Schema({
     type: Number,
     default: new Date().getTime(),
     required: false
-  },
-  //  Здесь хранятся все действия пользователя
-  logs: {
-    //  Всё подписки/отписки пользователя
-    //  Массив объектов
-    subscribedEvents: [
-      {
-        //  Идентификатор события
-        event: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Event',
-          required: false
-        },
-        //  Действие пользователя ("subscribe"/"unsubscribe") (подписка/отписка)
-        action: {
-          type: String,
-          required: false
-        }
-      }
-    ],
-    //  Всё приглашения на события, которые отправляются пользователю
-    //  Массив объектов
-    invitedEvents: [
-      {
-        //  Идентификатор события
-        event: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Event',
-          required: false
-        },
-        //  Действие пользователя ("accept"/"decline") (подтвердил/отклонил)
-        action: {
-          type: String,
-          required: false
-        }
-      }
-    ],
-    //  массив посещенных пользователем событий
-    visitedEvents: [
-      {
-        //  Идентификатор события
-        event: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Event',
-          required: false
-        },
-        //  Дата посещения
-        date: {
-          type: Number,
-          required: false
-        }
-      }
-    ],
-    //  Все полученные пользователем баны
-    bans: [
-      {
-        //  Дата бана
-        startDate: {
-          type: Number,
-          required: false
-        },
-        //  Дата окончания бана
-        endDate: {
-          type: Number,
-          required: false
-        }
-      }
-    ]
   },
   //  Если пользователь админ
   admin: {
