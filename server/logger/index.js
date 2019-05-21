@@ -1,6 +1,9 @@
 const { createLogger, format, transports } = require('winston');
 require('winston-daily-rotate-file');
 const path = require('path');
+const logModel = require('../database/models/log');
+
+const Log = logModel('demo_log');
 
 const env = process.env.NODE_ENV || 'development';
 const logDir = 'server/log';
@@ -12,7 +15,6 @@ const dailyRotateFileTransport = new transports.DailyRotateFile({
 });
 
 const consoleTransport = new transports.Console({
-  level: 'info',
   format: format.combine(
     format.colorize(),
     format.printf(
@@ -23,7 +25,7 @@ const consoleTransport = new transports.Console({
 
 const logger = createLogger({
   // уровень логирования в зависимости от окружения
-  level: env === 'development' ? 'verbose' : 'warn',
+  level: 'error',
   format: format.combine(
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
@@ -40,5 +42,13 @@ if (env === 'development') {
 module.exports = {
   error(err) {
     logger.error(err);
+  },
+  info(userId, actionType, action) {
+    const log = new Log({
+      userId,
+      actionType,
+      action
+    });
+    log.save().catch(error => logger.error(error));
   }
 };
