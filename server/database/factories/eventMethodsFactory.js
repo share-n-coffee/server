@@ -1,38 +1,38 @@
-const EventPairsSchema = require('../models/event');
+const EventSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 
 function randomizerMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
     return {};
   }
-  const EventPairs = EventPairsSchema(modelNames.eventPairs);
+  const Event = EventSchema(modelNames.event);
 
   // методы для Рандомайзера //
 
-  const insertEventPairs = eventPairsObj => {
-    const newEventPair = new EventPairs(eventPairsObj);
+  const insertEvent = eventObj => {
+    const newEvent = new Event(eventObj);
 
     return new Promise((resolve, reject) => {
-      newEventPair.save((err, addedEventPair) => {
+      newEvent.save((err, addedEvent) => {
         if (err) reject(err);
-        resolve(addedEventPair);
+        resolve(addedEvent);
       });
-      console.log(`Пары к событию ${eventPairsObj.eventId} добавлены.`);
+      console.log(`Пары к событию ${eventObj.eventId} добавлены.`);
     });
   };
 
-  const removeAllEventPairsByEventId = id => {
-    return EventPairs.deleteOne({ eventId: id }, (err, data) =>
-      console.log(`Event c Id ${id} удален из Бд(eventPairs)`)
+  const removeAllEventByEventId = id => {
+    return Event.deleteOne({ eventId: id }, (err, data) =>
+      console.log(`Event c Id ${id} удален из Бд(event)`)
     );
   };
 
-  const getEventPairsById = id => {
-    return EventPairs.findOne({ eventId: id }).exec();
+  const getEventById = id => {
+    return Event.findOne({ eventId: id }).exec();
   };
 
   const insertPair = (id, pairObject) => {
-    return EventPairs.findOneAndUpdate(
+    return Event.findOneAndUpdate(
       { eventId: id },
       { $push: { pairs: pairObject } },
       { useFindAndModify: false, new: true }
@@ -40,7 +40,7 @@ function randomizerMethodsFactory(modelNames) {
   };
 
   const removePair = (id, pairId) => {
-    return EventPairs.findOneAndUpdate(
+    return Event.findOneAndUpdate(
       { eventId: id },
       { $pull: { pairs: { _id: pairId } } },
       { useFindAndModify: false, new: true }
@@ -48,9 +48,9 @@ function randomizerMethodsFactory(modelNames) {
   };
 
   return {
-    insertEventPairs,
-    removeAllEventPairsByEventId,
-    getEventPairsById,
+    insertEvent,
+    removeAllEventByEventId,
+    getEventById,
     insertPair,
     removePair
   };
