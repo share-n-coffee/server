@@ -1,48 +1,59 @@
-const mongoose = require('mongoose');
-const EventSchema = require('../models/event');
+const EventPairsSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 
-function eventMethodsFactory(eventModelName) {
-  if (isNull(eventModelName)) {
+function randomizerMethodsFactory(modelNames) {
+  if (isNull(modelNames)) {
     return {};
   }
-  const Events = EventSchema(eventModelName);
+  const EventPairs = EventPairsSchema(modelNames.eventPairs);
 
-  const getAllEvents = () => {
-    return Events.find({}).exec();
-  };
+  // методы для Рандомайзера //
 
-  const getEventById = eventId => {
-    return Events.findOne({
-      _id: mongoose.Types.ObjectId(eventId)
-    }).exec();
-  };
+  const insertEventPairs = eventPairsObj => {
+    const newEventPair = new EventPairs(eventPairsObj);
 
-  const postNewEvent = event => {
-    const newEvent = new Events(event);
     return new Promise((resolve, reject) => {
-      newEvent.save((err, addedEvent) => {
+      newEventPair.save((err, addedEventPair) => {
         if (err) reject(err);
-        resolve(addedEvent);
+        resolve(addedEventPair);
       });
+      console.log(`Пары к событию ${eventPairsObj.eventId} добавлены.`);
     });
   };
 
-  const updateEvent = (eventId, newProps) => {
-    return Events.findOneAndUpdate(
-      { _id: eventId },
-      { $set: newProps },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
+  const removeAllEventPairsByEventId = id => {
+    return EventPairs.deleteOne({ eventId: id }, (err, data) =>
+      console.log(`Event c Id ${id} удален из Бд(eventPairs)`)
+    );
+  };
+
+  const getEventPairsById = id => {
+    return EventPairs.findOne({ eventId: id }).exec();
+  };
+
+  const insertPair = (id, pairObject) => {
+    return EventPairs.findOneAndUpdate(
+      { eventId: id },
+      { $push: { pairs: pairObject } },
+      { useFindAndModify: false, new: true }
+    );
+  };
+
+  const removePair = (id, pairId) => {
+    return EventPairs.findOneAndUpdate(
+      { eventId: id },
+      { $pull: { pairs: { _id: pairId } } },
+      { useFindAndModify: false, new: true }
     );
   };
 
   return {
-    getAllEvents,
-    getEventById,
-    postNewEvent,
-    updateEvent
+    insertEventPairs,
+    removeAllEventPairsByEventId,
+    getEventPairsById,
+    insertPair,
+    removePair
   };
 }
 
-module.exports = eventMethodsFactory;
+module.exports = randomizerMethodsFactory;
