@@ -7,10 +7,10 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   }
   const Subscriptions = SubscriptionSchema(subscriptionModelName);
 
-  const createSubscription = (topicId, userTelegramId, visitsRemained) => {
+  const createSubscription = (topicId, userId, visitsRemained) => {
     return Subscriptions.create({
       topicId,
-      userTelegramId,
+      userId,
       visitsRemained
     });
   };
@@ -19,36 +19,33 @@ function subscriptionMethodsFactory(subscriptionModelName) {
     return Subscriptions.find({ topicId }).exec();
   };
 
-  const getSubscriptionByUserTelegramId = userTelegramId => {
-    return Subscriptions.find({ userTelegramId }).exec();
+  const getSubscriptionByUserId = userId => {
+    return Subscriptions.find({ userId }).exec();
   };
 
   const getAllSubscriptions = () => {
     return Subscriptions.find({}).exec();
   };
 
-  const removeSubscription = (topicId, userTelegramId) => {
-    return Subscriptions.deleteOne({ topicId, userTelegramId });
+  const removeSubscription = (topicId, userId) => {
+    return Subscriptions.deleteOne({ topicId, userId });
   };
 
-  const getVisitsRemainedQuantity = (topicId, userTelegramId) => {
-    return Subscriptions.find(
-      { topicId, userTelegramId },
-      'visitsRemained'
-    ).exec();
+  const getVisitsRemainedQuantity = (topicId, userId) => {
+    return Subscriptions.find({ topicId, userId }, 'visitsRemained').exec();
   };
 
-  const setVisitsRemainedQuantity = (topicId, userTelegramId, newQuantity) => {
+  const setVisitsRemainedQuantity = (topicId, userId, visitQuantity) => {
     return Subscriptions.updateOne(
-      { topicId, userTelegramId },
-      { $set: { visitsRemained: newQuantity } }
+      { topicId, userId },
+      { $set: { visitsRemained: visitQuantity } }
     );
   };
 
   return {
     createSubscription,
     getSubscriptionByTopicId,
-    getSubscriptionByUserTelegramId,
+    getSubscriptionByUserId,
     getAllSubscriptions,
     removeSubscription,
     getVisitsRemainedQuantity,
