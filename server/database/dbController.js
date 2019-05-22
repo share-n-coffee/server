@@ -24,7 +24,7 @@ function DBController(...collectionNames) {
     collections = collectionNames;
   }
 
-  const switchFactory = collectionName => {
+  const factorySwitcher = collectionName => {
     switch (collectionName) {
       case 'user':
         return userMethodsFactory(collectionConfig.user);
@@ -52,7 +52,7 @@ function DBController(...collectionNames) {
     if (!methodNames.includes(collection)) {
       throw SyntaxError(`arguments should be from list: ${methodNames}`);
     }
-    return Object.assign(result, switchFactory(collection));
+    return Object.assign(result, factorySwitcher(collection));
   }, {});
 }
 
