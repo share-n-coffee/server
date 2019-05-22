@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema({
   //  Телеграмовский идентификатор пользователя
-  telegramUserId: {
+  telegramId: {
     type: Number,
     required: false
   },
