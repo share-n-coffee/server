@@ -10,7 +10,7 @@ const SubscribtionSchema = new Schema({
     required: true
   },
   //  id подписанного пользователя
-  userTelegramId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true

@@ -12,7 +12,7 @@ const EventSchema = new Schema({
   //  список участников и их статусов
   participants: [
     {
-      telegramUserId: {
+      userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: false
