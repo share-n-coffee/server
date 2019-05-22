@@ -2,7 +2,7 @@ const userMethodsFactory = require('./factories/userMethodsFactory');
 const topicMethodsFactory = require('./factories/topicMethodsFactory');
 const departmentMethodsFactory = require('./factories/departmentMethodsFactory');
 const eventMethodsFactory = require('./factories/eventMethodsFactory');
-const subscriberMethodsFactory = require('./factories/subscriberMethodsFactory');
+const subscriptionMethodsFactory = require('./factories/subscriptionMethodsFactory');
 const substitutionMethodsFactory = require('./factories/substitutionMethodsFactory');
 const logMethodsFactory = require('./factories/logMethodsFactory');
 const collectionConfig = require('./collection');
@@ -35,7 +35,7 @@ function DBController(...collectionNames) {
       case 'event':
         return eventMethodsFactory(collectionConfig.event);
       case 'subscriber':
-        return subscriberMethodsFactory(collectionConfig.subscriber);
+        return subscriptionMethodsFactory(collectionConfig.subscriber);
       case 'substitution':
         return substitutionMethodsFactory(collectionConfig.substitution);
       case 'log':
