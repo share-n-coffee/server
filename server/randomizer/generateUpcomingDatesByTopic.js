@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-// Функция принимает объект event и генерирует события на следущий месяц и заносит их в event.options.nexDates
+// Функция принимает объект event и генерирует события на следующий месяц и возвращает event.options.nexDates
 function generateUpcomingDatesByTopic({ options, created }) {
   // 00:00:00 первого числа следующего месяца
   const firstDayNextMonth = new Date(
@@ -21,16 +21,18 @@ function generateUpcomingDatesByTopic({ options, created }) {
 
   const findDates = timestamp => {
     let currentTime = timestamp;
+    const eventTime = options.time;
     if (currentTime > endOfMonth) {
       return options.nextDates;
     }
     const currentDay = new Date(currentTime).getDay();
-    if (currentDay === options.regularity) {
+    if (currentDay === options.weekDay) {
       const year = new Date(currentTime).getFullYear();
       const month = new Date(currentTime).getMonth();
       const day = new Date(currentTime).getDate();
-      const hour = options.hour + 3;
-      options.nextDates.push(new Date(year, month, day, hour));
+      const hour = eventTime.slice(0, eventTime.indexOf(':'));
+      const minutes = eventTime.slice(eventTime.indexOf(':') + 1);
+      options.nextDates.push(new Date(year, month, day, hour, minutes));
       if (!options.cyclic) {
         return options.nextDates;
       }
@@ -38,8 +40,7 @@ function generateUpcomingDatesByTopic({ options, created }) {
     findDates((currentTime += oneDay));
     return options.nextDates;
   };
-
-  findDates(firstDayNextMonth.getTime());
+  return findDates(firstDayNextMonth.getTime());
 }
 
 module.exports = generateUpcomingDatesByTopic;
