@@ -43,9 +43,9 @@ const TopicSchema = new Schema({
     type: Number,
     required: false
   },
-  // Время, когда будут проходить ивенты
+  // Время, когда будут проходить ивенты (в формате 15:42)
   time: {
-    type: Number,
+    type: String,
     required: false
   },
   //  Даты следующих событий, пересчитывается отдельным скриптом перед работой рандомайзера
@@ -54,6 +54,11 @@ const TopicSchema = new Schema({
   created: {
     type: Number,
     default: new Date().getTime(),
+    required: false
+  },
+  // Дата проведения единоразового события
+  singleDate: {
+    type: Number,
     required: false
   },
   // Дата последней генерации ивентов
