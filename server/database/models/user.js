@@ -42,16 +42,6 @@ const UserSchema = new Schema({
       required: false
     }
   },
-  // Массив с топиками, на которые подписан пользователь
-  topics: [
-    {
-      topicId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Topic',
-        required: false
-      }
-    }
-  ],
   //  Массив с событиями, в которых участвует пользователь
   events: [
     {
