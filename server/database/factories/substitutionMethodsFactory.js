@@ -1,9 +1,9 @@
 const SubstitutionSchema = require('../models/substitution');
-const isNull = require('../../utilities/isNull');
+const isString = require('../../utilities/isString');
 
 function substitutionMethodsFactory(substitutionModelName) {
-  if (isNull(substitutionModelName)) {
-    return {};
+  if (!isString(substitutionModelName)) {
+    return new TypeError('substitutionModelName should be a String');
   }
 
   const Substitutions = SubstitutionSchema(substitutionModelName);
