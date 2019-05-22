@@ -3,7 +3,7 @@ const isString = require('../../utilities/isString');
 
 function substitutionMethodsFactory(substitutionModelName) {
   if (!isString(substitutionModelName)) {
-    return new TypeError('substitutionModelName should be a String');
+    throw new TypeError('substitutionModelName should be a String');
   }
 
   const Substitutions = SubstitutionSchema(substitutionModelName);
