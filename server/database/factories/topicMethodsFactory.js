@@ -27,7 +27,43 @@ function topicMethodsFactory(topicModelName) {
       });
     });
   };
-
+  // новые методы //
+  const makeActiveTopic = topicId => {
+    return Topics.update({ _id: topicId }, { $set: { active: true } }, err =>
+      console.log(err)
+    );
+  };
+  const unActiveTopic = topicId => {
+    return Topics.update({ _id: topicId }, { $set: { active: false } }, err =>
+      console.log(err)
+    );
+  };
+  const changeCyclicProp = (topicId, boolean) => {
+    return Topics.update({ _id: topicId }, { $set: { cyclic: boolean } }, err =>
+      console.log(err)
+    );
+  };
+  const setLastEventsCreationDate = (topicId, timestamp) => {
+    return Topics.update(
+      { _id: topicId },
+      { $set: { lastEventsCreationDate: timestamp } },
+      err => console.log(err)
+    );
+  };
+  const updateLastEventsCreationDate = (topicId, timestamp) => {
+    return Topics.update(
+      { _id: topicId },
+      { $set: { lastEventsCreationDate: timestamp } },
+      err => console.log(err)
+    );
+  };
+  const getLastEventsCreationDate = (topicId, timestamp) => {
+    return Topics.findOne(
+      { _id: topicId, lastEventsCreationDate: timestamp },
+      err => console.log(err)
+    );
+  };
+  // ------------------------//
   const updateTopic = (topicId, newProps) => {
     return Topics.findOneAndUpdate(
       { _id: topicId },
@@ -41,7 +77,13 @@ function topicMethodsFactory(topicModelName) {
     getAllTopics,
     getTopicById,
     postNewTopic,
-    updateTopic
+    updateTopic,
+    makeActiveTopic,
+    unActiveTopic,
+    changeCyclicProp,
+    setLastEventsCreationDate,
+    updateLastEventsCreationDate,
+    getLastEventsCreationDate
   };
 }
 
