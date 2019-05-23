@@ -10,7 +10,13 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('department');
 
-    DBController.getAllDepartments(req.sorting)
+    DBController.find(
+      req.query,
+      req.fields,
+      req.sorting,
+      +req.pagination.skip,
+      +req.pagination.limit
+    )
       .then(departments => res.status(200).json({ data: departments }))
       .catch(error => res.status(404).send(error));
   })

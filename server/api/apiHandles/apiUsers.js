@@ -4,24 +4,44 @@ const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('./../../database/dbController');
 const adminAuth = require('../../middleware/adminAuth');
 const objectIdValidation = require('../../middleware/objectIdValidation');
+const generatePagination = require('../../middleware/generatePagination');
 
 const router = express.Router();
 
-router.route('/').get((req, res) => {
+router.route('/').get(async (req, res) => {
   const DBController = new ClassDBController('user');
+  const totalQuantity = (await DBController.getAllUsers()).length;
 
-  DBController.querySearch(req.query, req.fields, req.sorting)
-    .then(results => res.status(200).json({ data: results }))
+  DBController.find(
+    req.query,
+    req.fields,
+    req.sorting,
+    generatePagination(req, totalQuantity)
+  )
+    .then(results => {
+      return res
+        .status(200)
+        .json({ data: results, pagination: req.pagination.pages });
+      // return res.status(200).json({ pagination });
+    })
     .catch(error => res.status(404));
 });
 
 router
   .route('/:id', objectIdValidation)
   .get((req, res) => {
-    const DBController = new ClassDBController('user');
+    const DBController = new ClassDBController('user', 'department');
 
-    DBController.querySearch({ _id: req.params.id }, req.fields, req.sorting)
-      .then(user => res.status(200).json({ data: user }))
+    DBController.find({ _id: req.params.id }, req.fields, req.sorting)
+      .then(users => {
+        DBController.getDepartmentById(users[0].department)
+          .then(department => {
+            const answer = { data: users[0].toJSON() };
+            answer.data.department = department.toJSON();
+            return res.status(200).json(answer);
+          })
+          .catch(error => res.status(404).send(error));
+      })
       .catch(error => res.status(404).send(error));
   })
   .put((req, res) => {

@@ -12,6 +12,9 @@ function eventMethodsFactory(eventModelName) {
     return Events.find({}, null, sorting).exec();
   };
 
+  const find = (query, fields = null, sorting = null, skip = 0, limit = 0) =>
+    Events.find(query, fields, { ...sorting, skip, limit }).exec();
+
   const getEventById = eventId => {
     return Events.findOne({
       _id: mongoose.Types.ObjectId(eventId)
@@ -41,7 +44,8 @@ function eventMethodsFactory(eventModelName) {
     getAllEvents,
     getEventById,
     postNewEvent,
-    updateEvent
+    updateEvent,
+    find
   };
 }
 

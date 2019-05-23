@@ -2,8 +2,6 @@ module.exports = (req, res, next) => {
   req.sorting = {};
   req.fields = null;
 
-  console.log(req.query);
-
   if (req.query.getFields) {
     req.fields = req.query.getFields.replace(/,/g, ' ');
     delete req.query.getFields;
@@ -21,7 +19,13 @@ module.exports = (req, res, next) => {
     delete req.query.sortBy;
   }
 
-  console.log(req.query);
+  //  Pagination
+  req.pagination = {};
+  req.pagination.page = +req.query.page || 0;
+  req.pagination.limit = +req.query.limit || 0;
+
+  delete req.query.page;
+  delete req.query.limit;
 
   next();
 };

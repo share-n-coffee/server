@@ -10,7 +10,13 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('event');
 
-    DBController.getAllEvents(req.sorting)
+    DBController.find(
+      req.query,
+      req.fields,
+      req.sorting,
+      +req.pagination.skip,
+      +req.pagination.limit
+    )
       .then(events => res.status(200).json({ data: events }))
       .catch(error => res.status(404).send(error));
   })

@@ -12,8 +12,8 @@ function userMethodsFactory(userModelName) {
     return Users.find({}, fields, sorting).exec();
   };
 
-  const querySearch = (query, fields = null, sorting) => {
-    return Users.find(query, fields, sorting).exec();
+  const find = (query, fields = null, sorting = null, pagination) => {
+    return Users.find(query, fields, { ...sorting, ...pagination }).exec();
   };
 
   const getUserById = (id, fields = null) => {
@@ -140,7 +140,7 @@ function userMethodsFactory(userModelName) {
     getUserByTelegramUserId,
     postNewUser,
     getAllUsersByEventId,
-    querySearch,
+    find,
     putUserBan,
     saveNewUser,
     updateUser,
