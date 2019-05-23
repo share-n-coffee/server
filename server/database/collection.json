@@ -5,5 +5,6 @@
   "event": "event",
   "subscription": "subscription",
   "substitution": "substitution",
-  "log": "log"
+  "log": "log",
+  "project": "random-coffee"
 }
