@@ -6,7 +6,18 @@ function logMethodsFactory(logModelName) {
     return {};
   }
 
-  const Logs = LogSchema(logModelName);
+  const Log = LogSchema(logModelName);
+
+  const postNewLog = log => {
+    const newLog = new Log(log);
+
+    return new Promise((resolve, reject) => {
+      newLog.save((err, addedLog) => {
+        if (err) reject(err);
+        resolve(addedLog);
+      });
+    });
+  };
 
   // const getAllUsers = (fields = null) => {
   //   return Users.find({}, fields).exec();
@@ -22,17 +33,6 @@ function logMethodsFactory(logModelName) {
 
   // const getUserByTelegramUserId = (telegramUserId, fields = null) => {
   //   return Users.findOne({ telegramUserId }, fields).exec();
-  // };
-
-  // const postNewUser = user => {
-  //   const newUser = new Users(user);
-
-  //   return new Promise((resolve, reject) => {
-  //     newUser.save((err, addedUser) => {
-  //       if (err) reject(err);
-  //       resolve(addedUser);
-  //     });
-  //   });
   // };
 
   // const getAllUsersByEventId = id => {
@@ -134,7 +134,9 @@ function logMethodsFactory(logModelName) {
   //   return Promise.all(usersToSetStatus);
   // };
 
-  return {};
+  return {
+    postNewLog
+  };
 }
 
 module.exports = logMethodsFactory;
