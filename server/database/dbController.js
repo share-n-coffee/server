@@ -13,12 +13,12 @@ function DBController(...collectionNames) {
     'topic',
     'department',
     'event',
-    'subscriber',
+    'subscription',
     'substitution',
     'log'
   ];
   let collections;
-  if (arguments.length === 0) {
+  if (collectionNames.length === 0) {
     collections = methodNames;
   } else {
     collections = collectionNames;
@@ -47,7 +47,7 @@ function DBController(...collectionNames) {
 
   return collections.reduce((result, collection) => {
     if (typeof collection !== 'string') {
-      throw new TypeError('DBController argument should be a strind');
+      throw new TypeError('DBController argument should be a string');
     }
     if (!methodNames.includes(collection)) {
       throw SyntaxError(`arguments should be from list: ${methodNames}`);
