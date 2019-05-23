@@ -12,7 +12,7 @@ router.route('/').get(async (req, res) => {
   const DBController = new ClassDBController('user');
   const totalQuantity = (await DBController.getAllUsers()).length;
 
-  DBController.find(
+  DBController.findUsers(
     req.query,
     req.fields,
     req.sorting,
@@ -32,7 +32,7 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('user', 'department');
 
-    DBController.find({ _id: req.params.id }, req.fields, req.sorting)
+    DBController.findUsers({ _id: req.params.id }, req.fields, req.sorting)
       .then(users => {
         DBController.getDepartmentById(users[0].department)
           .then(department => {

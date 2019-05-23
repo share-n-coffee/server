@@ -12,7 +12,12 @@ function userMethodsFactory(userModelName) {
     return Users.find({}, fields, sorting).exec();
   };
 
-  const find = (query, fields = null, sorting = null, pagination) => {
+  const findUsers = (
+    query,
+    fields = null,
+    sorting = null,
+    pagination = null
+  ) => {
     return Users.find(query, fields, { ...sorting, ...pagination }).exec();
   };
 
@@ -140,7 +145,7 @@ function userMethodsFactory(userModelName) {
     getUserByTelegramUserId,
     postNewUser,
     getAllUsersByEventId,
-    find,
+    findUsers,
     putUserBan,
     saveNewUser,
     updateUser,
