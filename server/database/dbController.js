@@ -2,7 +2,7 @@ const userMethodsFactory = require('./factories/userMethodsFactory');
 const topicMethodsFactory = require('./factories/topicMethodsFactory');
 const departmentMethodsFactory = require('./factories/departmentMethodsFactory');
 const eventMethodsFactory = require('./factories/eventMethodsFactory');
-const subscriberMethodsFactory = require('./factories/subscriberMethodsFactory');
+const subscriptionMethodsFactory = require('./factories/subscriptionMethodsFactory');
 const substitutionMethodsFactory = require('./factories/substitutionMethodsFactory');
 const logMethodsFactory = require('./factories/logMethodsFactory');
 const collectionConfig = require('./collection');
@@ -24,7 +24,7 @@ function DBController(...collectionNames) {
     collections = collectionNames;
   }
 
-  const switchFactory = collectionName => {
+  const factorySwitcher = collectionName => {
     switch (collectionName) {
       case 'user':
         return userMethodsFactory(collectionConfig.user);
@@ -34,8 +34,8 @@ function DBController(...collectionNames) {
         return departmentMethodsFactory(collectionConfig.departments);
       case 'event':
         return eventMethodsFactory(collectionConfig.event);
-      case 'subscriber':
-        return subscriberMethodsFactory(collectionConfig.subscriber);
+      case 'subscription':
+        return subscriptionMethodsFactory(collectionConfig.subscription);
       case 'substitution':
         return substitutionMethodsFactory(collectionConfig.substitution);
       case 'log':
@@ -52,7 +52,7 @@ function DBController(...collectionNames) {
     if (!methodNames.includes(collection)) {
       throw SyntaxError(`arguments should be from list: ${methodNames}`);
     }
-    return Object.assign(result, switchFactory(collection));
+    return Object.assign(result, factorySwitcher(collection));
   }, {});
 }
 

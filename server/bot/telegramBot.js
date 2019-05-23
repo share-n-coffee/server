@@ -5,7 +5,7 @@ const logger = require('../logger');
 const DBController = require('../database/dbController');
 
 const bot = new TelegramBot(telegramBotToken, { polling: true });
-const controller = new DBController('randomizer', 'user');
+const controller = new DBController();
 
 // Тексты сообщений из базы данных
 const botConfig = {

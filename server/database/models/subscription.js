@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const SubscriberSchema = new Schema({
+const SubscribtionSchema = new Schema({
   // топик, на который подписан пользователь
   topicId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -10,7 +10,7 @@ const SubscriberSchema = new Schema({
     required: true
   },
   //  id подписанного пользователя
-  telegramId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -19,4 +19,4 @@ const SubscriberSchema = new Schema({
   visitsRemained: { type: Number, required: true }
 });
 
-module.exports = modelName => mongoose.model(modelName, SubscriberSchema);
+module.exports = modelName => mongoose.model(modelName, SubscribtionSchema);
