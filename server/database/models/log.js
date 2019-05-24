@@ -7,11 +7,11 @@ const LogSchema = new Schema({
     type: Number,
     required: true
   },
-  actionType: {
+  type: {
     type: String,
     required: true
   },
-  action: {
+  message: {
     type: String,
     required: true
   },

@@ -7,7 +7,35 @@ function eventMethodsFactory(modelNames) {
   }
   const Event = EventSchema(modelNames);
 
-  // методы для Рандомайзера //
+  // новые методы //
+  const addEvent = (topicID, dateTimestamp) => {
+    const newEvent = new Event({
+      topicId: topicID,
+      date: dateTimestamp
+    });
+
+    return new Promise((resolve, reject) => {
+      newEvent.save((err, addedEvent) => {
+        if (err) reject(err);
+        resolve(addedEvent);
+      });
+    });
+  };
+  const getAllEvents = () => {
+    return Event.find({}, (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+    }).exec();
+  };
+  const addParticipant = (eventID, userID) => {
+    return Event.findOneAndUpdate(
+      { _id: eventID },
+      { $push: { participants: { userId: userID } } },
+      { useFindAndModify: false, new: true }
+    );
+  };
+  // ------------ //
 
   const insertEvent = eventObj => {
     const newEvent = new Event(eventObj);
@@ -52,7 +80,10 @@ function eventMethodsFactory(modelNames) {
     removeAllEventByEventId,
     getEventById,
     insertPair,
-    removePair
+    removePair,
+    addEvent,
+    getAllEvents,
+    addParticipant
   };
 }
 

@@ -1,12 +1,11 @@
 const { createLogger, format, transports } = require('winston');
 require('winston-daily-rotate-file');
 const path = require('path');
-const logModel = require('../database/models/log');
-
-const Log = logModel('demo_log');
+const DBcontroller = require('../database/dbController');
 
 const env = process.env.NODE_ENV || 'development';
 const logDir = 'server/log';
+const controller = new DBcontroller('log');
 
 const dailyRotateFileTransport = new transports.DailyRotateFile({
   filename: `${logDir}/%DATE%-results.log`,
@@ -43,12 +42,14 @@ module.exports = {
   error(err) {
     logger.error(err);
   },
-  info(userId, actionType, action) {
-    const log = new Log({
-      userId,
-      actionType,
-      action
-    });
-    log.save().catch(error => logger.error(error));
+  info(userId, logType, logMessage) {
+    controller
+      .postNewLog({
+        userId,
+        type: logType,
+        message: logMessage,
+        timestamp: Date.now()
+      })
+      .catch(err => this.error(err));
   }
 };
