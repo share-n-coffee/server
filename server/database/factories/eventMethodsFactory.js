@@ -1,11 +1,11 @@
 const EventSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 
-function randomizerMethodsFactory(modelNames) {
+function eventMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
     return {};
   }
-  const Event = EventSchema(modelNames.event);
+  const Event = EventSchema(modelNames);
 
   // методы для Рандомайзера //
 
@@ -56,4 +56,4 @@ function randomizerMethodsFactory(modelNames) {
   };
 }
 
-module.exports = randomizerMethodsFactory;
+module.exports = eventMethodsFactory;

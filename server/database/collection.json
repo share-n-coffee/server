@@ -1,7 +1,7 @@
 {
   "user": "user",
   "topic": "topic",
-  "department": "department",
+  "departments": "department",
   "event": "event",
   "subscription": "subscription",
   "substitution": "substitution",

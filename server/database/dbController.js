@@ -34,8 +34,8 @@ function DBController(...collectionNames) {
         return departmentMethodsFactory(collectionConfig.departments);
       case 'event':
         return eventMethodsFactory(collectionConfig.event);
-      case 'subscriber':
-        return subscriptionMethodsFactory(collectionConfig.subscriber);
+      case 'subscription':
+        return subscriptionMethodsFactory(collectionConfig.subscription);
       case 'substitution':
         return substitutionMethodsFactory(collectionConfig.substitution);
       case 'log':
