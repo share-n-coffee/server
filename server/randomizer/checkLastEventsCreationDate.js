@@ -16,8 +16,6 @@ function checkLastEventsCreationDate(lastDate) {
     59,
     59
   );
-  console.log(firstDayPreviousMonth);
-  console.log(lastDayPreviousMonth);
 
   if (lastDate > firstDayPreviousMonth && lastDate < lastDayPreviousMonth) {
     return true;
