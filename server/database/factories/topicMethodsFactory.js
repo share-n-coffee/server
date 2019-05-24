@@ -73,16 +73,10 @@ function topicMethodsFactory(topicModelName) {
       }
     );
   };
-  const getLastEventsCreationDate = (topicId, timestamp) => {
-    return Topics.findOne(
-      {
-        _id: mongoose.Types.ObjectId(topicId),
-        lastEventsCreationDate: timestamp
-      },
-      err => {
-        if (err) console.log(err);
-      }
-    );
+  const getLastEventsCreationDate = topicId => {
+    return Topics.findOne({ _id: topicId }, 'lastEventsCreationDate', err => {
+      if (err) console.log(err);
+    }).exec();
   };
   // ------------------------//
   const updateTopic = (topicId, newProps) => {

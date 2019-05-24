@@ -50,7 +50,6 @@ module.exports = {
         message: logMessage,
         timestamp: Date.now()
       })
-      .then(data => console.log(data))
       .catch(err => this.error(err));
   }
 };
