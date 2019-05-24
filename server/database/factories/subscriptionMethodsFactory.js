@@ -15,11 +15,11 @@ function subscriptionMethodsFactory(subscriptionModelName) {
     });
   };
 
-  const getSubscriptionByTopicId = topicId => {
+  const getAllSubscriptionsByTopicId = topicId => {
     return Subscriptions.find({ topicId }).exec();
   };
 
-  const getSubscriptionByUserId = userId => {
+  const getAllSubscriptionsByUserId = userId => {
     return Subscriptions.find({ userId }).exec();
   };
 
@@ -44,8 +44,8 @@ function subscriptionMethodsFactory(subscriptionModelName) {
 
   return {
     createSubscription,
-    getSubscriptionByTopicId,
-    getSubscriptionByUserId,
+    getAllSubscriptionsByTopicId,
+    getAllSubscriptionsByUserId,
     getAllSubscriptions,
     removeSubscription,
     getVisitsRemainedQuantity,
