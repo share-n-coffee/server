@@ -1,32 +1,56 @@
 /* eslint-disable dot-notation */
 const mongoose = require('mongoose');
-const { MongoClient } = require('mongodb');
 const config = require('../../../server/config/config');
-const connectDatabase = require('../../../server/lib/connectDatabase');
-const ClassController = require('../../../server/database/dbController');
-// const collectionConfig = require('./collection');
+// const connectDatabase = require('../../../server/lib/connectDatabase');
+const DBController = require('../../../server/database/dbController');
+const collection = require('./../../../server/database/collection');
+const usersBackup = require('../collectionBackups/users.json');
+const usersComparison = require('../collectionBackups/usersComparison.json');
+const copyDatabaseCollection = require('./../../../server/lib/copyDatabaseCollection');
 
-const userMethods = [
-  'getAllUsers',
-  'getUserById',
-  'postNewUser',
-  'getAllUsersByEventId',
-  'querySearch',
-  'putUserBan',
-  'saveNewUser',
-  'updateUser',
-  'setEventStatus'
-];
-
-const controller = new ClassController();
+const mongoUri =
+  'mongodb://demoman:wgforge1@ds259806.mlab.com:59806/random-coffee';
+// JSON.stringify(config.database);
+const controller = new DBController('user');
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
   departmentId: undefined
 };
-connectDatabase();
 
-describe('dbController tests', () => {
+mongoose
+  .connect(
+    mongoUri,
+    {
+      useNewUrlParser: true,
+      useCreateIndex: true
+    }
+  )
+  .then(() => {
+    console.log('Database is connected');
+  })
+  .catch(error => {
+    console.log(error);
+  });
+
+// save user collection in backup file
+copyDatabaseCollection(
+  mongoUri,
+  collection.project,
+  collection.user,
+  './test/dbController/collectionBackups/users.json'
+);
+
+const updateUsersComparison = () => {
+  copyDatabaseCollection(
+    mongoUri,
+    collection.project,
+    collection.user,
+    './test/dbController/collectionBackups/usersComparison.json'
+  );
+};
+
+describe('dbController user methods tests', () => {
   it('config test', () => {
     expect(controller).toBeTruthy();
   });
@@ -36,63 +60,26 @@ describe('dbController tests', () => {
     console.log('tests done, May the Force be with you young Jedi');
   });
 
-  test('Get all Events', done => {
-    function cb(data) {
-      testData.eventId = data[0]['_id'];
-      expect(data).toHaveLength(5);
+  test('getAllUsers works', done => {
+    controller.getAllUsers().then(controllerUsers => {
+      updateUsersComparison();
+      expect(controllerUsers).toHaveLength(usersComparison.length);
       done();
-    }
-
-    controller.getAllEvents().then(events => {
-      cb(events);
     });
   });
 
-  test('Get all Users', done => {
-    function cb(controllerUsers, mongoUsersCount) {
-      testData.userTelegramId = controllerUsers[0].telegramUserId;
-      testData.userId = controllerUsers[0]['_id'];
-      expect(controllerUsers).toHaveLength(mongoUsersCount);
+  test('getUserByUserId works', done => {
+    updateUsersComparison();
+    const userComparison = usersComparison[0];
+    const userProperties = Object.keys(userComparison).filter(property => {
+      return property !== '_id';
+    });
+    const userId = userComparison['_id'];
+    controller.getUserByUserId(userId).then(controllerUser => {
+      userProperties.forEach(property => {
+        expect(controllerUser[property]).toEqual(userComparison[property]);
+      });
       done();
-    }
-
-    //  Send mongodb driver's query for comparing results
-    MongoClient.connect(
-      config.database,
-      (err, client) => {
-        client
-          .db('demoproject')
-          .collection('demo_users')
-          .find({})
-          .count((error, mongoUsersCount) => {
-            client.close();
-            controller.getAllUsers().then(controllerUsers => {
-              cb(controllerUsers, mongoUsersCount);
-            });
-          });
-      }
-    );
-  });
-
-  // test('GET User by telegram id', done => {
-  //   function cb(user) {
-  //     expect(user).toHaveProperty('username');
-  //     done();
-  //   }
-
-  //   controller.getUserById(testData.userTelegramId).then(user => {
-  //     cb(user);
-  //   });
-  // });
-
-  test('GET User by _id', done => {
-    function cb(user) {
-      expect(user).toHaveProperty('username');
-      done();
-    }
-
-    controller.getUserById(testData.userId).then(user => {
-      cb(user);
     });
   });
 });

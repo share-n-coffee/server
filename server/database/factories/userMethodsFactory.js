@@ -1,9 +1,9 @@
 const UserSchema = require('../models/user');
-const isNull = require('../../utilities/isNull');
+const isString = require('../../utilities/isString');
 
 function userMethodsFactory(userModelName) {
-  if (isNull(userModelName)) {
-    return {};
+  if (!isString(userModelName)) {
+    throw new TypeError('userModelName should be a String');
   }
 
   const Users = UserSchema(userModelName);
@@ -12,140 +12,107 @@ function userMethodsFactory(userModelName) {
     return Users.find({}, fields).exec();
   };
 
-  const querySearch = (query, fields = null) => {
-    return Users.find(query, fields).exec();
+  const getUserByUserId = (_id, fields = null) => {
+    return Users.findOne({ _id }, fields)
+      .lean()
+      .exec();
   };
 
-  const getUserById = (id, fields = null) => {
-    return Users.findOne({ _id: id }, fields).exec();
+  const getUserByTelegramId = (telegramId, fields = null) => {
+    return Users.findOne({ telegramId }, fields);
   };
 
-  const getUserByTelegramUserId = (telegramUserId, fields = null) => {
-    return Users.findOne({ telegramUserId }, fields).exec();
-  };
-
-  const postNewUser = user => {
-    const newUser = new Users(user);
-
-    return new Promise((resolve, reject) => {
-      newUser.save((err, addedUser) => {
-        if (err) reject(err);
-        resolve(addedUser);
-      });
+  const createNewUser = user => {
+    return Users.create({
+      firstName: user.first_name,
+      lastName: user.last_name,
+      telegramUserId: user.id,
+      avatar: user.photo_url,
+      username: user.username
     });
   };
 
-  const getAllUsersByEventId = id => {
-    return Users.find({ 'events.eventId': id }).exec();
-  };
-
-  const putUserBan = (user, banned) => {
+  const updateUserInfoByUserId = (_id, info) => {
     return Users.findOneAndUpdate(
-      user,
-      { $set: { banned } },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
+      { _id },
+      {
+        $set: {
+          firstName: info.first_name,
+          lastName: info.last_name,
+          avatar: info.photo_url,
+          username: info.username
+        }
+      }
     );
   };
 
-  const saveNewUser = user => {
-    return new Promise((resolve, reject) => {
-      const newUser = new Users({
-        lastName: user.last_name,
-        firstName: user.first_name,
-        telegramUserId: user.id,
-        avatar: user.photo_url,
-        username: user.username
-      });
-
-      newUser.save((err, addedUser) => {
-        if (err) reject(err);
-        resolve(addedUser);
-      });
-    });
+  const removeUserByUserId = _id => {
+    return Users.deleteOne({ _id });
   };
 
-  const updateUser = (userId, newProps) => {
-    return Users.findOneAndUpdate(
-      { _id: userId },
-      { $set: newProps },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
+  const putUserEventByUserId = (_id, eventId) => {
+    return Users.updateOne({ _id }, { events: { $push: { eventId } } });
+  };
+
+  const getAllUserEventsByUserId = _id => {
+    return Users.findOne({ _id }, { events: 1 }).exec();
+  };
+
+  const removeUserEventByUserId = (_id, eventId) => {
+    return Users.updateOne({ _id }, { $pull: { events: { eventId } } });
+  };
+
+  const removeAllUserEventsByUserId = _id => {
+    return Users.updateOne({ _id }, { $set: { events: [] } });
+  };
+
+  const setUserDepartmentByUserId = (_id, departmentId) => {
+    return Users.updateOne({ _id }, { $set: { departmentId } });
+  };
+
+  const getUserDepartmentByUserId = _id => {
+    return Users.find({ _id }, 'department').exec();
+  };
+
+  const banUserByUserId = (_id, duration) => {
+    return Users.updateOne(
+      { _id },
+      { $set: { banned: true, expired: Date.now() + duration } }
     );
   };
 
-  const updateUsersEvents = (userId, eventId, operation) => {
-    return new Promise((resolve, reject) => {
-      Users.findById(userId, (err, findedUser) => {
-        if (err) reject(err);
-
-        const user = findedUser;
-        const containEvent = user.events.some(
-          event => event.eventId.toString() === eventId
-        );
-
-        if (operation === 'add' && !containEvent) {
-          user.events.push({
-            status: 'free',
-            eventId
-          });
-        } else {
-          user.events = user.events.filter(
-            event => event.eventId.toString() !== eventId
-          );
-        }
-
-        user.save((saveErr, updatedUser) => {
-          if (saveErr) reject(saveErr);
-          resolve(updatedUser);
-        });
-      });
-    });
+  const unbanUserByUserId = _id => {
+    return Users.updateOne({ _id }, { $set: { banned: false, expired: null } });
   };
 
-  const setEventStatus = users => {
-    const telegramUserIds = [];
-    const userEventIds = [];
-    const userEventStatuses = [];
-    users.forEach(user => {
-      telegramUserIds.push(Object.keys(user)[0]);
-      const userEvents = Object.values(user)[0];
-      userEventIds.push(Object.keys(userEvents)[0]);
-      userEventStatuses.push(Object.values(userEvents)[0]);
-    });
+  const assignAdminByUserId = (_id, password) => {
+    return Users.updateOne(
+      { _id },
+      { $set: { 'admin.isAdmin': true, 'admin.password': password } }
+    );
+  };
 
-    const usersToSetStatus = users.map((user, i) => {
-      return Users.updateOne(
-        {
-          telegramUserId: telegramUserIds[i],
-          events: {
-            $elemMatch: {
-              eventId: `${userEventIds[i]}`
-            }
-          }
-        },
-        {
-          $set: {
-            'events.$.status': `${userEventStatuses[i]}`
-          }
-        }
-      ).exec();
-    });
-    return Promise.all(usersToSetStatus);
+  const dischargeAdminByUserId = _id => {
+    return Users.updateOne({ _id }, { $set: { 'admin.isAdmin': false } });
   };
 
   return {
     getAllUsers,
-    getUserById,
-    getUserByTelegramUserId,
-    postNewUser,
-    getAllUsersByEventId,
-    querySearch,
-    putUserBan,
-    saveNewUser,
-    updateUser,
-    setEventStatus,
-    updateUsersEvents
+    getUserByUserId,
+    getUserByTelegramId,
+    createNewUser,
+    updateUserInfoByUserId,
+    removeUserByUserId,
+    putUserEventByUserId,
+    getAllUserEventsByUserId,
+    removeUserEventByUserId,
+    removeAllUserEventsByUserId,
+    setUserDepartmentByUserId,
+    getUserDepartmentByUserId,
+    banUserByUserId,
+    unbanUserByUserId,
+    assignAdminByUserId,
+    dischargeAdminByUserId
   };
 }
 
