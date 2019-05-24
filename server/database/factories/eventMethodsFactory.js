@@ -21,6 +21,20 @@ function eventMethodsFactory(modelNames) {
       });
     });
   };
+  const getAllEvents = () => {
+    return Event.find({}, (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+    }).exec();
+  };
+  const addParticipant = (eventID, userID) => {
+    return Event.findOneAndUpdate(
+      { eventId: eventID },
+      { $push: { participants: { userId: userID } } },
+      { useFindAndModify: false, new: true }
+    );
+  };
   // ------------ //
 
   const insertEvent = eventObj => {
@@ -67,7 +81,9 @@ function eventMethodsFactory(modelNames) {
     getEventById,
     insertPair,
     removePair,
-    addEvent
+    addEvent,
+    getAllEvents,
+    addParticipant
   };
 }
 

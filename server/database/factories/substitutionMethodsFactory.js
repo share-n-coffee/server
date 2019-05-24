@@ -16,10 +16,10 @@ function substitutionMethodsFactory(substitutionModelName) {
     return Substitutions.deleteOne({ eventId: id });
   };
 
-  const getAllEvents = () => {
+  const getAllEventsForSubstitution = () => {
     return Substitutions.find({}).exec();
   };
-  return { createEvent, removeEvent, getAllEvents };
+  return { createEvent, removeEvent, getAllEventsForSubstitution };
 }
 
 module.exports = substitutionMethodsFactory;
