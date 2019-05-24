@@ -7,7 +7,21 @@ function eventMethodsFactory(modelNames) {
   }
   const Event = EventSchema(modelNames);
 
-  // методы для Рандомайзера //
+  // новые методы //
+  const addEvent = (topicID, dateTimestamp) => {
+    const newEvent = new Event({
+      topicId: topicID,
+      date: dateTimestamp
+    });
+
+    return new Promise((resolve, reject) => {
+      newEvent.save((err, addedEvent) => {
+        if (err) reject(err);
+        resolve(addedEvent);
+      });
+    });
+  };
+  // ------------ //
 
   const insertEvent = eventObj => {
     const newEvent = new Event(eventObj);
@@ -52,7 +66,8 @@ function eventMethodsFactory(modelNames) {
     removeAllEventByEventId,
     getEventById,
     insertPair,
-    removePair
+    removePair,
+    addEvent
   };
 }
 
