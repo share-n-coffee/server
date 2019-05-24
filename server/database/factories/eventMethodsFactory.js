@@ -21,6 +21,7 @@ function eventMethodsFactory(modelNames) {
       });
     });
   };
+
   const getAllEvents = () => {
     return Event.find({}, (err, data) => {
       if (err) {
@@ -28,6 +29,7 @@ function eventMethodsFactory(modelNames) {
       }
     }).exec();
   };
+
   const addParticipant = (eventID, userID) => {
     return Event.findOneAndUpdate(
       { _id: eventID },
@@ -35,55 +37,50 @@ function eventMethodsFactory(modelNames) {
       { useFindAndModify: false, new: true }
     );
   };
-  // ------------ //
 
-  const insertEvent = eventObj => {
-    const newEvent = new Event(eventObj);
-
-    return new Promise((resolve, reject) => {
-      newEvent.save((err, addedEvent) => {
-        if (err) reject(err);
-        resolve(addedEvent);
-      });
-      console.log(`Пары к событию ${eventObj.eventId} добавлены.`);
-    });
-  };
-
-  const removeAllEventByEventId = id => {
-    return Event.deleteOne({ eventId: id }, (err, data) =>
-      console.log(`Event c Id ${id} удален из Бд(event)`)
+  const removeParticipant = (eventID, userID) => {
+    return Event.findOneAndUpdate(
+      { _id: eventID },
+      { $pull: { participants: { userId: userID } } },
+      { useFindAndModify: false, new: true }
     );
   };
 
   const getEventById = id => {
-    return Event.findOne({ eventId: id }).exec();
+    return Event.findOne({ _id: id }).exec();
   };
-
-  const insertPair = (id, pairObject) => {
-    return Event.findOneAndUpdate(
-      { eventId: id },
-      { $push: { pairs: pairObject } },
-      { useFindAndModify: false, new: true }
-    );
+  const getDateByEventId = eventId => {
+    return Event.findOne({ _id: eventId }, 'date').exec();
   };
-
-  const removePair = (id, pairId) => {
-    return Event.findOneAndUpdate(
-      { eventId: id },
-      { $pull: { pairs: { _id: pairId } } },
-      { useFindAndModify: false, new: true }
-    );
+  const getAllUsersByEvent = eventId => {
+    return Event.findOne({ _id: eventId }, 'participants.userId').exec();
   };
+  const setUserStatusByEvent = (eventId, userID, stat) => {
+    return Event.updateOne(
+      { _id: eventId, 'participants.userId': userID },
+      { $set: { 'participants.$.status': stat } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
+  const removeEventByEventId = id => {
+    return Event.deleteOne({ _id: id }, err => {
+      if (err) console.log(err);
+    });
+  };
+  // ------------ //
 
   return {
-    insertEvent,
-    removeAllEventByEventId,
+    removeEventByEventId,
     getEventById,
-    insertPair,
-    removePair,
     addEvent,
     getAllEvents,
-    addParticipant
+    addParticipant,
+    removeParticipant,
+    getDateByEventId,
+    getAllUsersByEvent,
+    setUserStatusByEvent
   };
 }
 
