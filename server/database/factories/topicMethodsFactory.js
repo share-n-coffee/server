@@ -32,35 +32,45 @@ function topicMethodsFactory(topicModelName) {
     return Topics.updateOne(
       { _id: mongoose.Types.ObjectId(topicId) },
       { $set: { active: true } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const makeTopicInactive = topicId => {
     return Topics.updateOne(
       { _id: mongoose.Types.ObjectId(topicId) },
       { $set: { active: false } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const changeCyclicProp = (topicId, boolean) => {
     return Topics.updateOne(
       { _id: mongoose.Types.ObjectId(topicId) },
       { $set: { cyclic: boolean } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const setLastEventsCreationDate = (topicId, timestamp) => {
     return Topics.updateOne(
       { _id: mongoose.Types.ObjectId(topicId) },
       { $set: { lastEventsCreationDate: timestamp } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const updateLastEventsCreationDate = (topicId, timestamp) => {
     return Topics.updateOne(
       { _id: mongoose.Types.ObjectId(topicId) },
       { $set: { lastEventsCreationDate: timestamp } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const getLastEventsCreationDate = (topicId, timestamp) => {
@@ -69,7 +79,9 @@ function topicMethodsFactory(topicModelName) {
         _id: mongoose.Types.ObjectId(topicId),
         lastEventsCreationDate: timestamp
       },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   // ------------------------//
