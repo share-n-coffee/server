@@ -8,6 +8,18 @@ function logMethodsFactory(logModelName) {
 
   const Log = LogSchema(logModelName);
 
+  const getAllLogs = (fields = null) => {
+    return Log.find({}, fields).exec();
+  };
+
+  const getLogsByUserId = (userId, fields = null) => {
+    return Log.find({ userId }, fields).exec();
+  };
+
+  const getLogsByType = (type, fields = null) => {
+    return Log.find({ type }, fields).exec();
+  };
+
   const postNewLog = log => {
     const newLog = new Log(log);
 
@@ -18,10 +30,6 @@ function logMethodsFactory(logModelName) {
       });
     });
   };
-
-  // const getAllUsers = (fields = null) => {
-  //   return Users.find({}, fields).exec();
-  // };
 
   // const querySearch = (query, fields = null) => {
   //   return Users.find(query, fields).exec();
@@ -135,7 +143,10 @@ function logMethodsFactory(logModelName) {
   // };
 
   return {
-    postNewLog
+    postNewLog,
+    getAllLogs,
+    getLogsByUserId,
+    getLogsByType
   };
 }
 

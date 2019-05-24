@@ -46,8 +46,8 @@ module.exports = {
     controller
       .postNewLog({
         userId,
-        logType,
-        logMessage,
+        type: logType,
+        message: logMessage,
         timestamp: Date.now()
       })
       .then(data => console.log(data))
