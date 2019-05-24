@@ -63,3 +63,6 @@ typings/
 
 .idea
 .vscode
+
+# database backup files for tests
+collectionBackups/

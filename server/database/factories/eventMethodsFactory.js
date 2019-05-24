@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 const EventSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 
-function eventMethodsFactory(eventModelName) {
-  if (isNull(eventModelName)) {
+function eventMethodsFactory(modelNames) {
+  if (isNull(modelNames)) {
     return {};
   }
-  const Events = EventSchema(eventModelName);
+  const Events = EventSchema(modelNames);
 
   const getAllEvents = sorting => {
     return Events.find({}, null, sorting).exec();
@@ -21,31 +21,48 @@ function eventMethodsFactory(eventModelName) {
     }).exec();
   };
 
-  const postNewEvent = event => {
-    const newEvent = new Events(event);
+  // методы для Рандомайзера //
+  const insertEvent = eventObj => {
+    const newEvent = new Event(eventObj);
+
     return new Promise((resolve, reject) => {
       newEvent.save((err, addedEvent) => {
         if (err) reject(err);
         resolve(addedEvent);
       });
+      console.log(`Пары к событию ${eventObj.eventId} добавлены.`);
     });
   };
 
-  const updateEvent = (eventId, newProps) => {
-    return Events.findOneAndUpdate(
-      { _id: eventId },
-      { $set: newProps },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
+  const removeAllEventByEventId = id => {
+    return Event.deleteOne({ eventId: id }, (err, data) =>
+      console.log(`Event c Id ${id} удален из Бд(event)`)
+    );
+  };
+
+  const insertPair = (id, pairObject) => {
+    return Event.findOneAndUpdate(
+      { eventId: id },
+      { $push: { pairs: pairObject } },
+      { useFindAndModify: false, new: true }
+    );
+  };
+
+  const removePair = (id, pairId) => {
+    return Event.findOneAndUpdate(
+      { eventId: id },
+      { $pull: { pairs: { _id: pairId } } },
+      { useFindAndModify: false, new: true }
     );
   };
 
   return {
-    getAllEvents,
+    insertEvent,
+    removeAllEventByEventId,
     getEventById,
-    postNewEvent,
-    updateEvent,
-    find
+    find,
+    insertPair,
+    removePair
   };
 }
 

@@ -1,5 +1,3 @@
-function isNull(arg) {
+module.exports = function isNull(arg) {
   return arg === null || false;
-}
-
-module.exports = isNull;
+};

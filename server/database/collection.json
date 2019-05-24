@@ -1,7 +1,10 @@
 {
-  "users": "demo_user",
-  "events": "demo_event",
-  "departments": "demo_department",
-  "eventPairs": "demo_eventpair",
-  "eventReserve": "demo_eventreserve"
+  "user": "user",
+  "topic": "topic",
+  "departments": "department",
+  "event": "event",
+  "subscription": "subscription",
+  "substitution": "substitution",
+  "log": "log",
+  "project": "random-coffee"
 }
