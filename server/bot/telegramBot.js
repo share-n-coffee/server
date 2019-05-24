@@ -23,7 +23,7 @@ const botConfig = {
   notificationLogText: 'Пользователь успешно оповещён о событии',
   notificationErrorLogText: 'Пользователь не получил оповещение',
   userAcceptLogText: 'Пользователь принял приглашение',
-  userDeclineLogText: 'Пользователь отклоинл приглашение'
+  userDeclineLogText: 'Пользователь отклонил приглашение'
 };
 
 const getEventDescription = event => {
@@ -49,7 +49,7 @@ bot.on('callback_query', callbackQuery => {
       chat_id: chat.id,
       message_id
     })
-    .then(logger.info(chat.id, 'Notification', confirmation))
+    .then(() => logger.info(chat.id, 'Notification', confirmation))
     .catch(err => logger.error(err.response.body.description));
 });
 
