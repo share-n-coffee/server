@@ -13,11 +13,13 @@ function userMethodsFactory(userModelName) {
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields).exec();
+    return Users.findOne({ _id }, fields)
+      .lean()
+      .exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields).exec();
+    return Users.findOne({ telegramId }, fields);
   };
 
   const createNewUser = user => {

@@ -11,7 +11,6 @@ const copyDatabaseCollection = (
     mongoUri,
     (err, client) => {
       if (err !== null) throw err;
-      let mongo;
       client
         .db(databaseName)
         .collection(`${collectionName}s`)
