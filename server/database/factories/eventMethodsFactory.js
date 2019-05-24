@@ -30,7 +30,7 @@ function eventMethodsFactory(modelNames) {
   };
   const addParticipant = (eventID, userID) => {
     return Event.findOneAndUpdate(
-      { eventId: eventID },
+      { _id: eventID },
       { $push: { participants: { userId: userID } } },
       { useFindAndModify: false, new: true }
     );
