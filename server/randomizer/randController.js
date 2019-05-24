@@ -6,6 +6,7 @@ const CronJob = require('cron').CronJob;
 const checkData = require('./checkDataCorrectness');
 const addNewPairs = require('./substitution');
 const generateUpcomingDatesByTopic = require('./generateUpcomingDatesByTopic');
+const checkLastEventsCreationDate = require('./checkLastEventsCreationDate');
 
 const controller = new DBController();
 const substitutionQueue = [];
@@ -27,24 +28,29 @@ class RandController {
 
   static async generateEventsForTopics() {
     const allTopics = await controller.getAllTopics();
+
     allTopics.forEach(async topic => {
       if (topic.active === false) return;
-
       if (topic.cyclic === true) {
+        if (!checkLastEventsCreationDate(topic.lastEventsCreationDate)) return;
+        console.log('start cyclic event generating');
         const dates = generateUpcomingDatesByTopic(topic);
-        dates.forEach(date => {
-          RandController.createEvent(topic.id, date);
+        dates.forEach(async date => {
+          await controller.addEvent(topic.id, date);
         });
-        const dateOfEventsСreation = new Date();
-        await controller.updateLastEventsCreatingDate(); // сделать метод, если нет еще
       } else {
-        RandController.createEvent(topic.id, topic.date);
+        if (topic.lastEventsCreationDate) return;
+        console.log('start simple event generating');
+        await controller.addEvent(topic.id, topic.singleDate);
       }
+      const dateOfEventsСreation = +new Date();
+      await controller.updateLastEventsCreationDate(
+        topic.id,
+        dateOfEventsСreation
+      );
     });
-  }
 
-  static async createEvent(topicId, date) {
-    // создает событие как объект новой коллекции и добавляет в базу
+    console.log('all topics checked and possible events created');
   }
 
   static makeSubstitution(eventId) {
@@ -64,28 +70,8 @@ const substitution = new CronJob('*/30 * * * * *', () => {
 
 substitution.start();
 
-const eventsGenerator = new CronJob('*/30 * * * * *', () => {
+const eventsGenerator = new CronJob('*/15 * * * * *', () => {
   RandController.generateEventsForTopics();
 });
 
 eventsGenerator.start();
-
-// тестируем работу генерации дат
-/*
-const dates = generateUpcomingDatesByTopic({
-  _id: '5cd6f6c381371d297acb2fe0',
-  active: true,
-  title: 'Furnitech',
-  description:
-    'Irure tempor qui tempor id mollit aliquip pariatur est nisi. Exercitation consequat eiusmod non Lorem nisi. Pariatur aute excepteur laborum cupidatat sint fugiat. Reprehenderit do laborum Lorem tempor dolore. Dolore eiusmod qui duis enim ut ex.',
-  location: ['53.886666', '27.53039'],
-  address: '594 Neptune Court, Rehrersburg, Tennessee',
-  cyclic: true,
-  weekDay: 3,
-  time: '11:45',
-  created: 1558161349720,
-  lastEventsCreationDate: 1560624944000
-});
-
-console.log(dates);
-*/
