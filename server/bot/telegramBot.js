@@ -19,7 +19,11 @@ const botConfig = {
   acceptText: 'Я иду!😋',
   declineText: 'Не в этот раз 😞',
   acceptReply: 'Очень круто 😉 , что ты подтвердил, не опаздывай!',
-  declineReply: 'Очень жаль, что ты отклонил☹, увидимся в другой раз!'
+  declineReply: 'Очень жаль, что ты отклонил☹, увидимся в другой раз!',
+  notificationLogText: 'Пользователь успешно оповещён о событии',
+  notificationErrorLogText: 'Пользователь не получил оповещение',
+  userAcceptLogText: 'Пользователь принял приглашение',
+  userDeclineLogText: 'Пользователь отклоинл приглашение'
 };
 
 const getEventDescription = event => {
@@ -30,11 +34,14 @@ const getEventDescription = event => {
 bot.on('callback_query', callbackQuery => {
   const { text, chat, message_id } = callbackQuery.message;
   let updatedMessage = `${text}${'\n\n\n'}`;
+  let confirmation;
 
   if (callbackQuery.data === 'accept') {
     updatedMessage += `${botConfig.acceptReply}`;
+    confirmation = botConfig.userAcceptLogText;
   } else {
     updatedMessage += `${botConfig.declineReply}`;
+    confirmation = botConfig.userDeclineLogText;
   }
 
   bot
@@ -42,6 +49,7 @@ bot.on('callback_query', callbackQuery => {
       chat_id: chat.id,
       message_id
     })
+    .then(logger.info(chat.id, 'Notification', confirmation))
     .catch(err => logger.error(err.response.body.description));
 });
 
@@ -93,13 +101,22 @@ module.exports = {
 
     bot
       .sendMessage(telegramUserId, message, replyObj)
-      .then(data => {
-        console.log(
-          `Пользователь ${data.chat.first_name} ${data.chat.last_name} c id 
-          ${data.chat.id} оповещен в Telegram ${data.date.toString()}`
+      .then(() =>
+        logger.info(
+          telegramUserId,
+          'Notification',
+          botConfig.notificationLogText
+        )
+      )
+      .catch(err => {
+        logger.info(
+          telegramUserId,
+          'Notification',
+          `${botConfig.notificationErrorLogText}.
+          ${err.response.body.description}`
         );
-      })
-      .catch(err => logger.error(err.response.body.description));
+        logger.error(err.response.body.description);
+      });
   },
   mailing(eventId) {
     controller
