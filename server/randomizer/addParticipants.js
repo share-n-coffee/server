@@ -73,7 +73,7 @@ async function addParticipants(event, usersLimit = 2) {
 
     await controller.putUserEventByUserId(balancedUser.id, event.id);
   }
-  bot.mailing(event.id);
+  // bot.mailing(event.id);
   console.log(
     `participants for topic ${event.topicId} for event ${
       event.id
