@@ -8,16 +8,23 @@ function userMethodsFactory(userModelName) {
 
   const Users = UserSchema(userModelName);
 
-  const findUsers = (
-    query,
-    fields = null,
-    sorting = null,
-    skip = 0,
-    limit = 0
-  ) => Users.find(query, fields, { ...sorting, skip, limit }).exec();
+  const findUsers = req =>
+    Users.find(req.query, req.fields || '-admin.password', { ...req.sorting });
 
   const findOneUser = (query, fields = null) =>
     Users.findOne(query, fields).exec();
+
+  const updateUser = (id, newProps) => {
+    return Users.findOneAndUpdate(
+      { _id: id },
+      { $set: newProps },
+      {
+        upsert: true,
+        new: true,
+        fields: '-admin.password'
+      }
+    );
+  };
 
   const getAllUsers = (fields = null, sorting) => {
     return Users.find({}, fields, sorting).exec();
@@ -136,7 +143,8 @@ function userMethodsFactory(userModelName) {
     unbanUserByUserId,
     assignAdminByUserId,
     dischargeAdminByUserId,
-    findOneUser
+    findOneUser,
+    updateUser
   };
 }
 

@@ -10,21 +10,10 @@ const router = express.Router();
 
 router.route('/').get(async (req, res) => {
   const DBController = new ClassDBController('user');
-  const totalQuantity = (await DBController.getAllUsers()).length;
 
-  DBController.findUsers(
-    req.query,
-    req.fields,
-    req.sorting,
-    generatePagination(req, totalQuantity)
-  )
-    .then(results => {
-      return res
-        .status(200)
-        .json({ data: results, pagination: req.pagination.pages });
-      // return res.status(200).json({ pagination });
-    })
-    .catch(error => res.status(404));
+  DBController.findUsers(req)
+    .then(users => res.status(200).json({ data: users }))
+    .catch(error => res.status(404).send(error));
 });
 
 router
@@ -59,18 +48,19 @@ router
       }
     }
 
-    if (req.body.eventId) {
-      if (ObjectId.isValid(req.body.eventId)) {
-        DBController.updateUsersEvents(req.params.id, req.body.eventId, 'add')
-          .then(user => res.status(200).json({ data: user }))
-          .catch(error => res.status(404).send(error));
-      } else {
-        res.status(404).send("New Event's _id is not valid ObjectId!");
-      }
-    }
+    // if (req.body.eventId) {
+    //   if (ObjectId.isValid(req.body.eventId)) {
+    //     DBController.updateUsersEvents(req.params.id, req.body.eventId, 'add')
+    //       .then(user => res.status(200).json({ data: user }))
+    //       .catch(error => res.status(404).send(error));
+    //   } else {
+    //     res.status(404).send("New Event's _id is not valid ObjectId!");
+    //   }
+    // }
 
+    console.log(req.user);
     if (req.body.admin) {
-      if (!req.user.admin.isAdmin) {
+      if (!req.user.permission) {
         res.status(403).json({
           errors: [{ msg: 'Forbidden – Access denied' }]
         });
@@ -91,21 +81,20 @@ router
     }
   })
   .delete((req, res) => {
-    const DBController = new ClassDBController('user');
-
-    if (req.body.eventId) {
-      if (ObjectId.isValid(req.body.eventId)) {
-        DBController.updateUsersEvents(
-          req.params.id,
-          req.body.eventId,
-          'remove'
-        )
-          .then(user => res.status(200).json({ data: user }))
-          .catch(error => res.status(404).send(error));
-      } else {
-        res.status(404).send("New Event's _id is not valid ObjectId!");
-      }
-    }
+    // const DBController = new ClassDBController('user');
+    // if (req.body.eventId) {
+    //   if (ObjectId.isValid(req.body.eventId)) {
+    //     DBController.updateUsersEvents(
+    //       req.params.id,
+    //       req.body.eventId,
+    //       'remove'
+    //     )
+    //       .then(user => res.status(200).json({ data: user }))
+    //       .catch(error => res.status(404).send(error));
+    //   } else {
+    //     res.status(404).send("New Event's _id is not valid ObjectId!");
+    //   }
+    // }
   });
 
 router.route('/ban/:id', objectIdValidation).put(adminAuth, (req, res) => {
@@ -116,9 +105,11 @@ router.route('/ban/:id', objectIdValidation).put(adminAuth, (req, res) => {
     const DBController = new ClassDBController('user');
     const userQuery = { _id: searchId };
 
-    DBController.putUserBan(userQuery, {
-      expired: ban.status ? 4102389828505 : 0,
-      ...ban
+    DBController.updateUser(userQuery, {
+      banned: {
+        expired: ban.status ? 4102389828505 : 0,
+        ...ban
+      }
     })
       .then(user => res.status(200).json({ data: user }))
       .catch(error => res.status(404).send(error));

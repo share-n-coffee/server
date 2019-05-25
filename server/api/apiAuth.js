@@ -28,13 +28,12 @@ function createPayload(user, department) {
 
 router.route('/').post((req, res) => {
   const reqUser = req.body;
-  const usersController = new ClassDBController('user');
+  const DBController = new ClassDBController('user', 'department');
 
-  usersController.getUserByTelegramId(reqUser.id).then(async takenUser => {
-    const user = takenUser || (await usersController.createNewUser(reqUser));
+  DBController.getUserByTelegramId(reqUser.id).then(async takenUser => {
+    const user = takenUser || (await DBController.createNewUser(reqUser));
 
-    const departmentController = new ClassDBController('department');
-    const department = await departmentController.findOneDepartment(
+    const department = await DBController.findOneDepartment(
       {
         _id: user.department
       },
@@ -48,8 +47,8 @@ router.route('/').post((req, res) => {
 router.route('/admin').post(async (req, res) => {
   const { username, password } = req.body;
 
-  const usersController = new ClassDBController('user');
-  const user = await usersController.findOneUser({
+  const DBController = new ClassDBController('user', 'department');
+  const user = await DBController.findOneUser({
     username
   });
 
@@ -70,8 +69,7 @@ router.route('/admin').post(async (req, res) => {
     });
   }
 
-  const departmentController = new ClassDBController('department');
-  const department = await departmentController.findOneDepartment(
+  const department = await DBController.findOneDepartment(
     {
       _id: user.department
     },
