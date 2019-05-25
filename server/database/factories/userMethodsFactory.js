@@ -54,7 +54,11 @@ function userMethodsFactory(userModelName) {
   };
 
   const putUserEventByUserId = (_id, eventId) => {
-    return Users.updateOne({ _id }, { events: { $push: { eventId } } });
+    return Users.updateOne(
+      { _id },
+      { events: { $push: { eventId } } },
+      { upsert: true }
+    );
   };
 
   const getAllUserEventsByUserId = _id => {
