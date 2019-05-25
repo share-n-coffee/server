@@ -23,7 +23,7 @@ function eventMethodsFactory(modelNames) {
 
   // новые методы //
   const addEvent = (topicID, dateTimestamp) => {
-    const newEvent = new Event({
+    const newEvent = new EventSchema({
       topicId: topicID,
       date: dateTimestamp
     });
