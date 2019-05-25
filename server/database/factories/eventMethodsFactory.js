@@ -21,48 +21,79 @@ function eventMethodsFactory(modelNames) {
     }).exec();
   };
 
-  // методы для Рандомайзера //
-  const insertEvent = eventObj => {
-    const newEvent = new Event(eventObj);
+  // новые методы //
+  const addEvent = (topicID, dateTimestamp) => {
+    const newEvent = new Event({
+      topicId: topicID,
+      date: dateTimestamp
+    });
 
     return new Promise((resolve, reject) => {
       newEvent.save((err, addedEvent) => {
         if (err) reject(err);
         resolve(addedEvent);
       });
-      console.log(`Пары к событию ${eventObj.eventId} добавлены.`);
     });
   };
 
-  const removeAllEventByEventId = id => {
-    return Event.deleteOne({ eventId: id }, (err, data) =>
-      console.log(`Event c Id ${id} удален из Бд(event)`)
-    );
-  };
-
-  const insertPair = (id, pairObject) => {
+  const addParticipant = (eventID, userID) => {
     return Event.findOneAndUpdate(
-      { eventId: id },
-      { $push: { pairs: pairObject } },
+      { _id: eventID },
+      { $push: { participants: { userId: userID } } },
       { useFindAndModify: false, new: true }
     );
   };
 
-  const removePair = (id, pairId) => {
+  const removeParticipant = (eventID, userID) => {
     return Event.findOneAndUpdate(
-      { eventId: id },
-      { $pull: { pairs: { _id: pairId } } },
+      { _id: eventID },
+      { $pull: { participants: { userId: userID } } },
       { useFindAndModify: false, new: true }
     );
   };
+
+  const getDateByEventId = eventId => {
+    return Event.findOne({ _id: eventId }, 'date').exec();
+  };
+  const getAllUsersByEvent = eventId => {
+    return Event.findOne(
+      { _id: eventId },
+      { 'participants.userId': true, _id: false }
+    ).exec();
+  };
+  const setUserStatusByEvent = (eventId, userID, stat) => {
+    return Event.updateOne(
+      { _id: eventId, 'participants.userId': userID },
+      { $set: { 'participants.$.status': stat } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
+  const removeEventByEventId = id => {
+    return Event.deleteOne({ _id: id }, err => {
+      if (err) console.log(err);
+    });
+  };
+  const getEventsByTopicId = topicID => {
+    return Event.find({ topicId: topicID }, err => {
+      if (err) console.log(err);
+    }).exec();
+  };
+  // ------------ //
 
   return {
-    insertEvent,
-    removeAllEventByEventId,
+    getEventsByTopicId,
+    removeEventByEventId,
     getEventById,
     find,
-    insertPair,
-    removePair
+    addEvent,
+    getAllEvents,
+    addParticipant,
+    removeParticipant,
+    getDateByEventId,
+    getAllUsersByEvent,
+    setUserStatusByEvent
   };
 }
 

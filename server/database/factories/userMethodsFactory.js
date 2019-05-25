@@ -22,23 +22,26 @@ function userMethodsFactory(userModelName) {
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields)
-      .lean()
-      .exec();
+    return Users.findOne({ _id }, fields).exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields);
+    return Users.findOne({ telegramId }, fields).exec();
   };
 
   const createNewUser = user => {
-    return Users.create({
+    const newUser = {
       firstName: user.first_name,
       lastName: user.last_name,
-      telegramUserId: user.id,
+      telegramId: user.id,
       avatar: user.photo_url,
       username: user.username
-    });
+    };
+    return Users.findOneAndUpdate(
+      { telegramId: newUser.telegramId },
+      { $set: newUser },
+      { upsert: true }
+    );
   };
 
   const updateUserInfoByUserId = (_id, info) => {
@@ -64,7 +67,11 @@ function userMethodsFactory(userModelName) {
   };
 
   const putUserEventByUserId = (_id, eventId) => {
-    return Users.updateOne({ _id }, { events: { $push: { eventId } } });
+    return Users.updateOne(
+      { _id },
+      { events: { $push: { eventId } } },
+      { upsert: true }
+    );
   };
 
   const getAllUserEventsByUserId = _id => {

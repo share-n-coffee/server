@@ -6,7 +6,8 @@ const DBController = require('../../../server/database/dbController');
 const collection = require('./../../../server/database/collection');
 // eslint-disable-next-line import/no-unresolved
 const usersComparison = require('../collectionBackups/usersComparison.json');
-const copyDatabaseCollection = require('./../../../server/lib/copyDatabaseCollection');
+const copyDatabaseCollection = require('../lib/copyDatabaseCollection');
+const cloneObject = require('./../lib/cloneObject');
 
 const mongoUri =
   'mongodb://demoman:wgforge1@ds259806.mlab.com:59806/random-coffee';
@@ -71,15 +72,64 @@ describe('dbController user methods tests', () => {
   test('getUserByUserId works', done => {
     updateUsersComparison();
     const userComparison = usersComparison[0];
-    const userProperties = Object.keys(userComparison).filter(property => {
-      return property !== '_id';
-    });
     const userId = userComparison['_id'];
     controller.getUserByUserId(userId).then(controllerUser => {
-      userProperties.forEach(property => {
-        expect(controllerUser[property]).toEqual(userComparison[property]);
-      });
+      expect(cloneObject(controllerUser)).toEqual(userComparison);
       done();
+    });
+  });
+
+  test('getUserByTelegramId works', done => {
+    updateUsersComparison();
+    const userComparison = usersComparison[5];
+    const { telegramId } = userComparison;
+    controller.getUserByTelegramId(telegramId).then(controllerUser => {
+      expect(cloneObject(controllerUser)).toEqual(userComparison);
+      done();
+    });
+  });
+
+  const newUser = {
+    first_name: 'Petro',
+    last_name: 'Poroshenko',
+    id: 9876543210,
+    photo_url: 'http://www.cnn.com',
+    username: 'petka'
+  };
+
+  test('createNewUser works', done => {
+    const mongoPropertyNames = {
+      first_name: 'firstName',
+      last_name: 'lastName',
+      id: 'telegramId',
+      photo_url: 'avatar',
+      username: 'username'
+    };
+    const userProps = Object.keys(newUser);
+    controller.createNewUser(newUser).then(user => {
+      const newMongoUser = cloneObject(user);
+      userProps.forEach(property => {
+        const mongoProperty = mongoPropertyNames[property];
+        expect(newMongoUser[mongoProperty]).toEqual(newUser[property]);
+        done();
+      });
+    });
+  });
+
+  updateUsersComparison();
+  test('putUserEventByUserId works', done => {
+    const { eventId } = usersComparison[0].events[0];
+    controller.putUserEventByUserId(eventId).then(controllerEvent => {
+      console.log('NEW EVENT ADDED>>>> ', cloneObject(controllerEvent));
+    });
+    done();
+  });
+
+  test('getAllUserEventsByUserId works', done => {
+    const lastUser = usersComparison[usersComparison.length - 1];
+    const lastUserId = lastUser['_id'];
+    controller.getAllUserEventsByUserId(lastUserId).then(controllerEvents => {
+      console.log('EVENTS>>>>>> ', controllerEvents);
     });
   });
 });

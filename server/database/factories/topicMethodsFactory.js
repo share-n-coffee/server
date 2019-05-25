@@ -28,40 +28,55 @@ function topicMethodsFactory(topicModelName) {
     });
   };
   // новые методы //
-  const makeActiveTopic = topicId => {
-    return Topics.update({ _id: topicId }, { $set: { active: true } }, err =>
-      console.log(err)
+  const makeTopicActive = topicId => {
+    return Topics.updateOne(
+      { _id: mongoose.Types.ObjectId(topicId) },
+      { $set: { active: true } },
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
-  const unActiveTopic = topicId => {
-    return Topics.update({ _id: topicId }, { $set: { active: false } }, err =>
-      console.log(err)
+  const makeTopicInactive = topicId => {
+    return Topics.updateOne(
+      { _id: mongoose.Types.ObjectId(topicId) },
+      { $set: { active: false } },
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const changeCyclicProp = (topicId, boolean) => {
-    return Topics.update({ _id: topicId }, { $set: { cyclic: boolean } }, err =>
-      console.log(err)
+    return Topics.updateOne(
+      { _id: mongoose.Types.ObjectId(topicId) },
+      { $set: { cyclic: boolean } },
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const setLastEventsCreationDate = (topicId, timestamp) => {
-    return Topics.update(
-      { _id: topicId },
+    return Topics.updateOne(
+      { _id: mongoose.Types.ObjectId(topicId) },
       { $set: { lastEventsCreationDate: timestamp } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
   const updateLastEventsCreationDate = (topicId, timestamp) => {
-    return Topics.update(
-      { _id: topicId },
+    return Topics.updateOne(
+      { _id: mongoose.Types.ObjectId(topicId) },
       { $set: { lastEventsCreationDate: timestamp } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
-  const getLastEventsCreationDate = (topicId, timestamp) => {
-    return Topics.findOne(
-      { _id: topicId, lastEventsCreationDate: timestamp },
-      err => console.log(err)
-    );
+  const getLastEventsCreationDate = topicId => {
+    return Topics.findOne({ _id: topicId }, 'lastEventsCreationDate', err => {
+      if (err) console.log(err);
+    }).exec();
   };
   // ------------------------//
   const updateTopic = (topicId, newProps) => {
@@ -78,8 +93,8 @@ function topicMethodsFactory(topicModelName) {
     getTopicById,
     postNewTopic,
     updateTopic,
-    makeActiveTopic,
-    unActiveTopic,
+    makeTopicActive,
+    makeTopicInactive,
     changeCyclicProp,
     setLastEventsCreationDate,
     updateLastEventsCreationDate,

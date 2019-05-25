@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
 const logger = require('../logger');
@@ -19,7 +20,11 @@ const botConfig = {
   acceptText: 'Я иду!😋',
   declineText: 'Не в этот раз 😞',
   acceptReply: 'Очень круто 😉 , что ты подтвердил, не опаздывай!',
-  declineReply: 'Очень жаль, что ты отклонил☹, увидимся в другой раз!'
+  declineReply: 'Очень жаль, что ты отклонил☹, увидимся в другой раз!',
+  notificationLogText: 'Пользователь успешно оповещён о событии',
+  notificationErrorLogText: 'Пользователь не получил оповещение',
+  userAcceptLogText: 'Пользователь принял приглашение на событие',
+  userDeclineLogText: 'Пользователь отклонил приглашение на событие'
 };
 
 const getEventDescription = event => {
@@ -29,12 +34,18 @@ const getEventDescription = event => {
 // Реагируем на ответы пользователя
 bot.on('callback_query', callbackQuery => {
   const { text, chat, message_id } = callbackQuery.message;
+  // парсим строку с ответом от пользователя
+  const replyStatus = callbackQuery.data.slice(0, 4);
+  const eventId = callbackQuery.data.slice(4);
   let updatedMessage = `${text}${'\n\n\n'}`;
+  let replyText;
 
-  if (callbackQuery.data === 'accept') {
+  if (replyStatus === 'acpt') {
     updatedMessage += `${botConfig.acceptReply}`;
+    replyText = botConfig.userAcceptLogText;
   } else {
     updatedMessage += `${botConfig.declineReply}`;
+    replyText = botConfig.userDeclineLogText;
   }
 
   bot
@@ -42,12 +53,13 @@ bot.on('callback_query', callbackQuery => {
       chat_id: chat.id,
       message_id
     })
+    .then(() => logger.info(chat.id, 'Notification', `${replyText} ${eventId}`))
     .catch(err => logger.error(err.response.body.description));
 });
 
 module.exports = {
   notify(notifyType, user, event) {
-    const { firstName, telegramUserId } = user;
+    const { firstName, telegramId } = user;
     let message = `Привет, ${firstName}😉!${'\n'}`;
     let replyObj;
     switch (notifyType) {
@@ -71,8 +83,14 @@ module.exports = {
             reply_markup: {
               inline_keyboard: [
                 [
-                  { text: botConfig.acceptText, callback_data: 'accept' },
-                  { text: botConfig.declineText, callback_data: 'decline' }
+                  {
+                    text: botConfig.acceptText,
+                    callback_data: `acpt${event.id}` // передаем статус ответа вместе с eventId в строке
+                  },
+                  {
+                    text: botConfig.declineText,
+                    callback_data: `dcln${event.id}`
+                  }
                 ]
               ]
             }
@@ -92,32 +110,40 @@ module.exports = {
     }
 
     bot
-      .sendMessage(telegramUserId, message, replyObj)
-      .then(data => {
-        console.log(
-          `Пользователь ${data.chat.first_name} ${data.chat.last_name} c id 
-          ${data.chat.id} оповещен в Telegram ${data.date.toString()}`
+      .sendMessage(telegramId, message, replyObj)
+      .then(() =>
+        logger.info(
+          telegramId,
+          'Notification',
+          `${botConfig.notificationLogText} ${event.id}`
+        )
+      )
+      .catch(err => {
+        logger.info(
+          telegramId,
+          'Notification',
+          `${botConfig.notificationErrorLogText}.
+          ${err.response.body.description}`
         );
-      })
-      .catch(err => logger.error(err.response.body.description));
+        logger.error(err.response.body.description);
+      });
   },
   mailing(eventId) {
     controller
-      .getEventPairsById(eventId)
-      .then(eventPair => {
-        eventPair.pairs.forEach(pair => {
-          const { invitedUser1, invitedUser2, event } = pair;
-
+      .getEventById(eventId)
+      .then(data => {
+        data.participants.forEach(user => {
           controller
-            .getUserByTelegramUserId(invitedUser1)
-            .then(user => this.notify('invite', user, event))
-            .catch(error => logger.error(error));
-          controller
-            .getUserByTelegramUserId(invitedUser2)
-            .then(user => this.notify('invite', user, event))
-            .catch(error => logger.error(error));
+            .getUserByUserId(user.userId)
+            .then(userData => {
+              this.notify('invite', userData, {
+                title: 'SOME TITLE',
+                description: 'Some description'
+              });
+            })
+            .catch(err => console.log(err));
         });
       })
-      .catch(error => logger.error(error));
+      .catch(err => logger.error(err));
   }
 };
