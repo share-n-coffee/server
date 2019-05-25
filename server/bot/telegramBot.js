@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
 const logger = require('../logger');
@@ -22,8 +23,8 @@ const botConfig = {
   declineReply: 'Очень жаль, что ты отклонил☹, увидимся в другой раз!',
   notificationLogText: 'Пользователь успешно оповещён о событии',
   notificationErrorLogText: 'Пользователь не получил оповещение',
-  userAcceptLogText: 'Пользователь принял приглашение',
-  userDeclineLogText: 'Пользователь отклонил приглашение'
+  userAcceptLogText: 'Пользователь принял приглашение на событие',
+  userDeclineLogText: 'Пользователь отклонил приглашение на событие'
 };
 
 const getEventDescription = event => {
@@ -33,15 +34,18 @@ const getEventDescription = event => {
 // Реагируем на ответы пользователя
 bot.on('callback_query', callbackQuery => {
   const { text, chat, message_id } = callbackQuery.message;
+  // парсим строку с ответом от пользователя
+  const replyStatus = callbackQuery.data.slice(0, 4);
+  const eventId = callbackQuery.data.slice(4);
   let updatedMessage = `${text}${'\n\n\n'}`;
-  let confirmation;
+  let replyText;
 
-  if (callbackQuery.data === 'accept') {
+  if (replyStatus === 'acpt') {
     updatedMessage += `${botConfig.acceptReply}`;
-    confirmation = botConfig.userAcceptLogText;
+    replyText = botConfig.userAcceptLogText;
   } else {
     updatedMessage += `${botConfig.declineReply}`;
-    confirmation = botConfig.userDeclineLogText;
+    replyText = botConfig.userDeclineLogText;
   }
 
   bot
@@ -49,7 +53,7 @@ bot.on('callback_query', callbackQuery => {
       chat_id: chat.id,
       message_id
     })
-    .then(() => logger.info(chat.id, 'Notification', confirmation))
+    .then(() => logger.info(chat.id, 'Notification', `${replyText} ${eventId}`))
     .catch(err => logger.error(err.response.body.description));
 });
 
@@ -79,8 +83,14 @@ module.exports = {
             reply_markup: {
               inline_keyboard: [
                 [
-                  { text: botConfig.acceptText, callback_data: 'accept' },
-                  { text: botConfig.declineText, callback_data: 'decline' }
+                  {
+                    text: botConfig.acceptText,
+                    callback_data: `acpt${event.id}` // передаем статус ответа вместе с eventId в строке
+                  },
+                  {
+                    text: botConfig.declineText,
+                    callback_data: `dcln${event.id}`
+                  }
                 ]
               ]
             }
@@ -105,7 +115,7 @@ module.exports = {
         logger.info(
           telegramUserId,
           'Notification',
-          botConfig.notificationLogText
+          `${botConfig.notificationLogText} ${event.id}`
         )
       )
       .catch(err => {
