@@ -8,7 +8,7 @@ const topicQuery =
     title: process.argv[2]
   } || {};
 const visits = process.argv[3] || 1;
-const userQuery = process.argv[4] || {};
+const userQuantity = process.argv[4] || 1;
 
 async function subscribe() {
   try {
@@ -24,7 +24,7 @@ async function subscribe() {
     const subscriptions = await db.collection('subscriptions');
 
     const currentTopic = await topics.findOne(topicQuery);
-    const currentUsers = await users.find(userQuery);
+    const currentUsers = await users.find({}).limit(userQuantity);
 
     const usersArray = await currentUsers.toArray();
 
@@ -87,6 +87,5 @@ async function showTopics() {
 if (process.argv[2] === undefined) {
   showTopics();
 } else {
-  console.log(userQuery);
   subscribe();
 }
