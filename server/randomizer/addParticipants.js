@@ -17,6 +17,8 @@ async function addParticipants(event, usersLimit = 2) {
     return subscriber.visitsRemained !== 0;
   });
 
+  if (availableSubscribers.length < usersLimit) return;
+
   const availableUsersAmount = availableSubscribers.length;
   const availableUsers = [];
   const balancedUsers = [];

@@ -54,7 +54,15 @@ class RandController {
   static async randomizer() {
     const allEvents = await controller.getAllEvents();
     for (const event of allEvents) {
+      await RandController.removePastEvents(event);
       await addParticipants(event);
+    }
+  }
+
+  static async removePastEvents(event) {
+    const currentDate = new Date();
+    if (currentDate > event.date) {
+      await controller.removeEventByEventId(event.id);
     }
   }
 
