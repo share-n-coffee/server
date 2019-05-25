@@ -1,12 +1,13 @@
-/* eslint-disable import/order */
-const DBController = require('../database/dbController');
-// eslint-disable-next-line import/order
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 // eslint-disable-next-line prefer-destructuring
 const CronJob = require('cron').CronJob;
+const DBController = require('../database/dbController');
 const checkData = require('./checkDataCorrectness');
 const addNewPairs = require('./substitution');
 const generateUpcomingDatesByTopic = require('./generateUpcomingDatesByTopic');
 const checkLastEventsCreationDate = require('./checkLastEventsCreationDate');
+const addParticipants = require('./addParticipants');
 
 const controller = new DBController();
 const substitutionQueue = [];
@@ -29,28 +30,32 @@ class RandController {
   static async generateEventsForTopics() {
     const allTopics = await controller.getAllTopics();
 
-    allTopics.forEach(async topic => {
+    allTopics.forEach(topic => {
       if (topic.active === false) return;
       if (topic.cyclic === true) {
         if (!checkLastEventsCreationDate(topic.lastEventsCreationDate)) return;
         console.log('start cyclic event generating');
         const dates = generateUpcomingDatesByTopic(topic);
-        dates.forEach(async date => {
-          await controller.addEvent(topic.id, date);
+        dates.forEach(date => {
+          controller.addEvent(topic.id, date);
         });
       } else {
         if (topic.lastEventsCreationDate) return;
         console.log('start simple event generating');
-        await controller.addEvent(topic.id, topic.singleDate);
+        controller.addEvent(topic.id, topic.singleDate);
       }
       const dateOfEventsСreation = +new Date();
-      await controller.updateLastEventsCreationDate(
-        topic.id,
-        dateOfEventsСreation
-      );
+      controller.updateLastEventsCreationDate(topic.id, dateOfEventsСreation);
     });
 
     console.log('all topics checked and possible events created');
+  }
+
+  static async randomizer() {
+    const allEvents = await controller.getAllEvents();
+    for (const event of allEvents) {
+      await addParticipants(event);
+    }
   }
 
   static makeSubstitution(eventId) {
@@ -75,3 +80,9 @@ const eventsGenerator = new CronJob('*/15 * * * * *', () => {
 });
 
 eventsGenerator.start();
+
+const randomizer = new CronJob('*/10 * * * * *', () => {
+  RandController.randomizer();
+});
+
+randomizer.start();
