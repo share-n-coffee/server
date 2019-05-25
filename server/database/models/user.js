@@ -47,7 +47,7 @@ const UserSchema = new Schema({
     {
       eventId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Topic',
+        ref: 'Event',
         required: false
       }
     }
@@ -69,7 +69,7 @@ const UserSchema = new Schema({
     //  Админский флаг: 0 - просто юзер, 1 - админ, 2 - супер админ
     permission: {
       type: Number,
-      required: true,
+      required: false,
       default: 0
     },
     //  Админский пароль для входа в систему, если к админу не привязан телеграм
