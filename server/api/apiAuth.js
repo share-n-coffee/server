@@ -34,7 +34,7 @@ router.route('/').post((req, res) => {
     const user = takenUser || (await usersController.createNewUser(reqUser));
 
     const departmentController = new ClassDBController('department');
-    const department = await departmentController.findOne(
+    const department = await departmentController.findOneDepartment(
       {
         _id: user.department
       },
@@ -49,7 +49,7 @@ router.route('/admin').post(async (req, res) => {
   const { username, password } = req.body;
 
   const usersController = new ClassDBController('user');
-  const user = await usersController.findOne({
+  const user = await usersController.findOneUser({
     username
   });
 
@@ -71,7 +71,7 @@ router.route('/admin').post(async (req, res) => {
   }
 
   const departmentController = new ClassDBController('department');
-  const department = await departmentController.findOne(
+  const department = await departmentController.findOneDepartment(
     {
       _id: user.department
     },

@@ -10,7 +10,7 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('department');
 
-    DBController.find(
+    DBController.findDepartments(
       req.query,
       req.fields,
       req.sorting,
@@ -39,7 +39,7 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('department');
 
-    DBController.getDepartmentById(req.params.id)
+    DBController.findOneDepartment({ _id: req.params.id })
       .then(department => res.status(200).json({ data: department }))
       .catch(error => res.status(404).send(error));
   })

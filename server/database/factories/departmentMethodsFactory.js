@@ -8,10 +8,15 @@ function departmentMethodsFactory(departmentModelName) {
   }
   const Departments = DepartmentSchema(departmentModelName);
 
-  const find = (query, fields = null, sorting = null, skip = 0, limit = 0) =>
-    Departments.find(query, fields, { ...sorting, skip, limit }).exec();
+  const findDepartments = (
+    query,
+    fields = null,
+    sorting = null,
+    skip = 0,
+    limit = 0
+  ) => Departments.find(query, fields, { ...sorting, skip, limit }).exec();
 
-  const findOne = (query, fields = null) =>
+  const findOneDepartment = (query, fields = null) =>
     Departments.findOne(query, fields).exec();
 
   const getDepartmentById = departmentId => {
@@ -48,8 +53,8 @@ function departmentMethodsFactory(departmentModelName) {
     getAllDepartments,
     postNewDepartment,
     updateDepartment,
-    find,
-    findOne
+    findDepartments,
+    findOneDepartment
   };
 }
 
