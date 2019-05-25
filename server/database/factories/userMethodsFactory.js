@@ -8,6 +8,11 @@ function userMethodsFactory(userModelName) {
 
   const Users = UserSchema(userModelName);
 
+  const find = (query, fields = null, sorting = null, skip = 0, limit = 0) =>
+    Users.find(query, fields, { ...sorting, skip, limit }).exec();
+
+  const findOne = (query, fields = null) => Users.findOne(query, fields).exec();
+
   const getAllUsers = (fields = null, sorting) => {
     return Users.find({}, fields, sorting).exec();
   };
@@ -133,7 +138,9 @@ function userMethodsFactory(userModelName) {
     banUserByUserId,
     unbanUserByUserId,
     assignAdminByUserId,
-    dischargeAdminByUserId
+    dischargeAdminByUserId,
+    find,
+    findOne
   };
 }
 

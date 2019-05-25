@@ -11,6 +11,9 @@ function departmentMethodsFactory(departmentModelName) {
   const find = (query, fields = null, sorting = null, skip = 0, limit = 0) =>
     Departments.find(query, fields, { ...sorting, skip, limit }).exec();
 
+  const findOne = (query, fields = null) =>
+    Departments.findOne(query, fields).exec();
+
   const getDepartmentById = departmentId => {
     return Departments.findOne({
       _id: mongoose.Types.ObjectId(departmentId)
@@ -45,7 +48,8 @@ function departmentMethodsFactory(departmentModelName) {
     getAllDepartments,
     postNewDepartment,
     updateDepartment,
-    find
+    find,
+    findOne
   };
 }
 
