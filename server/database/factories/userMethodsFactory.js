@@ -55,11 +55,10 @@ function userMethodsFactory(userModelName) {
   };
 
   const putUserEventByUserId = (_id, eventId) => {
-    const newEvent = { eventId };
     return Users.findOneAndUpdate(
       { _id },
-      { $push: { events: newEvent } }
-      // { upsert: true },
+      { $push: { events: { eventId } } },
+      { upsert: true }
     );
 
     //   return new Promise((resolve, reject) => {
@@ -79,8 +78,6 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserEventByUserId = (_id, eventId) => {
-    // const removeEvent = { eventId };
-    const mongooseEventId = mongoose.Types.ObjectId(eventId);
     return Users.findOneAndUpdate({ _id }, { $pull: { events: { eventId } } });
   };
   // { $pull: { 'events.$': { eventId:  } } }
@@ -89,8 +86,8 @@ function userMethodsFactory(userModelName) {
     return Users.updateOne({ _id }, { $set: { events: [] } });
   };
 
-  const setUserDepartmentByUserId = (_id, departmentId) => {
-    return Users.updateOne({ _id }, { $set: { departmentId } });
+  const setUserDepartmentByUserId = (_id, department) => {
+    return Users.updateOne({ _id }, { $set: { department } });
   };
 
   const getUserDepartmentByUserId = _id => {
