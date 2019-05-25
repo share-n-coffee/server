@@ -2,6 +2,7 @@
 /* eslint-disable no-await-in-loop */
 const DBController = require('../database/dbController');
 const countDaysRemained = require('./countDaysRemained');
+const bot = require('../bot/telegramBot');
 
 const controller = new DBController();
 
@@ -69,8 +70,10 @@ async function addParticipants(event, usersLimit = 2) {
       balancedUser.id,
       visitsRemained[0].visitsRemained - 1
     );
-  }
 
+    await controller.putUserEventByUserId(balancedUser.id, event.id);
+  }
+  bot.mailing(event.id);
   console.log(
     `participants for topic ${event.topicId} for event ${
       event.id

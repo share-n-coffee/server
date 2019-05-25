@@ -8,6 +8,7 @@ const addNewPairs = require('./substitution');
 const generateUpcomingDatesByTopic = require('./generateUpcomingDatesByTopic');
 const checkLastEventsCreationDate = require('./checkLastEventsCreationDate');
 const addParticipants = require('./addParticipants');
+const restoreVisits = require('./restoreVisits');
 
 const controller = new DBController();
 const substitutionQueue = [];
@@ -32,6 +33,7 @@ class RandController {
 
     allTopics.forEach(topic => {
       if (topic.active === false) return;
+      // restoreVisits(topic);
       if (topic.cyclic === true) {
         if (!checkLastEventsCreationDate(topic.lastEventsCreationDate)) return;
         console.log('start cyclic event generating');
@@ -54,7 +56,7 @@ class RandController {
   static async randomizer() {
     const allEvents = await controller.getAllEvents();
     for (const event of allEvents) {
-      await RandController.removePastEvents(event);
+      // await RandController.removePastEvents(event);
       await addParticipants(event);
     }
   }
@@ -62,7 +64,14 @@ class RandController {
   static async removePastEvents(event) {
     const currentDate = new Date();
     if (currentDate > event.date) {
+      const eventParticipants = await controller.getAllUsersByEvent(event.id); // должен приходить массив из юзеров, но не объект ивента
+
       await controller.removeEventByEventId(event.id);
+
+      console.log(eventParticipants);
+      for (const participant of eventParticipants) {
+        controller.removeUserEventByUserId(participant.id, event.id);
+      }
     }
   }
 
