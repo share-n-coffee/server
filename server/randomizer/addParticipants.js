@@ -1,11 +1,14 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const DBController = require('../database/dbController');
+const countDaysRemained = require('./countDaysRemained');
 
 const controller = new DBController();
 
 async function addParticipants(event, usersLimit = 2) {
   if (event.participants.length >= usersLimit) return;
+  const daysRemained = countDaysRemained(event.date);
+  if (daysRemained < 2) return;
 
   const subscribers = await controller.getAllSubscriptionsByTopicId(
     event.topicId
