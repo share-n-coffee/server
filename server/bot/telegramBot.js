@@ -59,7 +59,7 @@ bot.on('callback_query', callbackQuery => {
 
 module.exports = {
   notify(notifyType, user, event) {
-    const { firstName, telegramUserId } = user;
+    const { firstName, telegramId } = user;
     let message = `Привет, ${firstName}😉!${'\n'}`;
     let replyObj;
     switch (notifyType) {
@@ -110,17 +110,17 @@ module.exports = {
     }
 
     bot
-      .sendMessage(telegramUserId, message, replyObj)
+      .sendMessage(telegramId, message, replyObj)
       .then(() =>
         logger.info(
-          telegramUserId,
+          telegramId,
           'Notification',
           `${botConfig.notificationLogText} ${event.id}`
         )
       )
       .catch(err => {
         logger.info(
-          telegramUserId,
+          telegramId,
           'Notification',
           `${botConfig.notificationErrorLogText}.
           ${err.response.body.description}`
@@ -130,21 +130,20 @@ module.exports = {
   },
   mailing(eventId) {
     controller
-      .getEventPairsById(eventId)
-      .then(eventPair => {
-        eventPair.pairs.forEach(pair => {
-          const { invitedUser1, invitedUser2, event } = pair;
-
+      .getEventById(eventId)
+      .then(data => {
+        data.participants.forEach(user => {
           controller
-            .getUserByTelegramUserId(invitedUser1)
-            .then(user => this.notify('invite', user, event))
-            .catch(error => logger.error(error));
-          controller
-            .getUserByTelegramUserId(invitedUser2)
-            .then(user => this.notify('invite', user, event))
-            .catch(error => logger.error(error));
+            .getUserByUserId(user.userId)
+            .then(userData => {
+              this.notify('invite', userData, {
+                title: 'SOME TITLE',
+                description: 'Some description'
+              });
+            })
+            .catch(err => console.log(err));
         });
       })
-      .catch(error => logger.error(error));
+      .catch(err => logger.error(err));
   }
 };
