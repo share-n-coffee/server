@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const UserSchema = require('../models/user');
 const isString = require('../../utilities/isString');
 
@@ -54,11 +55,23 @@ function userMethodsFactory(userModelName) {
   };
 
   const putUserEventByUserId = (_id, eventId) => {
-    return Users.updateOne(
+    const newEvent = { eventId };
+    return Users.findOneAndUpdate(
       { _id },
-      { events: { $push: { eventId } } },
-      { upsert: true }
+      { $push: { events: newEvent } }
+      // { upsert: true },
     );
+
+    //   return new Promise((resolve, reject) => {
+    //     Users.findById({ _id }, (err, foundUser) => {
+    //       if (err) reject(err);
+    //       foundUser.events.push({ eventId: eventID });
+    //       foundUser.save((saveErr, updateUser) => {
+    //         if (saveErr) reject(saveErr);
+    //         resolve(updateUser);
+    //       });
+    //     });
+    //   });
   };
 
   const getAllUserEventsByUserId = _id => {
@@ -66,8 +79,11 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserEventByUserId = (_id, eventId) => {
-    return Users.updateOne({ _id }, { $pull: { events: { eventId } } });
+    // const removeEvent = { eventId };
+    const mongooseEventId = mongoose.Types.ObjectId(eventId);
+    return Users.findOneAndUpdate({ _id }, { $pull: { events: { eventId } } });
   };
+  // { $pull: { 'events.$': { eventId:  } } }
 
   const removeAllUserEventsByUserId = _id => {
     return Users.updateOne({ _id }, { $set: { events: [] } });
