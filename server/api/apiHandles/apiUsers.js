@@ -119,4 +119,21 @@ router.route('/ban/:id').put(adminAuth, objectIdValidation, (req, res) => {
   }
 });
 
+router.route('/:id/upcoming/').get(objectIdValidation, (req, res) => {
+  const DBController = new ClassDBController('user', 'event');
+
+  req.query = {
+    participants: {
+      $elemMatch: {
+        status: 'accepted',
+        userId: req.params.id
+      }
+    }
+  };
+
+  DBController.findEvents(req)
+    .then(events => res.status(200).json({ data: events }))
+    .catch(error => res.status(404).send(error));
+});
+
 module.exports = router;
