@@ -95,14 +95,21 @@ function userMethodsFactory(userModelName) {
   };
 
   const banUserByUserId = (_id, duration) => {
-    return Users.updateOne(
+    const expireTime = Date.now() + duration;
+    console.log('expire time');
+    return Users.findOneAndUpdate(
       { _id },
-      { $set: { banned: true, expired: Date.now() + duration } }
-    );
+      { $set: { 'banned.status': true, 'banned.expired': expireTime } },
+      { upsert: true }
+    ).exec();
   };
 
   const unbanUserByUserId = _id => {
-    return Users.updateOne({ _id }, { $set: { banned: false, expired: null } });
+    return Users.findOneAndUpdate(
+      { _id },
+      { $set: { 'banned.status': false, 'banned.expired': 0 } },
+      { upsert: true }
+    ).exec();
   };
 
   const assignAdminByUserId = (_id, password) => {
