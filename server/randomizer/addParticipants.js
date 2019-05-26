@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 const DBController = require('../database/dbController');
 const countDaysRemained = require('./countDaysRemained');
-// const bot = require('../bot/telegramBot');
+const bot = require('../bot/telegramBot');
 
 const controller = new DBController();
 
@@ -15,7 +15,7 @@ async function addParticipants(event, usersLimit = 2) {
     event.topicId
   );
   const availableSubscribers = subscribers.filter(subscriber => {
-    return subscriber.visitsRemained !== 0;
+    return subscriber.visitsRemained > 0;
   });
 
   if (availableSubscribers.length < usersLimit) return;
@@ -74,7 +74,7 @@ async function addParticipants(event, usersLimit = 2) {
     await controller.putUserEventByUserId(balancedUser.id, event.id);
     await controller.setUserStatusByEvent(event.id, balancedUser.id, 'pending');
   }
-  // bot.mailing(event.id);
+  bot.mailing(event.id);
   console.log(
     `participants for topic ${event.topicId} for event ${
       event.id
