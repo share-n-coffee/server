@@ -7,7 +7,7 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   }
   const Subscriptions = SubscriptionSchema(subscriptionModelName);
 
-  const createSubscription = (topicId, userId, visitsRemained) => {
+  const createSubscription = (topicId, userId, visitsRemained = 1) => {
     return Subscriptions.create({
       topicId,
       userId,

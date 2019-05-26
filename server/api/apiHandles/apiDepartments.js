@@ -35,15 +35,15 @@ router
   });
 
 router
-  .route('/:id', objectIdValidation)
-  .get((req, res) => {
+  .route('/:id')
+  .get(objectIdValidation, (req, res) => {
     const DBController = new ClassDBController('department');
 
     DBController.findOneDepartment({ _id: req.params.id })
       .then(department => res.status(200).json({ data: department }))
       .catch(error => res.status(404).send(error));
   })
-  .put(adminAuth, (req, res) => {
+  .put(adminAuth, objectIdValidation, (req, res) => {
     const DBController = new ClassDBController('department');
 
     DBController.updateDepartment(req.params.id, req.body)

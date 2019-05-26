@@ -17,11 +17,15 @@ router.route('/').get(async (req, res) => {
 });
 
 router
-  .route('/:id', objectIdValidation)
-  .get((req, res) => {
+  .route('/:id')
+  .get(objectIdValidation, (req, res) => {
     const DBController = new ClassDBController('user', 'department');
+    req.query = {
+      ...req.query,
+      _id: req.params.id
+    };
 
-    DBController.findUsers({ _id: req.params.id }, req.fields, req.sorting)
+    DBController.findUsers(req)
       .then(users => {
         DBController.getDepartmentById(users[0].department)
           .then(department => {
@@ -33,7 +37,7 @@ router
       })
       .catch(error => res.status(404).send(error));
   })
-  .put((req, res) => {
+  .put(objectIdValidation, (req, res) => {
     const DBController = new ClassDBController('user');
 
     if (req.body.newDepartment) {
@@ -58,7 +62,6 @@ router
     //   }
     // }
 
-    console.log(req.user);
     if (req.body.admin) {
       if (!req.user.permission) {
         res.status(403).json({
@@ -97,7 +100,7 @@ router
     // }
   });
 
-router.route('/ban/:id', objectIdValidation).put(adminAuth, (req, res) => {
+router.route('/ban/:id').put(adminAuth, objectIdValidation, (req, res) => {
   const searchId = req.params.id;
   const { ban } = req.body;
 
