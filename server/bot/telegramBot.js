@@ -132,6 +132,7 @@ module.exports = {
         .sendMessage(telegramId, message, replyObj)
         .then(data => {
           resolve(data);
+
           logger.info(
             telegramId,
             'Notification',
@@ -140,6 +141,7 @@ module.exports = {
         })
         .catch(err => {
           reject(err);
+
           logger.info(
             telegramId,
             'Notification',
@@ -150,28 +152,48 @@ module.exports = {
     });
   },
   // метод рассылки
-  mailing(eventId) {
+  mailing(eventId, notifyType = 'invite') {
     const event = {
       id: eventId
     };
+
     controller
       .getEventById(eventId)
       .then(eventData => {
         event.date = eventData.date;
         event.users = eventData.participants;
+
         return controller.getTopicById(eventData.topicId);
       })
       .then(topicData => {
         event.title = topicData.title;
         event.description = topicData.description;
+
         event.users.forEach(user => {
-          controller
-            .getUserByUserId(user.userId)
-            .then(userData => this.notify('invite', userData, event))
-            .then(() =>
-              controller.setUserStatusByEvent(eventId, user.userId, 'notified')
-            )
-            .catch(err => logger.error(err.message));
+          if (
+            (user.status === 'pending' && notifyType === 'invite') ||
+            (user.status === 'accepted' &&
+              (notifyType === 'remind' || notifyType === 'apology'))
+          ) {
+            controller
+              .getUserByUserId(user.userId)
+              .then(userData => this.notify(notifyType, userData, event))
+              .then(() => {
+                let newStatus;
+                if (notifyType === 'invite') {
+                  newStatus = 'notified';
+                }
+                if (notifyType === 'remind' || notifyType === 'apology') {
+                  newStatus = 'reminded';
+                }
+                controller.setUserStatusByEvent(
+                  eventId,
+                  user.userId,
+                  newStatus
+                );
+              })
+              .catch(err => logger.error(err.message));
+          }
         });
       })
       .catch(err => logger.error(err.message));
