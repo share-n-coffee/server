@@ -1,13 +1,13 @@
 /* eslint-disable camelcase */
+/* eslint-disable dot-notation */
 process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
 const logger = require('../logger');
 const DBController = require('../database/dbController');
-const RandController = require('../randomizer/randController');
 
 const bot = new TelegramBot(telegramBotToken, { polling: true });
-const controller = new DBController('user', 'event', 'topic');
+const controller = new DBController('user', 'event', 'topic', 'substitution');
 
 // Тексты сообщений
 const {
@@ -66,11 +66,11 @@ bot.on('callback_query', callbackQuery => {
       return controller.getUserByTelegramId(chat.id);
     })
     .then(userData =>
-      controller.setUserStatusByEvent(eventId, userData.id, status)
+      controller.setUserStatusByEventId(eventId, userData['_id'], status)
     )
     .then(() => {
       if (status === 'declined') {
-        RandController.makeSubstitution(eventId);
+        controller.addEventForSubstitution(eventId);
       }
     })
     .catch(err => logger.error(err.message));
@@ -194,7 +194,7 @@ module.exports = {
                 if (notifyType === 'remind' || notifyType === 'apology') {
                   newStatus = 'reminded';
                 }
-                controller.setUserStatusByEvent(
+                controller.setUserStatusByEventId(
                   eventId,
                   user.userId,
                   newStatus
