@@ -4,9 +4,10 @@ const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
 const logger = require('../logger');
 const DBController = require('../database/dbController');
+const RandController = require('../randomizer/randController');
 
 const bot = new TelegramBot(telegramBotToken, { polling: true });
-const controller = new DBController();
+const controller = new DBController('user', 'event', 'topic');
 
 // Тексты сообщений из базы данных
 const botConfig = {
@@ -38,17 +39,20 @@ const getEventDescription = event => {
 bot.on('callback_query', callbackQuery => {
   const { text, chat, message_id } = callbackQuery.message;
   // парсим строку с ответом от пользователя
-  const replyStatus = callbackQuery.data.slice(0, 4);
+  const reply = callbackQuery.data.slice(0, 4);
   const eventId = callbackQuery.data.slice(4);
   let updatedMessage = `${text}${'\n\n\n'}`;
   let replyText;
+  let status;
 
-  if (replyStatus === 'acpt') {
+  if (reply === 'acpt') {
     updatedMessage += `${botConfig.acceptReply}`;
     replyText = botConfig.userAcceptLogText;
+    status = 'accepted';
   } else {
     updatedMessage += `${botConfig.declineReply}`;
     replyText = botConfig.userDeclineLogText;
+    status = 'declined';
   }
 
   bot
@@ -56,8 +60,19 @@ bot.on('callback_query', callbackQuery => {
       chat_id: chat.id,
       message_id
     })
-    .then(() => logger.info(chat.id, 'Notification', `${replyText} ${eventId}`))
-    .catch(err => logger.error(err.response.body.description));
+    .then(() => {
+      logger.info(chat.id, 'Notification', `${replyText} ${eventId}`);
+      return controller.getUserByTelegramId(chat.id);
+    })
+    .then(userData =>
+      controller.setUserStatusByEvent(eventId, userData.id, status)
+    )
+    .then(() => {
+      if (status === 'declined') {
+        RandController.makeSubstitution(eventId);
+      }
+    })
+    .catch(err => logger.error(err.message));
 });
 
 module.exports = {
@@ -134,8 +149,11 @@ module.exports = {
         });
     });
   },
+  // метод рассылки
   mailing(eventId) {
-    const event = {};
+    const event = {
+      id: eventId
+    };
     controller
       .getEventById(eventId)
       .then(eventData => {
