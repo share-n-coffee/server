@@ -27,7 +27,9 @@ function eventMethodsFactory(modelNames) {
       if (err) {
         console.log(err);
       }
-    }).exec();
+    })
+      .lean()
+      .exec();
   };
 
   const addParticipant = (eventID, userID) => {
@@ -46,19 +48,25 @@ function eventMethodsFactory(modelNames) {
     );
   };
 
-  const getEventById = id => {
-    return Event.findOne({ _id: id }).exec();
+  const getEventById = _id => {
+    return Event.findOne({ _id })
+      .lean()
+      .exec();
   };
   const getDateByEventId = eventId => {
-    return Event.findOne({ _id: eventId }, 'date').exec();
+    return Event.findOne({ _id: eventId }, 'date')
+      .lean()
+      .exec();
   };
-  const getAllUsersByEvent = eventId => {
+  const getAllUsersByEventId = eventId => {
     return Event.findOne(
       { _id: eventId },
       { 'participants.userId': true, _id: false }
-    ).exec();
+    )
+      .lean()
+      .exec();
   };
-  const setUserStatusByEvent = (eventId, userID, stat) => {
+  const setUserStatusByEventId = (eventId, userID, stat) => {
     return Event.updateOne(
       { _id: eventId, 'participants.userId': userID },
       { $set: { 'participants.$.status': stat } },
@@ -67,15 +75,17 @@ function eventMethodsFactory(modelNames) {
       }
     ).exec();
   };
-  const removeEventByEventId = id => {
-    return Event.deleteOne({ _id: id }, err => {
+  const removeEventByEventId = _id => {
+    return Event.deleteOne({ _id }, err => {
       if (err) console.log(err);
     });
   };
-  const getEventsByTopicId = topicID => {
-    return Event.find({ topicId: topicID }, err => {
+  const getEventsByTopicId = topicId => {
+    return Event.find({ topicId }, err => {
       if (err) console.log(err);
-    }).exec();
+    })
+      .lean()
+      .exec();
   };
   // ------------ //
 
@@ -88,8 +98,8 @@ function eventMethodsFactory(modelNames) {
     addParticipant,
     removeParticipant,
     getDateByEventId,
-    getAllUsersByEvent,
-    setUserStatusByEvent
+    getAllUsersByEventId,
+    setUserStatusByEventId
   };
 }
 

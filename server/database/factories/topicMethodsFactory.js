@@ -9,13 +9,17 @@ function topicMethodsFactory(topicModelName) {
   const Topics = TopicSchema(topicModelName);
 
   const getAllTopics = () => {
-    return Topics.find({}).exec();
+    return Topics.find({})
+      .lean()
+      .exec();
   };
 
   const getTopicById = topicId => {
     return Topics.findOne({
       _id: mongoose.Types.ObjectId(topicId)
-    }).exec();
+    })
+      .lean()
+      .exec();
   };
 
   const postNewTopic = topic => {
