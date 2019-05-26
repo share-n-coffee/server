@@ -12,8 +12,11 @@ function eventMethodsFactory(modelNames) {
     return Events.find({}, null, sorting).exec();
   };
 
-  const find = (query, fields = null, sorting = null, skip = 0, limit = 0) =>
-    Events.find(query, fields, { ...sorting, skip, limit }).exec();
+  const findEvents = req =>
+    Events.find(req.query, req.fields, { ...req.sorting });
+
+  const findOneEvent = (query, fields = null) =>
+    Events.findOne(query, fields).exec();
 
   const getEventById = eventId => {
     return Events.findOne({
@@ -86,14 +89,15 @@ function eventMethodsFactory(modelNames) {
     getEventsByTopicId,
     removeEventByEventId,
     getEventById,
-    find,
     addEvent,
     getAllEvents,
     addParticipant,
     removeParticipant,
     getDateByEventId,
     getAllUsersByEvent,
-    setUserStatusByEvent
+    setUserStatusByEvent,
+    findEvents,
+    findOneEvent
   };
 }
 
