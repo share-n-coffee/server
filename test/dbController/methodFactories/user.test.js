@@ -117,20 +117,60 @@ describe('dbController user methods tests', () => {
   });
 
   updateUsersComparison();
-  test('putUserEventByUserId works', done => {
-    const { eventId } = usersComparison[0].events[0];
-    controller.putUserEventByUserId(eventId).then(controllerEvent => {
-      console.log('NEW EVENT ADDED>>>> ', cloneObject(controllerEvent));
-    });
-    done();
-  });
+  const lastUser = usersComparison[usersComparison.length - 1];
+  const lastUserId = lastUser['_id'];
+  // test('putUserEventByUserId works', done => {
+  //   const { eventId } = usersComparison[0].events[0];
+  //   controller
+  //     .putUserEventByUserId(lastUserId, eventId)
+  //     .then(controllerEvent => {
+  //       console.log('NEW EVENT ADDED>>>> ', cloneObject(controllerEvent)['eventId']);
+  //       updateUsersComparison();
+  //       const lastUserEvents = lastUser.events;
+  //       const lastUserAddedEventId = lastUser[lastUserEvents.length - 1];
+  //       expect(lastUserAddedEventId).toEqual(eventId);
+
+  //       done();
+  //     });
+  // });
+
+  const petkaID = '5ce7f0c99193c9bb5421580f';
+  const petkaEvent = '5ce954bf7540c406f8eb837f';
+  const petkaEvent2 = '5ce98813ee19931990096be8';
+  const petkaTelegram = 9876543210;
+  const petkaNewDepId = '5cd6f6c381371d297acb2fd2';
+  // controller.putUserEventByUserId(petkaID, petkaEvent).then();
+  // controller.putUserEventByUserId(petkaID, petkaEvent2).then();
+
+  // controller.removeUserEventByUserId(petkaID, petkaEvent2).then();
+  // controller.removeAllUserEventsByUserId(petkaID).then();
+
+  // controller.getUserDepartmentByUserId(petkaID).then(dep => {
+  // console.log('dep:::;', dep);
+  // });
+
+  // controller.setUserDepartmentByUserId(petkaID, petkaNewDepId).then();
+  // controller.banUserByUserId(petkaID, 66666666).then();
+  // controller.unbanUserByUserId(petkaID).then();
+
+  // controller.assignSuperAdminByUserId(petkaID).then();
+  // controller.dischargeAdminByUserId(petkaID).then();
+
+  // controller.getAdminPropertiesByUserId(petkaID).then(props => {
+  //     console.log('admin props >>>>>',JSON.stringify(props));
+  //   }
+  // );
+
+  // console.log('last user id>>>>', lastUserId);
 
   test('getAllUserEventsByUserId works', done => {
-    const lastUser = usersComparison[usersComparison.length - 1];
-    const lastUserId = lastUser['_id'];
-    controller.getAllUserEventsByUserId(lastUserId).then(controllerEvents => {
-      console.log('EVENTS>>>>>> ', controllerEvents);
-    });
+    controller
+      .getAllUserEventsByUserId('5ce5b8797247dc3860f0a745')
+      .then(controllerEvents => {
+        controllerEvents.events.forEach(event => {
+          console.log('EVENT>>>>>> ', event);
+        });
+      });
   });
   /*
   test('Query search', done => {
