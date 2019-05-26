@@ -9,6 +9,7 @@ const copyDatabaseCollection = (
 ) => {
   MongoClient.connect(
     mongoUri,
+    { useNewUrlParser: true },
     (err, client) => {
       if (err) throw err;
       client
