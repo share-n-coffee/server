@@ -4,7 +4,7 @@
 const CronJob = require('cron').CronJob;
 const DBController = require('../database/dbController');
 const checkData = require('./checkDataCorrectness');
-const addNewPairs = require('./substitution');
+const tryToSubsitute = require('./substitution');
 const generateUpcomingDatesByTopic = require('./generateUpcomingDatesByTopic');
 const checkLastEventsCreationDate = require('./checkLastEventsCreationDate');
 const addParticipants = require('./addParticipants');
@@ -58,6 +58,21 @@ class RandController {
       await RandController.removePastEvents(event);
       await addParticipants(event);
     }
+
+    const requiredSubstitutions = await controller.getAllEventsForSubstitution();
+    for (const eventForSubstitution of requiredSubstitutions) {
+      const substitutionSuccessfull = await tryToSubsitute(
+        eventForSubstitution.eventId
+      );
+      if (substitutionSuccessfull) {
+        console.log(
+          `Substitution for event ${
+            eventForSubstitution.eventId
+          } has been completed`
+        );
+        await controller.removeEvent(eventForSubstitution.eventId);
+      }
+    }
   }
 
   static async removePastEvents(event) {
@@ -80,17 +95,7 @@ class RandController {
   }
 }
 
-// RandController.makeSubstitution('5cd6f6c381371d297acb2fe0'); // метод для вызова ботом в случае отказа пользователя
-
 module.exports = RandController;
-
-const substitution = new CronJob('*/30 * * * * *', async () => {
-  /* if (substitutionQueue.length !== 0) {
-     addNewPairs(substitutionQueue.pop());
-  } */
-});
-
-substitution.start();
 
 const eventsGenerator = new CronJob('*/15 * * * * *', () => {
   RandController.generateEventsForTopics();

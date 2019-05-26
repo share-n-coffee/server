@@ -1,112 +1,118 @@
-/* eslint-disable no-param-reassign */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 /* eslint-disable consistent-return */
 const DBController = require('../database/dbController');
+const countDaysRemained = require('./countDaysRemained');
+const bot = require('../bot/telegramBot');
 
 const controller = new DBController();
 
-async function addNewPairs(eventId) {
-  const eventToBalance = await controller.getEventById(eventId);
-  const allUsers = await controller.getAllUsersByEventId(eventId);
+async function tryToSubsitute(eventId) {
+  const event = await controller.getEventById(eventId);
+  const daysRemained = countDaysRemained(event.date);
+  if (daysRemained < 2) return;
 
-  function generateEventUsersList(event) {
-    const usersList = [];
+  const subscribers = await controller.getAllSubscriptionsByTopicId(
+    event.topicId
+  );
 
-    allUsers.forEach(user => {
-      const availableUser = user.events.find(userEvent => {
-        return userEvent.status === 'free';
-      });
+  const availableSubscribers = subscribers.filter(subscriber => {
+    return subscriber.visitsRemained > 0;
+  });
 
-      if (availableUser) {
-        usersList.push(user);
-      }
-    });
+  const usersToSubstitute = event.participants.filter(participant => {
+    return participant.status === 'declined';
+  });
 
-    return usersList;
-  }
+  if (
+    availableSubscribers.length < usersToSubstitute.length ||
+    usersToSubstitute.length === 0
+  )
+    return;
 
-  // генерируем дополнительные пары
-  async function generateAdditionalPairs(event) {
-    const usersStatusUpdate = []; // для запроса на обновление статусов пользователей
-    const generatedPairs = []; // сформированные дополнительные пары для добавления
-    const availableUsers = generateEventUsersList(event); // собираем список всех свободных подписчиков события из всех отделов
+  const availableUsers = [];
+  const balancedUsers = [];
 
-    if (availableUsers.length < 2) {
-      return console.log(`any pairs to event ${eventId} was not added`);
-    }
-
-    availableUsers.forEach(balancedUser => {
-      let balancedUserStatus = balancedUser.events.find(userEvent => {
-        return event.id.toString() === userEvent.eventId.toString();
-      }).status;
-
-      const balancedUserEventIndex = balancedUser.events.findIndex(
-        userEvent => {
-          return event.id.toString() === userEvent.eventId.toString();
-        }
+  for (let i = 0; i < event.participants.length; i++) {
+    if (event.participants[i].status !== 'declined') {
+      const selectedUser = await controller.getUserByUserId(
+        event.participants[i].userId
       );
-
-      if (balancedUserStatus !== 'free') return;
-
-      availableUsers.forEach(user => {
-        balancedUserStatus = balancedUser.events.find(userEvent => {
-          return event.id.toString() === userEvent.eventId.toString();
-        }).status;
-
-        const userStatus = user.events.find(userEvent => {
-          return event.id.toString() === userEvent.eventId.toString();
-        }).status;
-
-        const userEventIndex = user.events.findIndex(userEvent => {
-          return event.id.toString() === userEvent.eventId.toString();
-        });
-
-        if (balancedUser.telegramUserId === user.telegramUserId) return;
-
-        if (balancedUser.department === user.department) return;
-
-        if (userStatus !== 'free' || balancedUserStatus !== 'free') return;
-
-        const pair = {};
-        pair.invitedUser1 = balancedUser.telegramUserId;
-        pair.invitedUser2 = user.telegramUserId;
-        pair.event = {
-          location: event.location,
-          title: event.title,
-          description: event.description,
-          date: event.options.nextDate
-        };
-        generatedPairs.push(pair);
-        balancedUser.events[balancedUserEventIndex].status = 'pending';
-        user.events[userEventIndex].status = 'pending';
-
-        const balancedUserStatusUpdate = {};
-        balancedUserStatusUpdate[balancedUser.telegramUserId] = {
-          [event.id]: 'pending'
-        };
-        usersStatusUpdate.push(balancedUserStatusUpdate);
-
-        const userStatusUpdate = {};
-        userStatusUpdate[user.telegramUserId] = {
-          [event.id]: 'pending'
-        };
-        usersStatusUpdate.push(userStatusUpdate);
-      });
-    });
-    console.log(usersStatusUpdate);
-    generatedPairs.forEach(async function addPair(pair) {
-      await controller.insertPair(event.id, pair);
-    });
-    console.log(generatedPairs);
-
-    // здесь нужно вызывать бота для передачи id события
-    if (generatedPairs.length !== 0) {
-      console.log(`new pairs to event ${eventId} added`);
-    } else {
-      console.log(`any pairs to event ${eventId} was not added`);
+      balancedUsers.push(selectedUser);
     }
   }
 
-  generateAdditionalPairs(eventToBalance); // вызов генерации дополнительных пар
+  for (let i = 0; i < availableSubscribers.length; i++) {
+    const availableUser = await controller.getUserByUserId(
+      availableSubscribers[i].userId
+    );
+    availableUsers.push(availableUser);
+  }
+
+  function findAcceptableParticipants() {
+    availableUsers.forEach(availableUser => {
+      if (balancedUsers.length === event.participants.length) return;
+      const userWasSelected = balancedUsers.find(balancedUser => {
+        return balancedUser.id === availableUser.id;
+      });
+
+      const departmentWasSelected = balancedUsers.find(balancedUser => {
+        return balancedUser.department === availableUser.department;
+      });
+
+      if (userWasSelected || departmentWasSelected) return;
+      balancedUsers.push(availableUser);
+    });
+  }
+
+  findAcceptableParticipants();
+
+  if (balancedUsers.length !== event.participants.length) return;
+
+  async function removeDeclinedParticipants() {
+    for (const participant of event.participants) {
+      if (participant.status === 'declined') {
+        await controller.removeParticipant(eventId, participant.userId);
+        await controller.removeUserEventByUserId(participant.userId, eventId);
+      }
+    }
+  }
+
+  removeDeclinedParticipants();
+
+  async function addAcceptableParticipants() {
+    for (const balancedUser of balancedUsers) {
+      const isAlreadyInEvent = await event.participants.find(participant => {
+        return participant.userId.toString() === balancedUser.id.toString();
+      });
+
+      if (!isAlreadyInEvent) {
+        await controller.addParticipant(event.id, balancedUser.id);
+        const visitsRemained = await controller.getVisitsRemainedQuantity(
+          event.topicId,
+          balancedUser.id
+        );
+
+        await controller.setVisitsRemainedQuantity(
+          event.topicId,
+          balancedUser.id,
+          visitsRemained[0].visitsRemained - 1
+        );
+
+        await controller.putUserEventByUserId(balancedUser.id, event.id);
+        await controller.setUserStatusByEvent(
+          event.id,
+          balancedUser.id,
+          'pending'
+        );
+      }
+    }
+  }
+
+  addAcceptableParticipants();
+
+  bot.mailing(event.id);
+  return true;
 }
 
-module.exports = addNewPairs;
+module.exports = tryToSubsitute;
