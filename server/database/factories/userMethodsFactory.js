@@ -115,12 +115,26 @@ function userMethodsFactory(userModelName) {
   const assignAdminByUserId = (_id, password) => {
     return Users.updateOne(
       { _id },
-      { $set: { 'admin.isAdmin': true, 'admin.password': password } }
+      { $set: { 'admin.permission': 1, 'admin.password': password } }
     );
   };
 
+  const assignSuperAdminByUserId = (_id, password) => {
+    return Users.updateOne(
+      { _id },
+      { $set: { 'admin.permission': 2, 'admin.password': password } }
+    );
+  };
+
+  const getAdminPropertiesByUserId = _id => {
+    return Users.findOne({ _id }, { admin: 1 }).exec();
+  };
+
   const dischargeAdminByUserId = _id => {
-    return Users.updateOne({ _id }, { $set: { 'admin.isAdmin': false } });
+    return Users.updateOne(
+      { _id },
+      { $set: { 'admin.permission': 0, 'admin.password': null } }
+    );
   };
 
   return {
@@ -139,6 +153,8 @@ function userMethodsFactory(userModelName) {
     banUserByUserId,
     unbanUserByUserId,
     assignAdminByUserId,
+    assignSuperAdminByUserId,
+    getAdminPropertiesByUserId,
     dischargeAdminByUserId
   };
 }
