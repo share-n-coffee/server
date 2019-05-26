@@ -18,6 +18,8 @@ const botConfig = {
   unsubscribeText: 'Ты отписан от канала',
   inviteText: 'Поздравляем, ты отправляешься на встречу☕:',
   remindText: 'Напоминаем тебе про встречу:',
+  apologyText:
+    'Нам очень, жаль но твоя встреча не состоится, так как мы не смогли найти тебе пару:',
   acceptText: 'Я иду!😋',
   declineText: 'Не в этот раз 😞',
   acceptReply: 'Очень круто 😉 , что ты подтвердил, не опаздывай!',
@@ -118,6 +120,13 @@ module.exports = {
 
       case 'remind':
         message += `${botConfig.remindText}${'\n'}`;
+        if (event) {
+          message += `${getEventDescription(event)}`;
+        }
+        break;
+
+      case 'apology':
+        message += `${botConfig.apologyText}${'\n'}`;
         if (event) {
           message += `${getEventDescription(event)}`;
         }
