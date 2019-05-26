@@ -8,24 +8,18 @@ const router = express.Router();
 router
   .route('/')
   .get((req, res) => {
-    const DBController = new ClassDBController('event');
+    const DBController = new ClassDBController('topic');
 
-    DBController.find(
-      req.query,
-      req.fields,
-      req.sorting,
-      +req.pagination.skip,
-      +req.pagination.limit
-    )
-      .then(events => res.status(200).json({ data: events }))
+    DBController.findTopics(req)
+      .then(topics => res.status(200).json({ data: topics }))
       .catch(error => res.status(404).send(error));
   })
   .post(adminAuth, (req, res) => {
-    const DBController = new ClassDBController('event');
+    const DBController = new ClassDBController('topic');
 
-    DBController.postNewEvent(req.body)
-      .then(addedEvent => {
-        res.status(200).json({ data: addedEvent });
+    DBController.postNewTopic(req.body)
+      .then(newTopic => {
+        res.status(200).json({ data: newTopic });
       })
       .catch(error => res.status(404).send(error));
   });
@@ -33,20 +27,24 @@ router
 router
   .route('/:id', objectIdValidation)
   .get((req, res) => {
-    const DBController = new ClassDBController('event');
+    const DBController = new ClassDBController('topic');
+    req.query = {
+      ...req.query,
+      _id: req.params.id
+    };
 
-    DBController.getEventById(req.params.id)
-      .then(event => {
-        return res.status(200).json({ data: event });
+    DBController.findTopics(req)
+      .then(topic => {
+        return res.status(200).json({ data: topic });
       })
       .catch(error => res.status(404).send(error));
   })
   .put(adminAuth, (req, res) => {
-    const DBController = new ClassDBController('event');
+    const DBController = new ClassDBController('topic');
 
-    DBController.updateEvent(req.params.id, req.body)
-      .then(updatedEvent => {
-        res.status(200).json({ data: updatedEvent });
+    DBController.updateTopic(req.params.id, req.body)
+      .then(updatedTopic => {
+        res.status(200).json({ data: updatedTopic });
       })
       .catch(error => res.status(404).send(error));
   });
