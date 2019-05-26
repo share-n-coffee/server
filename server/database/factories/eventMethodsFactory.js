@@ -1,25 +1,19 @@
-const mongoose = require('mongoose');
 const EventSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 
-function eventMethodsFactory(eventModelName) {
-  if (isNull(eventModelName)) {
+function eventMethodsFactory(modelNames) {
+  if (isNull(modelNames)) {
     return {};
   }
-  const Events = EventSchema(eventModelName);
+  const Event = EventSchema(modelNames);
 
-  const getAllEvents = () => {
-    return Events.find({}).exec();
-  };
+  // новые методы //
+  const addEvent = (topicID, dateTimestamp) => {
+    const newEvent = new Event({
+      topicId: topicID,
+      date: dateTimestamp
+    });
 
-  const getEventById = eventId => {
-    return Events.findOne({
-      _id: mongoose.Types.ObjectId(eventId)
-    }).exec();
-  };
-
-  const postNewEvent = event => {
-    const newEvent = new Events(event);
     return new Promise((resolve, reject) => {
       newEvent.save((err, addedEvent) => {
         if (err) reject(err);
@@ -28,20 +22,74 @@ function eventMethodsFactory(eventModelName) {
     });
   };
 
-  const updateEvent = (eventId, newProps) => {
-    return Events.findOneAndUpdate(
-      { _id: eventId },
-      { $set: newProps },
-      { useFindAndModify: false, new: true },
-      (err, data) => data
+  const getAllEvents = () => {
+    return Event.find({}, (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+    }).exec();
+  };
+
+  const addParticipant = (eventID, userID) => {
+    return Event.findOneAndUpdate(
+      { _id: eventID },
+      { $push: { participants: { userId: userID } } },
+      { useFindAndModify: false, new: true }
     );
   };
 
+  const removeParticipant = (eventID, userID) => {
+    return Event.findOneAndUpdate(
+      { _id: eventID },
+      { $pull: { participants: { userId: userID } } },
+      { useFindAndModify: false, new: true }
+    );
+  };
+
+  const getEventById = id => {
+    return Event.findOne({ _id: id }).exec();
+  };
+  const getDateByEventId = eventId => {
+    return Event.findOne({ _id: eventId }, 'date').exec();
+  };
+  const getAllUsersByEvent = eventId => {
+    return Event.findOne(
+      { _id: eventId },
+      { 'participants.userId': true, _id: false }
+    ).exec();
+  };
+  const setUserStatusByEvent = (eventId, userID, stat) => {
+    return Event.updateOne(
+      { _id: eventId, 'participants.userId': userID },
+      { $set: { 'participants.$.status': stat } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
+  const removeEventByEventId = id => {
+    return Event.deleteOne({ _id: id }, err => {
+      if (err) console.log(err);
+    });
+  };
+  const getEventsByTopicId = topicID => {
+    return Event.find({ topicId: topicID }, err => {
+      if (err) console.log(err);
+    }).exec();
+  };
+  // ------------ //
+
   return {
-    getAllEvents,
+    getEventsByTopicId,
+    removeEventByEventId,
     getEventById,
-    postNewEvent,
-    updateEvent
+    addEvent,
+    getAllEvents,
+    addParticipant,
+    removeParticipant,
+    getDateByEventId,
+    getAllUsersByEvent,
+    setUserStatusByEvent
   };
 }
 

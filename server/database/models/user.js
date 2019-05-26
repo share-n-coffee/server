@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema({
   //  Телеграмовский идентификатор пользователя
-  telegramUserId: {
+  telegramId: {
     type: Number,
     required: false
   },
@@ -42,17 +42,13 @@ const UserSchema = new Schema({
       required: false
     }
   },
-  //  Массив с событиями, на которые подписан пользователь
+  //  Массив с событиями, в которых участвует пользователь
   events: [
     {
       eventId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event',
         required: false
-      },
-      status: {
-        type: String,
-        required: false,
-        default: 'free'
       }
     }
   ],
@@ -68,101 +64,19 @@ const UserSchema = new Schema({
     default: new Date().getTime(),
     required: false
   },
-  //  Здесь хранятся все действия пользователя
-  logs: {
-    //  Всё подписки/отписки пользователя
-    //  Массив объектов
-    subscribedEvents: [
-      {
-        //  Идентификатор события
-        event: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Event',
-          required: false
-        },
-        //  Действие пользователя ("subscribe"/"unsubscribe") (подписка/отписка)
-        action: {
-          type: String,
-          required: false
-        }
-      }
-    ],
-    //  Всё приглашения на события, которые отправляются пользователю
-    //  Массив объектов
-    invitedEvents: [
-      {
-        //  Идентификатор события
-        event: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Event',
-          required: false
-        },
-        //  Действие пользователя ("accept"/"decline") (подтвердил/отклонил)
-        action: {
-          type: String,
-          required: false
-        }
-      }
-    ],
-    //  массив посещенных пользователем событий
-    visitedEvents: [
-      {
-        //  Идентификатор события
-        event: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: 'Event',
-          required: false
-        },
-        //  Дата посещения
-        date: {
-          type: Number,
-          required: false
-        }
-      }
-    ],
-    //  Все полученные пользователем баны
-    bans: [
-      {
-        //  Дата бана
-        startDate: {
-          type: Number,
-          required: false
-        },
-        //  Дата окончания бана
-        endDate: {
-          type: Number,
-          required: false
-        }
-      }
-    ]
-  },
   //  Если пользователь админ
   admin: {
-    //  Админский флаг
-    isAdmin: {
-      type: Boolean,
+    //  Админский флаг: 0 - просто юзер, 1 - админ, 2 - супер админ
+    permission: {
+      type: Number,
       required: false,
-      default: false
+      default: 0
     },
     //  Админский пароль для входа в систему, если к админу не привязан телеграм
     password: {
       type: String,
       required: false,
       default: null
-    }
-  },
-  tokens: {
-    origin: {
-      type: String,
-      required: false
-    },
-    expiredAt: {
-      type: Number,
-      required: false
-    },
-    refresh: {
-      type: String,
-      required: false
     }
   }
 });
