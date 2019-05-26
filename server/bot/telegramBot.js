@@ -28,7 +28,10 @@ const botConfig = {
 };
 
 const getEventDescription = event => {
-  return `${event.title}${'\n'}${event.description}`;
+  const eventDate = new Date(event.date);
+
+  return `${event.title}
+  ${'\n'}${event.description}${'\n'}${eventDate.toLocaleString('ru-RU')}`;
 };
 
 // Реагируем на ответы пользователя
@@ -109,41 +112,50 @@ module.exports = {
         message += `${notifyType}`;
     }
 
-    bot
-      .sendMessage(telegramId, message, replyObj)
-      .then(() =>
-        logger.info(
-          telegramId,
-          'Notification',
-          `${botConfig.notificationLogText} ${event.id}`
-        )
-      )
-      .catch(err => {
-        logger.info(
-          telegramId,
-          'Notification',
-          `${botConfig.notificationErrorLogText}.
-          ${err.response.body.description}`
-        );
-        logger.error(err.response.body.description);
-      });
+    return new Promise((resolve, reject) => {
+      bot
+        .sendMessage(telegramId, message, replyObj)
+        .then(data => {
+          resolve(data);
+          logger.info(
+            telegramId,
+            'Notification',
+            `${botConfig.notificationLogText} ${event.id}`
+          );
+        })
+        .catch(err => {
+          reject(err);
+          logger.info(
+            telegramId,
+            'Notification',
+            `${botConfig.notificationErrorLogText}.
+            ${err.response.body.description}`
+          );
+        });
+    });
   },
   mailing(eventId) {
+    const event = {};
     controller
       .getEventById(eventId)
-      .then(data => {
-        data.participants.forEach(user => {
+      .then(eventData => {
+        event.date = eventData.date;
+        event.users = eventData.participants;
+        return controller.getTopicById(eventData.topicId);
+      })
+      .then(topicData => {
+        event.title = topicData.title;
+        event.description = topicData.description;
+        event.users.forEach(user => {
           controller
             .getUserByUserId(user.userId)
-            .then(userData => {
-              this.notify('invite', userData, {
-                title: 'SOME TITLE',
-                description: 'Some description'
-              });
-            })
-            .catch(err => console.log(err));
+            .then(userData => this.notify('invite', userData, event))
+            .then(() =>
+              controller.setUserStatusByEvent(eventId, user.userId, 'notified')
+            )
+            .catch(err => logger.error(err.message));
         });
       })
-      .catch(err => logger.error(err));
+      .catch(err => logger.error(err.message));
   }
 };
