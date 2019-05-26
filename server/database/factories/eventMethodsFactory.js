@@ -39,6 +39,16 @@ function eventMethodsFactory(modelNames) {
     });
   };
 
+  const getAllEvents = () => {
+    return Event.find({}, (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+    })
+      .lean()
+      .exec();
+  };
+
   const addParticipant = (eventID, userID) => {
     return Event.findOneAndUpdate(
       { _id: eventID },
@@ -55,16 +65,25 @@ function eventMethodsFactory(modelNames) {
     );
   };
 
-  const getDateByEventId = eventId => {
-    return Event.findOne({ _id: eventId }, 'date').exec();
+  const getEventById = _id => {
+    return Event.findOne({ _id })
+      .lean()
+      .exec();
   };
-  const getAllUsersByEvent = eventId => {
+  const getDateByEventId = eventId => {
+    return Event.findOne({ _id: eventId }, 'date')
+      .lean()
+      .exec();
+  };
+  const getAllUsersByEventId = eventId => {
     return Event.findOne(
       { _id: eventId },
       { 'participants.userId': true, _id: false }
-    ).exec();
+    )
+      .lean()
+      .exec();
   };
-  const setUserStatusByEvent = (eventId, userID, stat) => {
+  const setUserStatusByEventId = (eventId, userID, stat) => {
     return Event.updateOne(
       { _id: eventId, 'participants.userId': userID },
       { $set: { 'participants.$.status': stat } },
@@ -73,15 +92,17 @@ function eventMethodsFactory(modelNames) {
       }
     ).exec();
   };
-  const removeEventByEventId = id => {
-    return Event.deleteOne({ _id: id }, err => {
+  const removeEventByEventId = _id => {
+    return Event.deleteOne({ _id }, err => {
       if (err) console.log(err);
     });
   };
-  const getEventsByTopicId = topicID => {
-    return Event.find({ topicId: topicID }, err => {
+  const getEventsByTopicId = topicId => {
+    return Event.find({ topicId }, err => {
       if (err) console.log(err);
-    }).exec();
+    })
+      .lean()
+      .exec();
   };
   // ------------ //
 
@@ -97,7 +118,9 @@ function eventMethodsFactory(modelNames) {
     getAllUsersByEvent,
     setUserStatusByEvent,
     findEvents,
-    findOneEvent
+    findOneEvent,
+    getAllUsersByEventId,
+    setUserStatusByEventId
   };
 }
 

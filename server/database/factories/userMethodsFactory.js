@@ -26,16 +26,22 @@ function userMethodsFactory(userModelName) {
     );
   };
 
-  const getAllUsers = (fields = null, sorting) => {
-    return Users.find({}, fields, sorting).exec();
+  const getAllUsers = (fields = null) => {
+    return Users.find({}, fields)
+      .lean()
+      .exec();
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields).exec();
+    return Users.findOne({ _id }, fields)
+      .lean()
+      .exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields).exec();
+    return Users.findOne({ telegramId }, fields)
+      .lean()
+      .exec();
   };
 
   const createNewUser = user => {
@@ -68,7 +74,9 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserByUserId = _id => {
-    return Users.deleteOne({ _id });
+    return Users.deleteOne({ _id })
+      .lean()
+      .exec();
   };
 
   const getAllUsersByEventId = (id, fields = {}, sorting = {}) => {
@@ -76,9 +84,9 @@ function userMethodsFactory(userModelName) {
   };
 
   const putUserEventByUserId = (_id, eventId) => {
-    return Users.updateOne(
+    return Users.findOneAndUpdate(
       { _id },
-      { events: { $push: { eventId } } },
+      { $push: { events: { eventId } } },
       { upsert: true }
     );
   };
@@ -88,15 +96,15 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserEventByUserId = (_id, eventId) => {
-    return Users.updateOne({ _id }, { $pull: { events: { eventId } } });
+    return Users.findOneAndUpdate({ _id }, { $pull: { events: { eventId } } });
   };
 
   const removeAllUserEventsByUserId = _id => {
     return Users.updateOne({ _id }, { $set: { events: [] } });
   };
 
-  const setUserDepartmentByUserId = (_id, departmentId) => {
-    return Users.updateOne({ _id }, { $set: { departmentId } });
+  const setUserDepartmentByUserId = (_id, department) => {
+    return Users.updateOne({ _id }, { $set: { department } });
   };
 
   const getUserDepartmentByUserId = _id => {
@@ -104,25 +112,46 @@ function userMethodsFactory(userModelName) {
   };
 
   const banUserByUserId = (_id, duration) => {
-    return Users.updateOne(
+    const expireTime = Date.now() + duration;
+    console.log('expire time');
+    return Users.findOneAndUpdate(
       { _id },
-      { $set: { banned: true, expired: Date.now() + duration } }
-    );
+      { $set: { 'banned.status': true, 'banned.expired': expireTime } },
+      { upsert: true }
+    ).exec();
   };
 
   const unbanUserByUserId = _id => {
-    return Users.updateOne({ _id }, { $set: { banned: false, expired: null } });
+    return Users.findOneAndUpdate(
+      { _id },
+      { $set: { 'banned.status': false, 'banned.expired': 0 } },
+      { upsert: true }
+    ).exec();
   };
 
   const assignAdminByUserId = (_id, password) => {
     return Users.updateOne(
       { _id },
-      { $set: { 'admin.isAdmin': true, 'admin.password': password } }
+      { $set: { 'admin.permission': 1, 'admin.password': password } }
     );
   };
 
+  const assignSuperAdminByUserId = (_id, password) => {
+    return Users.updateOne(
+      { _id },
+      { $set: { 'admin.permission': 2, 'admin.password': password } }
+    );
+  };
+
+  const getAdminPropertiesByUserId = _id => {
+    return Users.findOne({ _id }, { admin: 1 }).exec();
+  };
+
   const dischargeAdminByUserId = _id => {
-    return Users.updateOne({ _id }, { $set: { 'admin.isAdmin': false } });
+    return Users.updateOne(
+      { _id },
+      { $set: { 'admin.permission': 0, 'admin.password': null } }
+    );
   };
 
   return {
@@ -144,7 +173,10 @@ function userMethodsFactory(userModelName) {
     assignAdminByUserId,
     dischargeAdminByUserId,
     findOneUser,
-    updateUser
+    updateUser,
+    assignSuperAdminByUserId,
+    getAdminPropertiesByUserId,
+    dischargeAdminByUserId
   };
 }
 

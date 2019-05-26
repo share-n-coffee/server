@@ -10,7 +10,7 @@ const copyDatabaseCollection = (
   MongoClient.connect(
     mongoUri,
     (err, client) => {
-      if (err !== null) throw err;
+      if (err) throw err;
       client
         .db(databaseName)
         .collection(`${collectionName}s`)
@@ -20,7 +20,8 @@ const copyDatabaseCollection = (
           fs.writeFile(path, JSON.stringify(items), error => {
             if (error) throw error;
             console.log(`
-              ${collectionName} collection successfuly copied to ${path}!`);
+            ${collectionName} collection successfuly copied to ${path}!`);
+            client.close();
           });
         });
     }
