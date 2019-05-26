@@ -8,6 +8,24 @@ function userMethodsFactory(userModelName) {
 
   const Users = UserSchema(userModelName);
 
+  const findUsers = req =>
+    Users.find(req.query, req.fields || '-admin.password', { ...req.sorting });
+
+  const findOneUser = (query, fields = null) =>
+    Users.findOne(query, fields).exec();
+
+  const updateUser = (id, newProps) => {
+    return Users.findOneAndUpdate(
+      { _id: id },
+      { $set: newProps },
+      {
+        upsert: true,
+        new: true,
+        fields: '-admin.password'
+      }
+    );
+  };
+
   const getAllUsers = (fields = null) => {
     return Users.find({}, fields)
       .lean()
@@ -59,6 +77,10 @@ function userMethodsFactory(userModelName) {
     return Users.deleteOne({ _id })
       .lean()
       .exec();
+  };
+
+  const getAllUsersByEventId = (id, fields = {}, sorting = {}) => {
+    return Users.find({ 'events.eventId': id }, fields, sorting).exec();
   };
 
   const putUserEventByUserId = (_id, eventId) => {
@@ -134,7 +156,8 @@ function userMethodsFactory(userModelName) {
 
   return {
     getAllUsers,
-    getUserByUserId,
+    getAllUsersByEventId,
+    findUsers,
     getUserByTelegramId,
     createNewUser,
     updateUserInfoByUserId,
@@ -148,6 +171,9 @@ function userMethodsFactory(userModelName) {
     banUserByUserId,
     unbanUserByUserId,
     assignAdminByUserId,
+    dischargeAdminByUserId,
+    findOneUser,
+    updateUser,
     assignSuperAdminByUserId,
     getAdminPropertiesByUserId,
     dischargeAdminByUserId

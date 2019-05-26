@@ -8,6 +8,12 @@ function topicMethodsFactory(topicModelName) {
   }
   const Topics = TopicSchema(topicModelName);
 
+  const findTopics = req =>
+    Topics.find(req.query, req.fields, { ...req.sorting });
+
+  const findOneTopic = (query, fields = null) =>
+    Topics.findOne(query, fields).exec();
+
   const getAllTopics = () => {
     return Topics.find({})
       .lean()
@@ -102,7 +108,9 @@ function topicMethodsFactory(topicModelName) {
     changeCyclicProp,
     setLastEventsCreationDate,
     updateLastEventsCreationDate,
-    getLastEventsCreationDate
+    getLastEventsCreationDate,
+    findTopics,
+    findOneTopic
   };
 }
 

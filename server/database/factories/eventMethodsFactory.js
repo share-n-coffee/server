@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const EventSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 
@@ -5,11 +6,27 @@ function eventMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
     return {};
   }
-  const Event = EventSchema(modelNames);
+  const Events = EventSchema(modelNames);
+
+  const getAllEvents = sorting => {
+    return Events.find({}, null, sorting).exec();
+  };
+
+  const findEvents = req =>
+    Events.find(req.query, req.fields, { ...req.sorting });
+
+  const findOneEvent = (query, fields = null) =>
+    Events.findOne(query, fields).exec();
+
+  const getEventById = eventId => {
+    return Events.findOne({
+      _id: mongoose.Types.ObjectId(eventId)
+    }).exec();
+  };
 
   // новые методы //
   const addEvent = (topicID, dateTimestamp) => {
-    const newEvent = new Event({
+    const newEvent = new EventSchema({
       topicId: topicID,
       date: dateTimestamp
     });
@@ -98,6 +115,10 @@ function eventMethodsFactory(modelNames) {
     addParticipant,
     removeParticipant,
     getDateByEventId,
+    getAllUsersByEvent,
+    setUserStatusByEvent,
+    findEvents,
+    findOneEvent,
     getAllUsersByEventId,
     setUserStatusByEventId
   };

@@ -4,38 +4,40 @@ const { ObjectId } = require('mongoose').Types;
 const ClassDBController = require('./../../database/dbController');
 const adminAuth = require('../../middleware/adminAuth');
 const objectIdValidation = require('../../middleware/objectIdValidation');
+const generatePagination = require('../../middleware/generatePagination');
 
 const router = express.Router();
 
-router.route('/').get((req, res) => {
+router.route('/').get(async (req, res) => {
   const DBController = new ClassDBController('user');
-  let fields = null;
 
-  if (req.query.getFields) {
-    fields = req.query.getFields.replace(/,/g, ' ');
-    delete req.query.getFields;
-  }
-
-  DBController.querySearch(req.query, fields)
-    .then(results => res.status(200).json(results))
-    .catch(error => res.status(404));
+  DBController.findUsers(req)
+    .then(users => res.status(200).json({ data: users }))
+    .catch(error => res.status(404).send(error));
 });
 
 router
-  .route('/:id', objectIdValidation)
-  .get((req, res) => {
-    const DBController = new ClassDBController('user');
-    let fields = null;
+  .route('/:id')
+  .get(objectIdValidation, (req, res) => {
+    const DBController = new ClassDBController('user', 'department');
+    req.query = {
+      ...req.query,
+      _id: req.params.id
+    };
 
-    if (Object.keys(req.query).length && req.query.getFields) {
-      fields = req.query.getFields.replace(/,/g, ' ');
-    }
-
-    DBController.getUserById(req.params.id, fields)
-      .then(user => res.status(200).json(user))
+    DBController.findUsers(req)
+      .then(users => {
+        DBController.getDepartmentById(users[0].department)
+          .then(department => {
+            const answer = { data: users[0].toJSON() };
+            answer.data.department = department.toJSON();
+            return res.status(200).json(answer);
+          })
+          .catch(error => res.status(404).send(error));
+      })
       .catch(error => res.status(404).send(error));
   })
-  .put((req, res) => {
+  .put(objectIdValidation, (req, res) => {
     const DBController = new ClassDBController('user');
 
     if (req.body.newDepartment) {
@@ -43,25 +45,25 @@ router
         DBController.updateUser(req.params.id, {
           department: req.body.newDepartment
         })
-          .then(user => res.status(200).json(user))
+          .then(user => res.status(200).json({ data: user }))
           .catch(error => res.status(404).send(error));
       } else {
         res.status(404).send("New Department's id is not valid ObjectId!");
       }
     }
 
-    if (req.body.eventId) {
-      if (ObjectId.isValid(req.body.eventId)) {
-        DBController.updateUsersEvents(req.params.id, req.body.eventId, 'add')
-          .then(user => res.status(200).json(user))
-          .catch(error => res.status(404).send(error));
-      } else {
-        res.status(404).send("New Event's _id is not valid ObjectId!");
-      }
-    }
+    // if (req.body.eventId) {
+    //   if (ObjectId.isValid(req.body.eventId)) {
+    //     DBController.updateUsersEvents(req.params.id, req.body.eventId, 'add')
+    //       .then(user => res.status(200).json({ data: user }))
+    //       .catch(error => res.status(404).send(error));
+    //   } else {
+    //     res.status(404).send("New Event's _id is not valid ObjectId!");
+    //   }
+    // }
 
     if (req.body.admin) {
-      if (!req.user.admin.isAdmin) {
+      if (!req.user.permission) {
         res.status(403).json({
           errors: [{ msg: 'Forbidden – Access denied' }]
         });
@@ -77,29 +79,28 @@ router
       DBController.updateUser(req.params.id, {
         admin: req.body.admin
       })
-        .then(user => res.status(200).json(user))
+        .then(user => res.status(200).json({ data: user }))
         .catch(error => res.status(404).send(error));
     }
   })
   .delete((req, res) => {
-    const DBController = new ClassDBController('user');
-
-    if (req.body.eventId) {
-      if (ObjectId.isValid(req.body.eventId)) {
-        DBController.updateUsersEvents(
-          req.params.id,
-          req.body.eventId,
-          'remove'
-        )
-          .then(user => res.status(200).json(user))
-          .catch(error => res.status(404).send(error));
-      } else {
-        res.status(404).send("New Event's _id is not valid ObjectId!");
-      }
-    }
+    // const DBController = new ClassDBController('user');
+    // if (req.body.eventId) {
+    //   if (ObjectId.isValid(req.body.eventId)) {
+    //     DBController.updateUsersEvents(
+    //       req.params.id,
+    //       req.body.eventId,
+    //       'remove'
+    //     )
+    //       .then(user => res.status(200).json({ data: user }))
+    //       .catch(error => res.status(404).send(error));
+    //   } else {
+    //     res.status(404).send("New Event's _id is not valid ObjectId!");
+    //   }
+    // }
   });
 
-router.route('/ban/:id', objectIdValidation).put(adminAuth, (req, res) => {
+router.route('/ban/:id').put(adminAuth, objectIdValidation, (req, res) => {
   const searchId = req.params.id;
   const { ban } = req.body;
 
@@ -107,13 +108,32 @@ router.route('/ban/:id', objectIdValidation).put(adminAuth, (req, res) => {
     const DBController = new ClassDBController('user');
     const userQuery = { _id: searchId };
 
-    DBController.putUserBan(userQuery, {
-      expired: ban.status ? 4102389828505 : 0,
-      ...ban
+    DBController.updateUser(userQuery, {
+      banned: {
+        expired: ban.status ? 4102389828505 : 0,
+        ...ban
+      }
     })
-      .then(user => res.status(200).json(user))
+      .then(user => res.status(200).json({ data: user }))
       .catch(error => res.status(404).send(error));
   }
+});
+
+router.route('/:id/upcoming/').get(objectIdValidation, (req, res) => {
+  const DBController = new ClassDBController('user', 'event');
+
+  req.query = {
+    participants: {
+      $elemMatch: {
+        status: 'accepted',
+        userId: req.params.id
+      }
+    }
+  };
+
+  DBController.findEvents(req)
+    .then(events => res.status(200).json({ data: events }))
+    .catch(error => res.status(404).send(error));
 });
 
 module.exports = router;

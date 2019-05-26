@@ -7,7 +7,10 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   }
   const Subscriptions = SubscriptionSchema(subscriptionModelName);
 
-  const createSubscription = (topicId, userId, visitsRemained) => {
+  const findSubscriptions = req =>
+    Subscriptions.find(req.query, req.fields, { ...req.sorting });
+
+  const createSubscription = (topicId, userId, visitsRemained = 1) => {
     return Subscriptions.create({
       topicId,
       userId,
@@ -49,6 +52,7 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   };
 
   return {
+    findSubscriptions,
     createSubscription,
     getAllSubscriptionsByTopicId,
     getAllSubscriptionsByUserId,
