@@ -4,10 +4,12 @@ const DBController = require('../database/dbController');
 
 const controller = new DBController();
 
-/* async function restoreVisits(topic, visitsRemained = 1) {
+async function restoreVisits(topic, visitsRemained = 1) {
   // Admin should be able to change visitsRemained param
   if (!topic.lastEventsCreationDate) return;
-  const eventsRemainingThisMonth = await controller.getEventsByTopic(topic.id);
+  const eventsRemainingThisMonth = await controller.getEventsByTopicId(
+    topic.id
+  );
   if (eventsRemainingThisMonth.length === 0) {
     const subscribers = await controller.getAllSubscriptionsByTopicId(topic.id);
     for (const subscriber of subscribers) {
@@ -21,4 +23,3 @@ const controller = new DBController();
 }
 
 module.exports = restoreVisits;
-*/

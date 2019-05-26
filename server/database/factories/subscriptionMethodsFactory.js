@@ -16,15 +16,21 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   };
 
   const getAllSubscriptionsByTopicId = topicId => {
-    return Subscriptions.find({ topicId }).exec();
+    return Subscriptions.find({ topicId })
+      .lean()
+      .exec();
   };
 
   const getAllSubscriptionsByUserId = userId => {
-    return Subscriptions.find({ userId }).exec();
+    return Subscriptions.find({ userId })
+      .lean()
+      .exec();
   };
 
   const getAllSubscriptions = () => {
-    return Subscriptions.find({}).exec();
+    return Subscriptions.find({})
+      .lean()
+      .exec();
   };
 
   const removeSubscription = (topicId, userId) => {

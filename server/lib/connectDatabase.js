@@ -8,7 +8,8 @@ const connectDatabase = () => {
       config.database,
       {
         useNewUrlParser: true,
-        useCreateIndex: true
+        useCreateIndex: true,
+        useFindAndModify: false
       }
     )
     .then(() => {

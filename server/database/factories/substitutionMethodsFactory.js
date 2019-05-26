@@ -8,18 +8,25 @@ function substitutionMethodsFactory(substitutionModelName) {
 
   const Substitutions = SubstitutionSchema(substitutionModelName);
 
-  const createEvent = id => {
+  const addEventForSubstitution = id => {
     return Substitutions.create({ eventId: id });
   };
 
-  const removeEvent = id => {
+  const removeSubstitutedEvent = id => {
     return Substitutions.deleteOne({ eventId: id });
   };
 
   const getAllEventsForSubstitution = () => {
-    return Substitutions.find({}).exec();
+    return Substitutions.find({})
+      .lean()
+      .exec();
   };
-  return { createEvent, removeEvent, getAllEventsForSubstitution };
+
+  return {
+    addEventForSubstitution,
+    removeSubstitutedEvent,
+    getAllEventsForSubstitution
+  };
 }
 
 module.exports = substitutionMethodsFactory;

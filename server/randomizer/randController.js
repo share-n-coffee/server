@@ -4,14 +4,13 @@
 const CronJob = require('cron').CronJob;
 const DBController = require('../database/dbController');
 const checkData = require('./checkDataCorrectness');
-const addNewPairs = require('./substitution');
+const tryToSubsitute = require('./substitution');
 const generateUpcomingDatesByTopic = require('./generateUpcomingDatesByTopic');
 const checkLastEventsCreationDate = require('./checkLastEventsCreationDate');
 const addParticipants = require('./addParticipants');
 const restoreVisits = require('./restoreVisits');
 
 const controller = new DBController();
-const substitutionQueue = [];
 
 class RandController {
   static checkAllData() {
@@ -33,8 +32,8 @@ class RandController {
 
     allTopics.forEach(topic => {
       if (topic.active === false) return;
-      // restoreVisits(topic);
       if (topic.cyclic === true) {
+        restoreVisits(topic);
         if (!checkLastEventsCreationDate(topic.lastEventsCreationDate)) return;
         console.log('start cyclic event generating');
         const dates = generateUpcomingDatesByTopic(topic);
@@ -56,41 +55,47 @@ class RandController {
   static async randomizer() {
     const allEvents = await controller.getAllEvents();
     for (const event of allEvents) {
-      // await RandController.removePastEvents(event);
+      await RandController.removePastEvents(event);
       await addParticipants(event);
+    }
+
+    const requiredSubstitutions = await controller.getAllEventsForSubstitution();
+    for (const eventForSubstitution of requiredSubstitutions) {
+      const substitutionSuccessfull = await tryToSubsitute(
+        eventForSubstitution.eventId
+      );
+      if (substitutionSuccessfull) {
+        console.log(
+          `Substitution for event ${
+            eventForSubstitution.eventId
+          } has been completed`
+        );
+        await controller.removeEvent(eventForSubstitution.eventId);
+      }
     }
   }
 
   static async removePastEvents(event) {
     const currentDate = new Date();
     if (currentDate > event.date) {
-      const eventParticipants = await controller.getAllUsersByEvent(event.id); // должен приходить массив из юзеров, но не объект ивента
+      const users = await controller.getAllUsersByEvent(event.id);
+      const eventUsers = users.participants;
+      const eventParticipants = [].concat(eventUsers);
+
+      for (const participant of eventParticipants) {
+        await controller.removeUserEventByUserId(participant.userId, event.id);
+      }
 
       await controller.removeEventByEventId(event.id);
-
-      console.log(eventParticipants);
-      for (const participant of eventParticipants) {
-        controller.removeUserEventByUserId(participant.id, event.id);
-      }
     }
   }
 
-  static makeSubstitution(eventId) {
-    substitutionQueue.unshift(eventId);
+  static async makeSubstitution(eventId) {
+    await controller.createEvent(eventId);
   }
 }
 
-// RandController.makeSubstitution('5cd6f6c381371d297acb2fe0'); // метод для вызова ботом в случае отказа пользователя
-
 module.exports = RandController;
-
-const substitution = new CronJob('*/30 * * * * *', () => {
-  if (substitutionQueue.length !== 0) {
-    addNewPairs(substitutionQueue.pop());
-  }
-});
-
-substitution.start();
 
 const eventsGenerator = new CronJob('*/15 * * * * *', () => {
   RandController.generateEventsForTopics();

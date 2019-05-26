@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const UserSchema = require('../models/user');
 const isString = require('../../utilities/isString');
 
@@ -10,15 +9,21 @@ function userMethodsFactory(userModelName) {
   const Users = UserSchema(userModelName);
 
   const getAllUsers = (fields = null) => {
-    return Users.find({}, fields).exec();
+    return Users.find({}, fields)
+      .lean()
+      .exec();
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields).exec();
+    return Users.findOne({ _id }, fields)
+      .lean()
+      .exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields).exec();
+    return Users.findOne({ telegramId }, fields)
+      .lean()
+      .exec();
   };
 
   const createNewUser = user => {
@@ -51,7 +56,9 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserByUserId = _id => {
-    return Users.deleteOne({ _id });
+    return Users.deleteOne({ _id })
+      .lean()
+      .exec();
   };
 
   const putUserEventByUserId = (_id, eventId) => {
@@ -60,17 +67,6 @@ function userMethodsFactory(userModelName) {
       { $push: { events: { eventId } } },
       { upsert: true }
     );
-
-    //   return new Promise((resolve, reject) => {
-    //     Users.findById({ _id }, (err, foundUser) => {
-    //       if (err) reject(err);
-    //       foundUser.events.push({ eventId: eventID });
-    //       foundUser.save((saveErr, updateUser) => {
-    //         if (saveErr) reject(saveErr);
-    //         resolve(updateUser);
-    //       });
-    //     });
-    //   });
   };
 
   const getAllUserEventsByUserId = _id => {
@@ -80,7 +76,6 @@ function userMethodsFactory(userModelName) {
   const removeUserEventByUserId = (_id, eventId) => {
     return Users.findOneAndUpdate({ _id }, { $pull: { events: { eventId } } });
   };
-  // { $pull: { 'events.$': { eventId:  } } }
 
   const removeAllUserEventsByUserId = _id => {
     return Users.updateOne({ _id }, { $set: { events: [] } });
