@@ -9,26 +9,25 @@ const RandController = require('../randomizer/randController');
 const bot = new TelegramBot(telegramBotToken, { polling: true });
 const controller = new DBController('user', 'event', 'topic');
 
-// Тексты сообщений из базы данных
-const botConfig = {
-  textLocation: 'посмотреть место на карте',
-  map: 'Нажми, на карту, чтобы увеличить',
-  banText: 'Ты забанен',
-  unbanText: 'Время твоего бана истекло',
-  unsubscribeText: 'Ты отписан от канала',
-  inviteText: 'Поздравляем, ты отправляешься на встречу☕:',
-  remindText: 'Напоминаем тебе про встречу:',
-  apologyText:
-    'Нам очень, жаль но твоя встреча не состоится, так как мы не смогли найти тебе пару:',
-  acceptText: 'Я иду!😋',
-  declineText: 'Не в этот раз 😞',
-  acceptReply: 'Очень круто 😉 , что ты подтвердил, не опаздывай!',
-  declineReply: 'Очень жаль, что ты отклонил☹, увидимся в другой раз!',
-  notificationLogText: 'Пользователь успешно оповещён о событии',
-  notificationErrorLogText: 'Пользователь не получил оповещение',
-  userAcceptLogText: 'Пользователь принял приглашение на событие',
-  userDeclineLogText: 'Пользователь отклонил приглашение на событие'
-};
+// Тексты сообщений
+const {
+  textLocation,
+  mapText,
+  banText,
+  unbanText,
+  unsubscribeText,
+  inviteText,
+  remindText,
+  apologyText,
+  acceptText,
+  declineText,
+  acceptReply,
+  declineReply,
+  notificationLogText,
+  notificationErrorLogText,
+  userAcceptLogText,
+  userDeclineLogText
+} = require('./botMessages');
 
 const getEventDescription = event => {
   const eventDate = new Date(event.date);
@@ -48,12 +47,12 @@ bot.on('callback_query', callbackQuery => {
   let status;
 
   if (reply === 'acpt') {
-    updatedMessage += `${botConfig.acceptReply}`;
-    replyText = botConfig.userAcceptLogText;
+    updatedMessage += `${acceptReply}`;
+    replyText = userAcceptLogText;
     status = 'accepted';
   } else {
-    updatedMessage += `${botConfig.declineReply}`;
-    replyText = botConfig.userDeclineLogText;
+    updatedMessage += `${declineReply}`;
+    replyText = userDeclineLogText;
     status = 'declined';
   }
 
@@ -84,19 +83,19 @@ module.exports = {
     let replyObj;
     switch (notifyType) {
       case 'ban':
-        message += `${botConfig.banText}`;
+        message += `${banText}`;
         break;
 
       case 'unban':
-        message += `${botConfig.unbanText}`;
+        message += `${unbanText}`;
         break;
 
       case 'unsubscribe':
-        message += `${botConfig.unsubscribeText}`;
+        message += `${unsubscribeText}`;
         break;
 
       case 'invite':
-        message += `${botConfig.inviteText}${'\n'}`;
+        message += `${inviteText}${'\n'}`;
         if (event) {
           message += `${getEventDescription(event)}`;
           replyObj = {
@@ -104,11 +103,11 @@ module.exports = {
               inline_keyboard: [
                 [
                   {
-                    text: botConfig.acceptText,
+                    text: acceptText,
                     callback_data: `acpt${event.id}` // передаем статус ответа вместе с eventId в строке
                   },
                   {
-                    text: botConfig.declineText,
+                    text: declineText,
                     callback_data: `dcln${event.id}`
                   }
                 ]
@@ -119,14 +118,14 @@ module.exports = {
         break;
 
       case 'remind':
-        message += `${botConfig.remindText}${'\n'}`;
+        message += `${remindText}${'\n'}`;
         if (event) {
           message += `${getEventDescription(event)}`;
         }
         break;
 
       case 'apology':
-        message += `${botConfig.apologyText}${'\n'}`;
+        message += `${apologyText}${'\n'}`;
         if (event) {
           message += `${getEventDescription(event)}`;
         }
@@ -145,7 +144,7 @@ module.exports = {
           logger.info(
             telegramId,
             'Notification',
-            `${botConfig.notificationLogText} ${event.id}`
+            `${notificationLogText} ${event.id}`
           );
         })
         .catch(err => {
@@ -154,7 +153,7 @@ module.exports = {
           logger.info(
             telegramId,
             'Notification',
-            `${botConfig.notificationErrorLogText}.
+            `${notificationErrorLogText}.
             ${err.response.body.description}`
           );
         });
