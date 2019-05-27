@@ -14,6 +14,7 @@ module.exports = (req, res, next) => {
       const parameter = el.split('_')[0];
       const sortType = el.split('_')[1];
       req.sorting.sort[parameter] = sortType;
+      req.sorting.collation = { locale: 'ru', strength: 2 };
     });
 
     delete req.query.sortBy;
