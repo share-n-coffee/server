@@ -24,15 +24,11 @@ function departmentMethodsFactory(departmentModelName) {
   const getDepartmentById = departmentId => {
     return Departments.findOne({
       _id: mongoose.Types.ObjectId(departmentId)
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
 
   const getAllDepartments = () => {
-    return Departments.find({})
-      .lean()
-      .exec();
+    return Departments.find({}).exec();
   };
 
   const postNewDepartment = department => {
