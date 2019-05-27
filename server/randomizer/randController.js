@@ -70,7 +70,7 @@ class RandController {
             eventForSubstitution.eventId
           } has been completed`
         );
-        await controller.removeEvent(eventForSubstitution.eventId);
+        await controller.removeSubstitutedEvent(eventForSubstitution.eventId);
       }
     }
   }
