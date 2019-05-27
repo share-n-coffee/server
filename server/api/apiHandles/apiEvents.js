@@ -9,7 +9,20 @@ router.route('/').get((req, res) => {
   const DBController = new ClassDBController('event');
 
   DBController.findEvents(req)
-    .then(events => res.status(200).json({ data: events }))
+    .then(async events => {
+      const pagination = {};
+
+      if (req.pagination.limit > 0) {
+        const total = await DBController.countEvents();
+        const totalPages = Math.ceil(total / req.pagination.limit);
+
+        pagination.pages = {
+          total: totalPages
+        };
+      }
+
+      return res.status(200).json({ data: events, ...pagination });
+    })
     .catch(error => res.status(404).send(error));
 });
 
