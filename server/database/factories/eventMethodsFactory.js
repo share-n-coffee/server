@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const EventSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 

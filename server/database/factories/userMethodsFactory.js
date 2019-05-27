@@ -158,6 +158,7 @@ function userMethodsFactory(userModelName) {
     getAllUsers,
     getAllUsersByEventId,
     findUsers,
+    getUserByUserId,
     getUserByTelegramId,
     createNewUser,
     updateUserInfoByUserId,
