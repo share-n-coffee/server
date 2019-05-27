@@ -175,8 +175,7 @@ function userMethodsFactory(userModelName) {
     findOneUser,
     updateUser,
     assignSuperAdminByUserId,
-    getAdminPropertiesByUserId,
-    dischargeAdminByUserId
+    getAdminPropertiesByUserId
   };
 }
 

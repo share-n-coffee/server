@@ -8,21 +8,11 @@ function eventMethodsFactory(modelNames) {
   }
   const Events = EventSchema(modelNames);
 
-  const getAllEvents = sorting => {
-    return Events.find({}, null, sorting).exec();
-  };
-
   const findEvents = req =>
     Events.find(req.query, req.fields, { ...req.sorting });
 
   const findOneEvent = (query, fields = null) =>
     Events.findOne(query, fields).exec();
-
-  const getEventById = eventId => {
-    return Events.findOne({
-      _id: mongoose.Types.ObjectId(eventId)
-    }).exec();
-  };
 
   // новые методы //
   const addEvent = (topicID, dateTimestamp) => {
@@ -115,8 +105,6 @@ function eventMethodsFactory(modelNames) {
     addParticipant,
     removeParticipant,
     getDateByEventId,
-    getAllUsersByEvent,
-    setUserStatusByEvent,
     findEvents,
     findOneEvent,
     getAllUsersByEventId,
