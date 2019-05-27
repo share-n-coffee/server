@@ -19,7 +19,11 @@ const EventSchema = new Schema({
       },
       // status: pending, notified, accepted, declined
       status: { type: String, required: false, default: 'free' },
-      _id: false
+      _id: false,
+      notificationDate: {
+        type: Number,
+        required: false
+      }
     }
   ],
   // дата проведения
