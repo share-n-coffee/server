@@ -1,38 +1,49 @@
 /* eslint-disable camelcase */
+/* eslint-disable dot-notation */
 process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
 const logger = require('../logger');
 const DBController = require('../database/dbController');
-const RandController = require('../randomizer/randController');
 
 const bot = new TelegramBot(telegramBotToken, { polling: true });
-const controller = new DBController('user', 'event', 'topic');
+const controller = new DBController('user', 'event', 'topic', 'substitution');
 
-// Тексты сообщений из базы данных
-const botConfig = {
-  textLocation: 'посмотреть место на карте',
-  map: 'Нажми, на карту, чтобы увеличить',
-  banText: 'Ты забанен',
-  unbanText: 'Время твоего бана истекло',
-  unsubscribeText: 'Ты отписан от канала',
-  inviteText: 'Поздравляем, ты отправляешься на встречу☕:',
-  remindText: 'Напоминаем тебе про встречу:',
-  acceptText: 'Я иду!😋',
-  declineText: 'Не в этот раз 😞',
-  acceptReply: 'Очень круто 😉 , что ты подтвердил, не опаздывай!',
-  declineReply: 'Очень жаль, что ты отклонил☹, увидимся в другой раз!',
-  notificationLogText: 'Пользователь успешно оповещён о событии',
-  notificationErrorLogText: 'Пользователь не получил оповещение',
-  userAcceptLogText: 'Пользователь принял приглашение на событие',
-  userDeclineLogText: 'Пользователь отклонил приглашение на событие'
+// Тексты сообщений
+const {
+  textLocation,
+  mapText,
+  banText,
+  unbanText,
+  unsubscribeText,
+  inviteText,
+  remindText,
+  apologyText,
+  acceptText,
+  declineText,
+  acceptReply,
+  declineReply,
+  notificationLogText,
+  notificationErrorLogText,
+  userAcceptLogText,
+  userDeclineLogText
+} = require('./botMessages');
+
+const prettifyDate = timestamp => {
+  const addZero = mark => `0${mark}`.slice(-2);
+  const d = new Date(timestamp);
+  const date = addZero(d.getDate());
+  const month = addZero(d.getMonth() + 1);
+  const year = d.getFullYear();
+  const hours = addZero(d.getHours());
+  const minutes = addZero(d.getMinutes());
+
+  return `${date}.${month}.${year} ${hours}:${minutes}`;
 };
 
 const getEventDescription = event => {
-  const eventDate = new Date(event.date);
-
-  return `${event.title}
-  ${'\n'}${event.description}${'\n'}${eventDate.toLocaleString('ru-RU')}`;
+  const eventDate = prettifyDate(event.date);
+  return `\n${event.title}\n${event.description}\n${eventDate}`;
 };
 
 // Реагируем на ответы пользователя
@@ -46,12 +57,12 @@ bot.on('callback_query', callbackQuery => {
   let status;
 
   if (reply === 'acpt') {
-    updatedMessage += `${botConfig.acceptReply}`;
-    replyText = botConfig.userAcceptLogText;
+    updatedMessage += `${acceptReply}`;
+    replyText = userAcceptLogText;
     status = 'accepted';
   } else {
-    updatedMessage += `${botConfig.declineReply}`;
-    replyText = botConfig.userDeclineLogText;
+    updatedMessage += `${declineReply}`;
+    replyText = userDeclineLogText;
     status = 'declined';
   }
 
@@ -65,11 +76,11 @@ bot.on('callback_query', callbackQuery => {
       return controller.getUserByTelegramId(chat.id);
     })
     .then(userData =>
-      controller.setUserStatusByEvent(eventId, userData.id, status)
+      controller.setUserStatusByEventId(eventId, userData['_id'], status)
     )
     .then(() => {
       if (status === 'declined') {
-        RandController.makeSubstitution(eventId);
+        controller.addEventForSubstitution(eventId);
       }
     })
     .catch(err => logger.error(err.message));
@@ -82,19 +93,19 @@ module.exports = {
     let replyObj;
     switch (notifyType) {
       case 'ban':
-        message += `${botConfig.banText}`;
+        message += `${banText}`;
         break;
 
       case 'unban':
-        message += `${botConfig.unbanText}`;
+        message += `${unbanText}`;
         break;
 
       case 'unsubscribe':
-        message += `${botConfig.unsubscribeText}`;
+        message += `${unsubscribeText}`;
         break;
 
       case 'invite':
-        message += `${botConfig.inviteText}${'\n'}`;
+        message += `${inviteText}${'\n'}`;
         if (event) {
           message += `${getEventDescription(event)}`;
           replyObj = {
@@ -102,11 +113,11 @@ module.exports = {
               inline_keyboard: [
                 [
                   {
-                    text: botConfig.acceptText,
+                    text: acceptText,
                     callback_data: `acpt${event.id}` // передаем статус ответа вместе с eventId в строке
                   },
                   {
-                    text: botConfig.declineText,
+                    text: declineText,
                     callback_data: `dcln${event.id}`
                   }
                 ]
@@ -117,7 +128,14 @@ module.exports = {
         break;
 
       case 'remind':
-        message += `${botConfig.remindText}${'\n'}`;
+        message += `${remindText}${'\n'}`;
+        if (event) {
+          message += `${getEventDescription(event)}`;
+        }
+        break;
+
+      case 'apology':
+        message += `${apologyText}${'\n'}`;
         if (event) {
           message += `${getEventDescription(event)}`;
         }
@@ -132,46 +150,68 @@ module.exports = {
         .sendMessage(telegramId, message, replyObj)
         .then(data => {
           resolve(data);
+
           logger.info(
             telegramId,
             'Notification',
-            `${botConfig.notificationLogText} ${event.id}`
+            `${notificationLogText} ${event.id}`
           );
         })
         .catch(err => {
           reject(err);
+
           logger.info(
             telegramId,
             'Notification',
-            `${botConfig.notificationErrorLogText}.
+            `${notificationErrorLogText}.
             ${err.response.body.description}`
           );
         });
     });
   },
   // метод рассылки
-  mailing(eventId) {
+  mailing(eventId, notifyType = 'invite') {
     const event = {
       id: eventId
     };
+
     controller
       .getEventById(eventId)
       .then(eventData => {
         event.date = eventData.date;
         event.users = eventData.participants;
+
         return controller.getTopicById(eventData.topicId);
       })
       .then(topicData => {
         event.title = topicData.title;
         event.description = topicData.description;
+
         event.users.forEach(user => {
-          controller
-            .getUserByUserId(user.userId)
-            .then(userData => this.notify('invite', userData, event))
-            .then(() =>
-              controller.setUserStatusByEvent(eventId, user.userId, 'notified')
-            )
-            .catch(err => logger.error(err.message));
+          if (
+            (user.status === 'pending' && notifyType === 'invite') ||
+            (user.status === 'accepted' &&
+              (notifyType === 'remind' || notifyType === 'apology'))
+          ) {
+            controller
+              .getUserByUserId(user.userId)
+              .then(userData => this.notify(notifyType, userData, event))
+              .then(() => {
+                let newStatus;
+                if (notifyType === 'invite') {
+                  newStatus = 'notified';
+                }
+                if (notifyType === 'remind' || notifyType === 'apology') {
+                  newStatus = 'reminded';
+                }
+                controller.setUserStatusByEventId(
+                  eventId,
+                  user.userId,
+                  newStatus
+                );
+              })
+              .catch(err => logger.error(err.message));
+          }
         });
       })
       .catch(err => logger.error(err.message));

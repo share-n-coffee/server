@@ -7,7 +7,10 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   }
   const Subscriptions = SubscriptionSchema(subscriptionModelName);
 
-  const createSubscription = (topicId, userId, visitsRemained) => {
+  const findSubscriptions = req =>
+    Subscriptions.find(req.query, req.fields, { ...req.sorting });
+
+  const createSubscription = (topicId, userId, visitsRemained = 1) => {
     return Subscriptions.create({
       topicId,
       userId,
@@ -16,15 +19,21 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   };
 
   const getAllSubscriptionsByTopicId = topicId => {
-    return Subscriptions.find({ topicId }).exec();
+    return Subscriptions.find({ topicId })
+      .lean()
+      .exec();
   };
 
   const getAllSubscriptionsByUserId = userId => {
-    return Subscriptions.find({ userId }).exec();
+    return Subscriptions.find({ userId })
+      .lean()
+      .exec();
   };
 
   const getAllSubscriptions = () => {
-    return Subscriptions.find({}).exec();
+    return Subscriptions.find({})
+      .lean()
+      .exec();
   };
 
   const removeSubscription = (topicId, userId) => {
@@ -43,6 +52,7 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   };
 
   return {
+    findSubscriptions,
     createSubscription,
     getAllSubscriptionsByTopicId,
     getAllSubscriptionsByUserId,

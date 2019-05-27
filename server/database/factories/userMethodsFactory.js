@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const UserSchema = require('../models/user');
 const isString = require('../../utilities/isString');
 
@@ -9,16 +8,45 @@ function userMethodsFactory(userModelName) {
 
   const Users = UserSchema(userModelName);
 
+  const findUsers = req =>
+    Users.find(req.query, req.fields || '-admin.password', {
+      ...req.sorting,
+      ...req.pagination
+    });
+
+  const findOneUser = (query, fields = null) =>
+    Users.findOne(query, fields).exec();
+
+  const countUsers = () => Users.find({}).count();
+
+  const updateUser = (id, newProps) => {
+    return Users.findOneAndUpdate(
+      { _id: id },
+      { $set: newProps },
+      {
+        upsert: true,
+        new: true,
+        fields: '-admin.password'
+      }
+    );
+  };
+
   const getAllUsers = (fields = null) => {
-    return Users.find({}, fields).exec();
+    return Users.find({}, fields)
+      .lean()
+      .exec();
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields).exec();
+    return Users.findOne({ _id }, fields)
+      .lean()
+      .exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields).exec();
+    return Users.findOne({ telegramId }, fields)
+      .lean()
+      .exec();
   };
 
   const createNewUser = user => {
@@ -51,7 +79,13 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserByUserId = _id => {
-    return Users.deleteOne({ _id });
+    return Users.deleteOne({ _id })
+      .lean()
+      .exec();
+  };
+
+  const getAllUsersByEventId = (id, fields = {}, sorting = {}) => {
+    return Users.find({ 'events.eventId': id }, fields, sorting).exec();
   };
 
   const putUserEventByUserId = (_id, eventId) => {
@@ -60,17 +94,6 @@ function userMethodsFactory(userModelName) {
       { $push: { events: { eventId } } },
       { upsert: true }
     );
-
-    //   return new Promise((resolve, reject) => {
-    //     Users.findById({ _id }, (err, foundUser) => {
-    //       if (err) reject(err);
-    //       foundUser.events.push({ eventId: eventID });
-    //       foundUser.save((saveErr, updateUser) => {
-    //         if (saveErr) reject(saveErr);
-    //         resolve(updateUser);
-    //       });
-    //     });
-    //   });
   };
 
   const getAllUserEventsByUserId = _id => {
@@ -80,7 +103,6 @@ function userMethodsFactory(userModelName) {
   const removeUserEventByUserId = (_id, eventId) => {
     return Users.findOneAndUpdate({ _id }, { $pull: { events: { eventId } } });
   };
-  // { $pull: { 'events.$': { eventId:  } } }
 
   const removeAllUserEventsByUserId = _id => {
     return Users.updateOne({ _id }, { $set: { events: [] } });
@@ -139,6 +161,8 @@ function userMethodsFactory(userModelName) {
 
   return {
     getAllUsers,
+    getAllUsersByEventId,
+    findUsers,
     getUserByUserId,
     getUserByTelegramId,
     createNewUser,
@@ -153,9 +177,12 @@ function userMethodsFactory(userModelName) {
     banUserByUserId,
     unbanUserByUserId,
     assignAdminByUserId,
+    dischargeAdminByUserId,
+    findOneUser,
+    updateUser,
     assignSuperAdminByUserId,
     getAdminPropertiesByUserId,
-    dischargeAdminByUserId
+    countUsers
   };
 }
 

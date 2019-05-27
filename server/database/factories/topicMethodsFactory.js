@@ -8,14 +8,26 @@ function topicMethodsFactory(topicModelName) {
   }
   const Topics = TopicSchema(topicModelName);
 
+  const findTopics = req =>
+    Topics.find(req.query, req.fields, { ...req.sorting });
+
+  const findOneTopic = (query, fields = null) =>
+    Topics.findOne(query, fields).exec();
+
+  const countTopics = () => Topics.find({}).count();
+
   const getAllTopics = () => {
-    return Topics.find({}).exec();
+    return Topics.find({})
+      .lean()
+      .exec();
   };
 
   const getTopicById = topicId => {
     return Topics.findOne({
       _id: mongoose.Types.ObjectId(topicId)
-    }).exec();
+    })
+      .lean()
+      .exec();
   };
 
   const postNewTopic = topic => {
@@ -98,7 +110,10 @@ function topicMethodsFactory(topicModelName) {
     changeCyclicProp,
     setLastEventsCreationDate,
     updateLastEventsCreationDate,
-    getLastEventsCreationDate
+    getLastEventsCreationDate,
+    findTopics,
+    findOneTopic,
+    countTopics
   };
 }
 
