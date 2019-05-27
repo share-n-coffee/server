@@ -72,7 +72,11 @@ async function addParticipants(event, usersLimit = 2) {
     );
 
     await controller.putUserEventByUserId(balancedUser.id, event.id);
-    await controller.setUserStatusByEvent(event.id, balancedUser.id, 'pending');
+    await controller.setUserStatusByEventId(
+      event.id,
+      balancedUser.id,
+      'pending'
+    );
   }
   bot.mailing(event.id);
   console.log(

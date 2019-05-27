@@ -100,7 +100,7 @@ async function tryToSubsitute(eventId) {
         );
 
         await controller.putUserEventByUserId(balancedUser.id, event.id);
-        await controller.setUserStatusByEvent(
+        await controller.setUserStatusByEventId(
           event.id,
           balancedUser.id,
           'pending'
