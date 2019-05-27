@@ -14,6 +14,8 @@ function topicMethodsFactory(topicModelName) {
   const findOneTopic = (query, fields = null) =>
     Topics.findOne(query, fields).exec();
 
+  const countTopics = () => Topics.find({}).count();
+
   const getAllTopics = () => {
     return Topics.find({})
       .lean()
@@ -110,7 +112,8 @@ function topicMethodsFactory(topicModelName) {
     updateLastEventsCreationDate,
     getLastEventsCreationDate,
     findTopics,
-    findOneTopic
+    findOneTopic,
+    countTopics
   };
 }
 

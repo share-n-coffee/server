@@ -9,10 +9,15 @@ function userMethodsFactory(userModelName) {
   const Users = UserSchema(userModelName);
 
   const findUsers = req =>
-    Users.find(req.query, req.fields || '-admin.password', { ...req.sorting });
+    Users.find(req.query, req.fields || '-admin.password', {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneUser = (query, fields = null) =>
     Users.findOne(query, fields).exec();
+
+  const countUsers = () => Users.find({}).count();
 
   const updateUser = (id, newProps) => {
     return Users.findOneAndUpdate(
@@ -176,7 +181,8 @@ function userMethodsFactory(userModelName) {
     findOneUser,
     updateUser,
     assignSuperAdminByUserId,
-    getAdminPropertiesByUserId
+    getAdminPropertiesByUserId,
+    countUsers
   };
 }
 

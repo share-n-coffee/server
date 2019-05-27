@@ -21,8 +21,8 @@ module.exports = (req, res, next) => {
 
   //  Pagination
   req.pagination = {};
-  req.pagination.page = +req.query.page || 0;
   req.pagination.limit = +req.query.limit || 0;
+  req.pagination.skip = +req.query.page * req.pagination.limit || 0;
 
   delete req.query.page;
   delete req.query.limit;

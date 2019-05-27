@@ -29,11 +29,21 @@ const {
   userDeclineLogText
 } = require('./botMessages');
 
-const getEventDescription = event => {
-  const eventDate = new Date(event.date);
+const prettifyDate = timestamp => {
+  const addZero = mark => `0${mark}`.slice(-2);
+  const d = new Date(timestamp);
+  const date = addZero(d.getDate());
+  const month = addZero(d.getMonth() + 1);
+  const year = d.getFullYear();
+  const hours = addZero(d.getHours());
+  const minutes = addZero(d.getMinutes());
 
-  return `${event.title}
-  ${'\n'}${event.description}${'\n'}${eventDate.toLocaleString('ru-RU')}`;
+  return `${date}.${month}.${year} ${hours}:${minutes}`;
+};
+
+const getEventDescription = event => {
+  const eventDate = prettifyDate(event.date);
+  return `\n${event.title}\n${event.description}\n${eventDate}`;
 };
 
 // Реагируем на ответы пользователя

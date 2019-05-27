@@ -10,14 +10,21 @@ router
   .get((req, res) => {
     const DBController = new ClassDBController('department');
 
-    DBController.findDepartments(
-      req.query,
-      req.fields,
-      req.sorting,
-      +req.pagination.skip,
-      +req.pagination.limit
-    )
-      .then(departments => res.status(200).json({ data: departments }))
+    DBController.findDepartments(req)
+      .then(async departments => {
+        const pagination = {};
+
+        if (req.pagination.limit > 0) {
+          const total = await DBController.countDepartments();
+          const totalPages = Math.ceil(total / req.pagination.limit);
+
+          pagination.pages = {
+            total: totalPages
+          };
+        }
+
+        return res.status(200).json({ data: departments, ...pagination });
+      })
       .catch(error => res.status(404).send(error));
   })
   .post(adminAuth, (req, res) => {

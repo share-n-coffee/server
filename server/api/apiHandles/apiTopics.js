@@ -12,7 +12,20 @@ router
     const DBController = new ClassDBController('topic');
 
     DBController.findTopics(req)
-      .then(topics => res.status(200).json({ data: topics }))
+      .then(async topics => {
+        const pagination = {};
+
+        if (req.pagination.limit > 0) {
+          const total = await DBController.countTopics();
+          const totalPages = Math.ceil(total / req.pagination.limit);
+
+          pagination.pages = {
+            total: totalPages
+          };
+        }
+
+        return res.status(200).json({ data: topics, ...pagination });
+      })
       .catch(error => res.status(404).send(error));
   })
   .post(adminAuth, (req, res) => {
