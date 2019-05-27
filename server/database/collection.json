@@ -6,5 +6,6 @@
   "subscription": "subscription",
   "substitution": "substitution",
   "log": "log",
+  "archive": "archive",
   "project": "random-coffee"
 }
