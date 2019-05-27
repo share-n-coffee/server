@@ -10,8 +10,19 @@ router.route('/').get((req, res) => {
   const DBController = new ClassDBController('subscription');
 
   DBController.findSubscriptions(req)
-    .then(subscriptions => {
-      return res.status(200).json({ data: subscriptions });
+    .then(async subscriptions => {
+      const pagination = {};
+
+      if (req.pagination.limit > 0) {
+        const total = (await DBController.findDescriptions({})).length;
+        const totalPages = Math.ceil(total / req.pagination.limit);
+
+        pagination.pages = {
+          total: totalPages
+        };
+      }
+
+      return res.status(200).json({ data: subscriptions, ...pagination });
     })
     .catch(error => res.status(404).send(error));
 });

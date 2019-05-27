@@ -9,7 +9,10 @@ function userMethodsFactory(userModelName) {
   const Users = UserSchema(userModelName);
 
   const findUsers = req =>
-    Users.find(req.query, req.fields || '-admin.password', { ...req.sorting });
+    Users.find(req.query, req.fields || '-admin.password', {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneUser = (query, fields = null) =>
     Users.findOne(query, fields).exec();
@@ -175,8 +178,7 @@ function userMethodsFactory(userModelName) {
     findOneUser,
     updateUser,
     assignSuperAdminByUserId,
-    getAdminPropertiesByUserId,
-    dischargeAdminByUserId
+    getAdminPropertiesByUserId
   };
 }
 

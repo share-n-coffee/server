@@ -12,7 +12,20 @@ router.route('/').get(async (req, res) => {
   const DBController = new ClassDBController('user');
 
   DBController.findUsers(req)
-    .then(users => res.status(200).json({ data: users }))
+    .then(async users => {
+      const pagination = {};
+
+      if (req.pagination.limit > 0) {
+        const total = (await DBController.findUsers({})).length;
+        const totalPages = Math.ceil(total / req.pagination.limit);
+
+        pagination.pages = {
+          total: totalPages
+        };
+      }
+
+      return res.status(200).json({ data: users, ...pagination });
+    })
     .catch(error => res.status(404).send(error));
 });
 
