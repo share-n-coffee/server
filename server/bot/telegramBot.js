@@ -76,7 +76,7 @@ bot.on('callback_query', callbackQuery => {
       return controller.getUserByTelegramId(chat.id);
     })
     .then(userData =>
-      controller.setUserStatusByEventId(eventId, userData['_id'], status)
+      controller.setUserStatusByEventId(eventId, userData.id, status)
     )
     .then(() => {
       if (status === 'declined') {
@@ -85,6 +85,53 @@ bot.on('callback_query', callbackQuery => {
     })
     .catch(err => logger.error(err.message));
 });
+
+/*
+
+const editMessage = status => {
+  if (status !== 'notified') {
+    updatedMessage = 'Что-то пошло не так...'
+    Bot.editMessageText(updatedMessage, {
+      chat_id: chat.id,
+      message_id
+    });
+    throw new Error(updatedMessage);
+  }
+
+  if (reply === 'acpt') {
+    updatedMessage += `${acceptReply}`;
+    replyText = userAcceptLogText;
+    newStatus = 'accepted';
+  } else {
+    updatedMessage += `${declineReply}`;
+    replyText = userDeclineLogText;
+    newStatus = 'declined';
+  }
+
+  return Bot.editMessageText(updatedMessage, {
+    chat_id: chat.id,
+    message_id
+  });
+};
+
+controller
+  .getUserByTelegramId(chat.id, { id: 1 }) // получаем id пользователя
+  .then(id => {
+    userId = id;
+    return controller.getUserStatusByEventId(eventId, id); // получаем статус пользователя
+  })
+  .then(status => editMessage(status)) // проверяем статус и редактируем сообщение
+  .then(() => controller.setUserStatusByEventId(eventId, id, newStatus)) // обновляем статус
+  .then(() => {
+    logger.info(chat.id, 'Notification', `${replyText} ${eventId}`);
+
+    if (newStatus === 'declined') {
+      return controller.addEventForSubstitution(eventId); // вызываем замену
+    }
+  })
+  .catch(err => logger.err(err));
+
+*/
 
 module.exports = {
   notify(notifyType, user, event) {
