@@ -15,7 +15,7 @@ router
         const pagination = {};
 
         if (req.pagination.limit > 0) {
-          const total = (await DBController.findDepartments({})).length;
+          const total = await DBController.countDepartments();
           const totalPages = Math.ceil(total / req.pagination.limit);
 
           pagination.pages = {

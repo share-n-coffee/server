@@ -14,6 +14,8 @@ function eventMethodsFactory(modelNames) {
   const findOneEvent = (query, fields = null) =>
     Events.findOne(query, fields).exec();
 
+  const countEvents = () => Events.find({}).count();
+
   // новые методы //
   const addEvent = (topicID, dateTimestamp) => {
     const newEvent = new EventSchema({
@@ -108,7 +110,8 @@ function eventMethodsFactory(modelNames) {
     findEvents,
     findOneEvent,
     getAllUsersByEventId,
-    setUserStatusByEventId
+    setUserStatusByEventId,
+    countEvents
   };
 }
 

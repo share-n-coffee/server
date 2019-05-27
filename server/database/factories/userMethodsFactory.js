@@ -17,6 +17,8 @@ function userMethodsFactory(userModelName) {
   const findOneUser = (query, fields = null) =>
     Users.findOne(query, fields).exec();
 
+  const countUsers = () => Users.find({}).count();
+
   const updateUser = (id, newProps) => {
     return Users.findOneAndUpdate(
       { _id: id },
@@ -178,7 +180,8 @@ function userMethodsFactory(userModelName) {
     findOneUser,
     updateUser,
     assignSuperAdminByUserId,
-    getAdminPropertiesByUserId
+    getAdminPropertiesByUserId,
+    countUsers
   };
 }
 

@@ -13,7 +13,7 @@ router.route('/').get((req, res) => {
       const pagination = {};
 
       if (req.pagination.limit > 0) {
-        const total = (await DBController.findEvents({})).length;
+        const total = await DBController.countEvents();
         const totalPages = Math.ceil(total / req.pagination.limit);
 
         pagination.pages = {
