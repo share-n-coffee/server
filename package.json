@@ -37,6 +37,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.2.4",
     "mongoose": "^5.5.4",
+    "node-cron": "^2.0.3",
     "node-telegram-bot-api": "^0.30.0",
     "passport": "^0.4.0",
     "passport-telegram": "^1.0.0",

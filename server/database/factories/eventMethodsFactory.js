@@ -95,6 +95,55 @@ function eventMethodsFactory(modelNames) {
     }).exec();
   };
   // ------------ //
+  const getUpcomingEventsBothAccepted = () => {
+    const currentTime = new Date().getTime();
+    return Event.find(
+      {
+        $and: [
+          {
+            date: {
+              $lt: currentTime + 3600 * 24
+            }
+          },
+          {
+            'participants.status': { $all: ['accepted'] }
+          }
+        ]
+      },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+        }
+      }
+    ).exec();
+  };
+  // ----------//
+  const getUpcomingEventsOneAccepted = () => {
+    const currentTime = new Date().getTime();
+    return Event.find(
+      {
+        $and: [
+          {
+            date: {
+              $lt: currentTime + 3600 * 24
+            }
+          },
+          {
+            'participants.status': 'accepted'
+          }
+        ]
+      },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+        }
+      }
+    ).exec();
+  };
+  // ------------ //
+  const getUpdateEventStatus = (eventId) => {
+    return Event.updateOne({ _id: eventId }, { $set: {isNotifited: true }}).exec();
+  };
 
   return {
     getEventsByTopicId,
@@ -110,7 +159,12 @@ function eventMethodsFactory(modelNames) {
     getAllUsersByEvent,
     setUserStatusByEventId,
     getUserStatusByEventId,
-    countEvents
+    countEvents,
+    getUpcomingEventsBothAccepted,
+    getUpcomingEventsOneAccepted,
+    getUpdateEventStatus
+
+
   };
 }
 

@@ -23,7 +23,9 @@ const EventSchema = new Schema({
     }
   ],
   // дата проведения
-  date: { type: Number, required: false }
+  date: { type: Number, required: false },
+  // статус уведомления у события
+  isNotifited : {type: Boolean, required:false, default: false}
 });
 
 module.exports = modelName => mongoose.model(modelName, EventSchema);
