@@ -17,17 +17,13 @@ function topicMethodsFactory(topicModelName) {
   const countTopics = () => Topics.find({}).count();
 
   const getAllTopics = () => {
-    return Topics.find({})
-      .lean()
-      .exec();
+    return Topics.find({}).exec();
   };
 
   const getTopicById = topicId => {
     return Topics.findOne({
       _id: mongoose.Types.ObjectId(topicId)
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
 
   const postNewTopic = topic => {

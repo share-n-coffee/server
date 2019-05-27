@@ -17,9 +17,7 @@ function substitutionMethodsFactory(substitutionModelName) {
   };
 
   const getAllEventsForSubstitution = () => {
-    return Substitutions.find({})
-      .lean()
-      .exec();
+    return Substitutions.find({}).exec();
   };
 
   return {
