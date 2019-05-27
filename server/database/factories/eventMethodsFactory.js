@@ -66,7 +66,7 @@ function eventMethodsFactory(modelNames) {
       .lean()
       .exec();
   };
-  const getAllUsersByEventId = eventId => {
+  const getAllUsersByEvent = eventId => {
     return Events.findOne(
       { _id: eventId },
       { 'participants.userId': true, _id: false }
@@ -108,7 +108,7 @@ function eventMethodsFactory(modelNames) {
     getDateByEventId,
     findEvents,
     findOneEvent,
-    getAllUsersByEventId,
+    getAllUsersByEvent,
     setUserStatusByEventId,
     countEvents
   };
