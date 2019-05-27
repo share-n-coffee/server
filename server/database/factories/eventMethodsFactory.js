@@ -9,7 +9,10 @@ function eventMethodsFactory(modelNames) {
   const Events = EventSchema(modelNames);
 
   const findEvents = req =>
-    Events.find(req.query, req.fields, { ...req.sorting });
+    Events.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneEvent = (query, fields = null) =>
     Events.findOne(query, fields).exec();

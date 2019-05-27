@@ -8,7 +8,10 @@ function subscriptionMethodsFactory(subscriptionModelName) {
   const Subscriptions = SubscriptionSchema(subscriptionModelName);
 
   const findSubscriptions = req =>
-    Subscriptions.find(req.query, req.fields, { ...req.sorting });
+    Subscriptions.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const createSubscription = (topicId, userId, visitsRemained = 1) => {
     return Subscriptions.create({
