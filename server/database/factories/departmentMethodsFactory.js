@@ -19,6 +19,8 @@ function departmentMethodsFactory(departmentModelName) {
 
   const countDepartments = () => Departments.find({}).count();
 
+  const deleteDepartment = id => Departments.findByIdAndDelete(id).exec();
+
   const getDepartmentById = departmentId => {
     return Departments.findOne({
       _id: mongoose.Types.ObjectId(departmentId)
@@ -55,7 +57,8 @@ function departmentMethodsFactory(departmentModelName) {
     updateDepartment,
     findDepartments,
     findOneDepartment,
-    countDepartments
+    countDepartments,
+    deleteDepartment
   };
 }
 
