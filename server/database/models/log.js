@@ -4,14 +4,14 @@ const { Schema, model } = mongoose;
 
 const LogSchema = new Schema({
   userId: {
-    type: Number,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
   type: {
     type: String,
     required: true
   },
-  message: {
+  payload: {
     type: String,
     required: true
   },

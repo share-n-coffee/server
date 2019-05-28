@@ -3,9 +3,10 @@
 process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
-const logger = require('../logger');
 const DBController = require('../database/dbController');
+const logger = require('../logger');
 
+const { logTypes } = logger;
 const bot = new TelegramBot(telegramBotToken, { polling: true });
 const controller = new DBController('user', 'event', 'topic', 'substitution');
 
@@ -135,7 +136,7 @@ controller
 
 module.exports = {
   notify(notifyType, user, event) {
-    const { firstName, telegramId } = user;
+    const { id, firstName, telegramId } = user;
     let message = `Привет, ${firstName}😉!${'\n'}`;
     let replyObj;
     switch (notifyType) {
@@ -197,10 +198,9 @@ module.exports = {
         .sendMessage(telegramId, message, replyObj)
         .then(data => {
           resolve(data);
-
           logger.info(
-            telegramId,
-            'Notification',
+            id,
+            logTypes.userNotification,
             `${notificationLogText} ${event.id}`
           );
         })
@@ -208,8 +208,8 @@ module.exports = {
           reject(err);
 
           logger.info(
-            telegramId,
-            'Notification',
+            id,
+            logTypes.userNotification,
             `${notificationErrorLogText}.
             ${err.response.body.description}`
           );

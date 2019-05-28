@@ -7,6 +7,12 @@ const env = process.env.NODE_ENV || 'development';
 const logDir = 'server/log';
 const controller = new DBcontroller('log');
 
+const logTypes = {
+  userNotification: 'user_notification',
+  userSubscription: 'user_subscription',
+  userBan: 'user_ban'
+};
+
 const dailyRotateFileTransport = new transports.DailyRotateFile({
   filename: `${logDir}/%DATE%-results.log`,
   datePattern: 'YYYY-MM-DD',
@@ -39,14 +45,17 @@ module.exports = {
   error(err) {
     logger.error(err);
   },
-  info(userId, logType, logMessage) {
+  info(userId, type, payload) {
+    let logType = type;
+    if (!logType) logType = 'unknown_type';
     controller
       .postNewLog({
         userId,
         type: logType,
-        message: logMessage,
+        payload,
         timestamp: Date.now()
       })
       .catch(err => this.error(err));
-  }
+  },
+  logTypes
 };
