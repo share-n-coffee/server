@@ -12,8 +12,7 @@ const controller = new DBController('user', 'event', 'topic', 'substitution');
 
 // Тексты сообщений
 const {
-  textLocation,
-  mapText,
+  greeting,
   banText,
   unbanText,
   unsubscribeText,
@@ -138,7 +137,7 @@ module.exports = {
   notify(notifyType, user, event) {
     const { id, firstName, telegramId } = user;
     const eventId = event.id;
-    let message = `Привет, ${firstName}😉!${'\n'}`;
+    let message = `${greeting}, ${firstName}😉!${'\n'}`;
     let replyObj;
     switch (notifyType) {
       case 'ban':
@@ -210,13 +209,12 @@ module.exports = {
   },
   // метод рассылки
   mailing(eventId, notifyType = 'invite') {
-    const event = {
-      id: eventId
-    };
+    const event = {}; // объект для передачи в notify
 
     controller
       .getEventById(eventId)
       .then(eventData => {
+        event.id = eventId;
         event.date = eventData.date;
         event.users = eventData.participants;
 
@@ -237,10 +235,10 @@ module.exports = {
               .then(userData => this.notify(notifyType, userData, event))
               .then(() => {
                 let newStatus;
-                if (notifyType === 'invite') {
+                if (user.status === 'pending') {
                   newStatus = 'notified';
                 }
-                if (notifyType === 'remind' || notifyType === 'apology') {
+                if (user.status === 'accepted') {
                   newStatus = 'reminded';
                 }
                 return controller.setUserStatusByEventId(
