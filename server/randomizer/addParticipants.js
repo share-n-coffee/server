@@ -3,6 +3,7 @@
 const DBController = require('../database/dbController');
 const countDaysRemained = require('./countDaysRemained');
 const bot = require('../bot/telegramBot');
+const checkUserFields = require('./checkUserFields');
 
 const controller = new DBController();
 
@@ -14,9 +15,13 @@ async function addParticipants(event, usersLimit = 2) {
   const subscribers = await controller.getAllSubscriptionsByTopicId(
     event.topicId
   );
-  const availableSubscribers = subscribers.filter(subscriber => {
-    return subscriber.visitsRemained > 0;
-  });
+  const availableSubscribers = [];
+  for (const subscriber of subscribers) {
+    const validationPassed = await checkUserFields(subscriber.userId);
+    if (subscriber.visitsRemained > 0 && validationPassed) {
+      availableSubscribers.push(subscriber);
+    }
+  }
 
   if (availableSubscribers.length < usersLimit) return;
 
