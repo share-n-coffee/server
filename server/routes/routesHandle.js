@@ -1,4 +1,4 @@
-const authRoutes = require('../api/apiAuth');
+const { router: authRoutes } = require('../api/apiAuth');
 const apiRoutes = require('../api/api');
 const jwtAuth = require('../middleware/jwtAuth');
 const parseQuery = require('../middleware/parseQuery');

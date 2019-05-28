@@ -58,6 +58,17 @@ router
         res.status(200).json({ data: updatedDepartment });
       })
       .catch(error => res.status(404).send(error));
+  })
+  .delete(adminAuth, objectIdValidation, (req, res) => {
+    const DBController = new ClassDBController('department');
+
+    DBController.deleteDepartment(req.params.id)
+      .then(deletedDepartment => {
+        console.log(deletedDepartment);
+
+        res.status(200).json({ data: deletedDepartment });
+      })
+      .catch(error => res.status(404).send(error));
   });
 
 module.exports = router;
