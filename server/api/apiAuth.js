@@ -30,18 +30,27 @@ router.route('/').post((req, res) => {
   const reqUser = req.body;
   const DBController = new ClassDBController('user', 'department');
 
-  DBController.getUserByTelegramId(reqUser.id).then(async takenUser => {
-    const user = takenUser || (await DBController.createNewUser(reqUser));
+  DBController.getUserByTelegramId(reqUser.id)
+    .then(async takenUser => {
+      const user =
+        takenUser === null
+          ? await DBController.createNewUser(reqUser)
+          : takenUser;
 
-    const department = await DBController.findOneDepartment(
-      {
-        _id: user.department
-      },
-      'title description'
-    );
+      let department;
 
-    res.json({ token: createJWT(createPayload(user, department)) });
-  });
+      if (!user.department) {
+        department = await DBController.findOneDepartment(
+          {
+            _id: user.department
+          },
+          'title description'
+        );
+      }
+
+      res.json({ token: createJWT(createPayload(user, department || null)) });
+    })
+    .catch(err => console.log(err));
 });
 
 router.route('/admin').post(async (req, res) => {

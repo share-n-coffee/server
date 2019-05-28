@@ -55,12 +55,15 @@ function userMethodsFactory(userModelName) {
       lastName: user.last_name,
       telegramId: user.id,
       avatar: user.photo_url,
-      username: user.username
+      username: user.username,
+      admin: {
+        permission: 0
+      }
     };
     return Users.findOneAndUpdate(
       { telegramId: newUser.telegramId },
       { $set: newUser },
-      { upsert: true }
+      { upsert: true, new: true }
     );
   };
 
