@@ -78,6 +78,15 @@ function eventMethodsFactory(modelNames) {
       }
     ).exec();
   };
+  const setNotificationDateByEventId = (eventId, userID, date) => {
+    return Events.updateOne(
+      { _id: eventId, 'participants.userId': userID },
+      { $set: { 'participants.$.notificationDate': date } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
   const getUserStatusByEventId = (eventId, userId) => {
     return Events.findOne(
       { _id: eventId },
@@ -112,6 +121,7 @@ function eventMethodsFactory(modelNames) {
     findOneEvent,
     getAllUsersByEvent,
     setUserStatusByEventId,
+    setNotificationDateByEventId,
     getUserStatusByEventId,
     countEvents
   };

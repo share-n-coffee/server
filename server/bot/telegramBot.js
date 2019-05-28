@@ -243,11 +243,20 @@ module.exports = {
                 if (notifyType === 'remind' || notifyType === 'apology') {
                   newStatus = 'reminded';
                 }
-                controller.setUserStatusByEventId(
+                return controller.setUserStatusByEventId(
                   eventId,
                   user.userId,
                   newStatus
                 );
+              })
+              .then(() => {
+                if (!user.notificationDate) {
+                  controller.setNotificationDateByEventId(
+                    eventId,
+                    user.userId,
+                    Date.now()
+                  );
+                }
               })
               .catch(err => logger.error(err.message));
           }
