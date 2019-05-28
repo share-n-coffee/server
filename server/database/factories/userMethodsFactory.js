@@ -61,7 +61,7 @@ function userMethodsFactory(userModelName) {
     return Users.findOneAndUpdate(
       { telegramId: newUser.telegramId },
       { $set: newUser },
-      { upsert: true }
+      { upsert: true, new: true }
     );
   };
 
