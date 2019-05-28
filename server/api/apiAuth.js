@@ -79,4 +79,8 @@ router.route('/admin').post(async (req, res) => {
   return res.json({ token: createJWT(createPayload(user, department)) });
 });
 
-module.exports = router;
+module.exports = {
+  router,
+  createPayload,
+  createJWT
+};
