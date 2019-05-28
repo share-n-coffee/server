@@ -8,7 +8,10 @@ function eventMethodsFactory(modelNames) {
   const Events = EventSchema(modelNames);
 
   const findEvents = req =>
-    Events.find(req.query, req.fields, { ...req.sorting });
+    Events.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneEvent = (query, fields = null) =>
     Events.findOne(query, fields).exec();
@@ -75,6 +78,15 @@ function eventMethodsFactory(modelNames) {
       }
     ).exec();
   };
+  const getUserStatusByEventId = (eventId, userId) => {
+    return Events.findOne(
+      { _id: eventId },
+      { participants: { $elemMatch: { userId } } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
   const removeEventByEventId = _id => {
     return Events.deleteOne({ _id }, err => {
       if (err) console.log(err);
@@ -100,6 +112,7 @@ function eventMethodsFactory(modelNames) {
     findOneEvent,
     getAllUsersByEvent,
     setUserStatusByEventId,
+    getUserStatusByEventId,
     countEvents
   };
 }

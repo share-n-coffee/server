@@ -3,9 +3,10 @@
 process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
-const logger = require('../logger');
 const DBController = require('../database/dbController');
+const logger = require('../logger');
 
+const { logTypes } = logger;
 const bot = new TelegramBot(telegramBotToken, { polling: true });
 const controller = new DBController('user', 'event', 'topic', 'substitution');
 
@@ -135,7 +136,8 @@ controller
 
 module.exports = {
   notify(notifyType, user, event) {
-    const { firstName, telegramId } = user;
+    const { id, firstName, telegramId } = user;
+    const eventId = event.id;
     let message = `Привет, ${firstName}😉!${'\n'}`;
     let replyObj;
     switch (notifyType) {
@@ -161,11 +163,11 @@ module.exports = {
                 [
                   {
                     text: acceptText,
-                    callback_data: `acpt${event.id}` // передаем статус ответа вместе с eventId в строке
+                    callback_data: `acpt${eventId}` // передаем статус ответа вместе с eventId в строке
                   },
                   {
                     text: declineText,
-                    callback_data: `dcln${event.id}`
+                    callback_data: `dcln${eventId}`
                   }
                 ]
               ]
@@ -197,22 +199,12 @@ module.exports = {
         .sendMessage(telegramId, message, replyObj)
         .then(data => {
           resolve(data);
-
-          logger.info(
-            telegramId,
-            'Notification',
-            `${notificationLogText} ${event.id}`
-          );
+          logger.info(id, logTypes.userNotification, { eventId, message });
         })
         .catch(err => {
           reject(err);
 
-          logger.info(
-            telegramId,
-            'Notification',
-            `${notificationErrorLogText}.
-            ${err.response.body.description}`
-          );
+          logger.info(id, logTypes.userNotification, { eventId, message, err });
         });
     });
   },

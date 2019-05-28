@@ -8,13 +8,11 @@ function departmentMethodsFactory(departmentModelName) {
   }
   const Departments = DepartmentSchema(departmentModelName);
 
-  const findDepartments = (
-    query,
-    fields = null,
-    sorting = null,
-    skip = 0,
-    limit = 0
-  ) => Departments.find(query, fields, { ...sorting, skip, limit }).exec();
+  const findDepartments = req =>
+    Departments.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneDepartment = (query, fields = null) =>
     Departments.findOne(query, fields).exec();
