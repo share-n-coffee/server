@@ -1,10 +1,14 @@
 const express = require('express');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 const { ObjectId } = require('mongoose').Types;
+const config = require('../../config/config');
 const ClassDBController = require('./../../database/dbController');
 const adminAuth = require('../../middleware/adminAuth');
 const objectIdValidation = require('../../middleware/objectIdValidation');
 const generatePagination = require('../../middleware/generatePagination');
+
+const { createPayload, createJWT } = require('./../apiAuth');
 
 const router = express.Router();
 
@@ -51,14 +55,25 @@ router
       .catch(error => res.status(404).send(error));
   })
   .put(objectIdValidation, (req, res) => {
-    const DBController = new ClassDBController('user');
+    const DBController = new ClassDBController('user', 'department');
 
     if (req.body.newDepartment) {
       if (ObjectId.isValid(req.body.newDepartment)) {
         DBController.updateUser(req.params.id, {
           department: req.body.newDepartment
         })
-          .then(user => res.status(200).json({ data: user }))
+          .then(async user => {
+            const department = await DBController.findOneDepartment(
+              {
+                _id: user.department
+              },
+              'title description'
+            );
+
+            return res
+              .status(200)
+              .json({ token: createJWT(createPayload(user, department)) });
+          })
           .catch(error => res.status(404).send(error));
       } else {
         res.status(404).send("New Department's id is not valid ObjectId!");

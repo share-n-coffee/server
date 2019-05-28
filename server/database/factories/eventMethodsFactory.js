@@ -1,6 +1,8 @@
 const EventSchema = require('../models/event');
 const isNull = require('../../utilities/isNull');
 
+const currentTime = new Date().getTime();
+
 function eventMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
     return {};
@@ -8,7 +10,10 @@ function eventMethodsFactory(modelNames) {
   const Events = EventSchema(modelNames);
 
   const findEvents = req =>
-    Events.find(req.query, req.fields, { ...req.sorting });
+    Events.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneEvent = (query, fields = null) =>
     Events.findOne(query, fields).exec();
@@ -75,6 +80,15 @@ function eventMethodsFactory(modelNames) {
       }
     ).exec();
   };
+  const setNotificationDateByEventId = (eventId, userID, date) => {
+    return Events.updateOne(
+      { _id: eventId, 'participants.userId': userID },
+      { $set: { 'participants.$.notificationDate': date } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
   const getUserStatusByEventId = (eventId, userId) => {
     return Events.findOne(
       { _id: eventId },
@@ -96,13 +110,13 @@ function eventMethodsFactory(modelNames) {
   };
   // ------------ //
   const getUpcomingEventsBothAccepted = () => {
-    const currentTime = new Date().getTime();
-    return Event.find(
+    return Events.find(
       {
         $and: [
           {
             date: {
-              $lt: currentTime + 3600 * 24
+              $gte: currentTime,
+              $lte: currentTime + 3600 * 24
             }
           },
           {
@@ -119,20 +133,13 @@ function eventMethodsFactory(modelNames) {
   };
   // ----------//
   const getUpcomingEventsOneAccepted = () => {
-    const currentTime = new Date().getTime();
-    return Event.find(
+    return Events.find(
       {
         $and: [
           {
             date: {
-              $and: [
-                {
-                  $lte: currentTime + 3600 * 24
-                },
-                {
-                  $gte: currentTime
-                }
-              ]
+              $lte: currentTime + 3600 * 24,
+              $gte: currentTime
             }
           },
           {
@@ -147,9 +154,18 @@ function eventMethodsFactory(modelNames) {
       }
     ).exec();
   };
+  // -----------//
+
+  const getAllEventsNotificationTimeExpired = n => {
+    return Events.find({
+      date: {
+        $lt: currentTime - n
+      }
+    }).exec();
+  };
   // ------------ //
   const getUpdateEventStatus = eventId => {
-    return Event.updateOne(
+    return Events.updateOne(
       { _id: eventId },
       { $set: { isReminded: true } }
     ).exec();
@@ -168,11 +184,13 @@ function eventMethodsFactory(modelNames) {
     findOneEvent,
     getAllUsersByEvent,
     setUserStatusByEventId,
+    setNotificationDateByEventId,
     getUserStatusByEventId,
     countEvents,
     getUpcomingEventsBothAccepted,
     getUpcomingEventsOneAccepted,
-    getUpdateEventStatus
+    getUpdateEventStatus,
+    getAllEventsNotificationTimeExpired
   };
 }
 

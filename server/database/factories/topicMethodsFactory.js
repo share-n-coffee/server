@@ -9,7 +9,10 @@ function topicMethodsFactory(topicModelName) {
   const Topics = TopicSchema(topicModelName);
 
   const findTopics = req =>
-    Topics.find(req.query, req.fields, { ...req.sorting });
+    Topics.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneTopic = (query, fields = null) =>
     Topics.findOne(query, fields).exec();

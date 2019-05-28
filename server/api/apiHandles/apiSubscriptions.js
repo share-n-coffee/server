@@ -28,7 +28,7 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/topic/:id').get(objectIdValidation, (req, res) => {
-  const DBController = new ClassDBController('subscription');
+  const DBController = new ClassDBController('user', 'subscription');
   req.query = {
     ...req.query,
     topicId: req.params.id
@@ -36,8 +36,18 @@ router.route('/topic/:id').get(objectIdValidation, (req, res) => {
 
   DBController.findSubscriptions(req)
     .then(subscribedUsers => {
-      const usersId = subscribedUsers.map(user => user.userId);
-      return res.status(200).json({ data: usersId });
+      const users = subscribedUsers.map(subscribedUser =>
+        DBController.findOneUser(
+          {
+            _id: subscribedUser.userId
+          },
+          'firstName lastName'
+        )
+      );
+
+      Promise.all(users)
+        .then(result => res.status(200).json({ data: result }))
+        .catch(error => res.status(404).send(error));
     })
     .catch(error => res.status(404).send(error));
 });

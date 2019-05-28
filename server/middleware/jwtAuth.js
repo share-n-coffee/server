@@ -8,14 +8,14 @@ module.exports = (req, res, next) => {
     : false;
 
   if (!token) {
-    return res.status(403).json({
+    return res.status(401).json({
       errors: [{ msg: 'There is no token, authorization denied' }]
     });
   }
 
   jwt.verify(token, config.jwtSecret, (err, decoded) => {
     if (err) {
-      res.status(403).json({
+      res.status(401).json({
         errors: [{ msg: 'Token is not valid!' }]
       });
     } else {
@@ -23,7 +23,7 @@ module.exports = (req, res, next) => {
       const currentDate = new Date().getTime();
 
       if (endDate - currentDate <= 0) {
-        res.status(403).json({
+        res.status(401).json({
           errors: [{ msg: 'Your token is expired!' }]
         });
       } else {
