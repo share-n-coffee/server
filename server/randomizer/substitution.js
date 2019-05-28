@@ -3,6 +3,7 @@
 /* eslint-disable consistent-return */
 const DBController = require('../database/dbController');
 const countDaysRemained = require('./countDaysRemained');
+const checkUserFields = require('./checkUserFields');
 const bot = require('../bot/telegramBot');
 
 const controller = new DBController();
@@ -16,9 +17,13 @@ async function tryToSubsitute(eventId) {
     event.topicId
   );
 
-  const availableSubscribers = subscribers.filter(subscriber => {
-    return subscriber.visitsRemained > 0;
-  });
+  const availableSubscribers = [];
+  for (const subscriber of subscribers) {
+    const validationPassed = await checkUserFields(subscriber.userId);
+    if (subscriber.visitsRemained > 0 && validationPassed) {
+      availableSubscribers.push(subscriber);
+    }
+  }
 
   const usersToSubstitute = event.participants.filter(participant => {
     return participant.status === 'declined';
@@ -100,7 +105,7 @@ async function tryToSubsitute(eventId) {
         );
 
         await controller.putUserEventByUserId(balancedUser.id, event.id);
-        await controller.setUserStatusByEvent(
+        await controller.setUserStatusByEventId(
           event.id,
           balancedUser.id,
           'pending'

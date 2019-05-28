@@ -9,21 +9,15 @@ function logMethodsFactory(logModelName) {
   const Log = LogSchema(logModelName);
 
   const getAllLogs = (fields = null) => {
-    return Log.find({}, fields)
-      .lean()
-      .exec();
+    return Log.find({}, fields).exec();
   };
 
   const getLogsByUserId = (userId, fields = null) => {
-    return Log.find({ userId }, fields)
-      .lean()
-      .exec();
+    return Log.find({ userId }, fields).exec();
   };
 
   const getLogsByType = (type, fields = null) => {
-    return Log.find({ type }, fields)
-      .lean()
-      .exec();
+    return Log.find({ type }, fields).exec();
   };
 
   const postNewLog = log => {

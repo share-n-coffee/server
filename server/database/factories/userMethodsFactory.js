@@ -32,21 +32,15 @@ function userMethodsFactory(userModelName) {
   };
 
   const getAllUsers = (fields = null) => {
-    return Users.find({}, fields)
-      .lean()
-      .exec();
+    return Users.find({}, fields).exec();
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields)
-      .lean()
-      .exec();
+    return Users.findOne({ _id }, fields).exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields)
-      .lean()
-      .exec();
+    return Users.findOne({ telegramId }, fields).exec();
   };
 
   const createNewUser = user => {
@@ -56,9 +50,12 @@ function userMethodsFactory(userModelName) {
       telegramId: user.id,
       avatar: user.photo_url,
       username: user.username,
-      admin: {
-        permission: 0
-      }
+      events: [],
+      created: Date.now(),
+      'banned.status': false,
+      'banned.expired': 0,
+      'admin.permission': 0,
+      'admin.password': null
     };
     return Users.findOneAndUpdate(
       { telegramId: newUser.telegramId },
@@ -82,9 +79,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserByUserId = _id => {
-    return Users.deleteOne({ _id })
-      .lean()
-      .exec();
+    return Users.deleteOne({ _id }).exec();
   };
 
   const getAllUsersByEventId = (id, fields = {}, sorting = {}) => {
@@ -166,6 +161,7 @@ function userMethodsFactory(userModelName) {
     getAllUsers,
     getAllUsersByEventId,
     findUsers,
+    getUserByUserId,
     getUserByTelegramId,
     createNewUser,
     updateUserInfoByUserId,
