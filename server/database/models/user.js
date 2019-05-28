@@ -32,13 +32,11 @@ const UserSchema = new Schema({
     //  Забанен ли пользователь
     status: {
       type: Boolean,
-      required: false,
-      default: false
+      required: false
     },
     //  Если забанен, когда истекает срок бана
     expired: {
       type: Number,
-      default: 0,
       required: false
     }
   },
@@ -61,7 +59,6 @@ const UserSchema = new Schema({
   //  Дата создания аккаунта (дата первой авторизации через телегу)
   created: {
     type: Number,
-    default: new Date().getTime(),
     required: false
   },
   //  Если пользователь админ
@@ -69,14 +66,12 @@ const UserSchema = new Schema({
     //  Админский флаг: 0 - просто юзер, 1 - админ, 2 - супер админ
     permission: {
       type: Number,
-      required: false,
-      default: 0
+      required: false
     },
     //  Админский пароль для входа в систему, если к админу не привязан телеграм
     password: {
       type: String,
-      required: false,
-      default: null
+      required: false
     }
   }
 });

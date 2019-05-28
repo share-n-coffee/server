@@ -49,7 +49,13 @@ function userMethodsFactory(userModelName) {
       lastName: user.last_name,
       telegramId: user.id,
       avatar: user.photo_url,
-      username: user.username
+      username: user.username,
+      events: [],
+      created: Date.now(),
+      'banned.status': false,
+      'banned.expired': 0,
+      'admin.permission': 0,
+      'admin.password': null
     };
     return Users.findOneAndUpdate(
       { telegramId: newUser.telegramId },
