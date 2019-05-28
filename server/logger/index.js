@@ -9,6 +9,7 @@ const controller = new DBcontroller('log');
 
 const logTypes = {
   userNotification: 'user_notification',
+  userReply: 'user_reply',
   userSubscription: 'user_subscription',
   userBan: 'user_ban'
 };
