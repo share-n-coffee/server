@@ -9,14 +9,12 @@ const ArchiveSchema = new Schema({
   },
   topicId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Topic',
     required: true
   },
   participants: [
     {
       userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
         required: false
       },
       // status: pending, notified, accepted, declined, reminded
