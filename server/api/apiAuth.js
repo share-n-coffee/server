@@ -37,9 +37,9 @@ router.route('/').post((req, res) => {
           ? await DBController.createNewUser(reqUser)
           : takenUser;
 
-      let department;
+      let { department } = user || null;
 
-      if (!user.department) {
+      if (department) {
         department = await DBController.findOneDepartment(
           {
             _id: user.department
@@ -48,7 +48,7 @@ router.route('/').post((req, res) => {
         );
       }
 
-      res.json({ token: createJWT(createPayload(user, department || null)) });
+      res.json({ token: createJWT(createPayload(user, department)) });
     })
     .catch(err => console.log(err));
 });
