@@ -1,5 +1,6 @@
 const UserSchema = require('../models/user');
 const isString = require('../../utilities/isString');
+const nullAndUndefinedValidation = require('./../../utilities/nullAndUndefinedValidation');
 
 function userMethodsFactory(userModelName) {
   if (!isString(userModelName)) {
@@ -20,6 +21,7 @@ function userMethodsFactory(userModelName) {
   const countUsers = () => Users.find({}).count();
 
   const updateUser = (id, newProps) => {
+    nullAndUndefinedValidation(id, newProps);
     return Users.findOneAndUpdate(
       { _id: id },
       { $set: newProps },
@@ -44,6 +46,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const createNewUser = user => {
+    nullAndUndefinedValidation(user);
     const newUser = {
       firstName: user.first_name,
       lastName: user.last_name,
@@ -52,10 +55,8 @@ function userMethodsFactory(userModelName) {
       username: user.username,
       events: [],
       created: Date.now(),
-      'banned.status': false,
-      'banned.expired': 0,
-      'admin.permission': 0,
-      'admin.password': null
+      banned: { status: false, expired: 0 },
+      admin: { permission: 0, password: null }
     };
     return Users.findOneAndUpdate(
       { telegramId: newUser.telegramId },
@@ -65,6 +66,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const updateUserInfoByUserId = (_id, info) => {
+    nullAndUndefinedValidation(_id, info);
     return Users.findOneAndUpdate(
       { _id },
       {
@@ -79,6 +81,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserByUserId = _id => {
+    nullAndUndefinedValidation(_id);
     return Users.deleteOne({ _id }).exec();
   };
 
@@ -87,10 +90,11 @@ function userMethodsFactory(userModelName) {
   };
 
   const putUserEventByUserId = (_id, eventId) => {
+    nullAndUndefinedValidation(_id, eventId);
     return Users.findOneAndUpdate(
       { _id },
       { $push: { events: { eventId } } },
-      { upsert: true }
+      err => console.log(err)
     );
   };
 
@@ -107,6 +111,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const setUserDepartmentByUserId = (_id, department) => {
+    nullAndUndefinedValidation(_id, department);
     return Users.updateOne({ _id }, { $set: { department } });
   };
 
@@ -115,6 +120,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const banUserByUserId = (_id, duration) => {
+    nullAndUndefinedValidation(_id, duration);
     const expireTime = Date.now() + duration;
     console.log('expire time');
     return Users.findOneAndUpdate(
@@ -133,6 +139,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const assignAdminByUserId = (_id, password) => {
+    nullAndUndefinedValidation(_id, password);
     return Users.updateOne(
       { _id },
       { $set: { 'admin.permission': 1, 'admin.password': password } }
@@ -140,6 +147,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const assignSuperAdminByUserId = (_id, password) => {
+    nullAndUndefinedValidation(_id, password);
     return Users.updateOne(
       { _id },
       { $set: { 'admin.permission': 2, 'admin.password': password } }
@@ -151,6 +159,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const dischargeAdminByUserId = _id => {
+    nullAndUndefinedValidation(_id);
     return Users.updateOne(
       { _id },
       { $set: { 'admin.permission': 0, 'admin.password': null } }
