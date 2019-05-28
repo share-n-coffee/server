@@ -148,7 +148,7 @@ router.route('/ban/:id').put(adminAuth, objectIdValidation, (req, res) => {
 });
 
 router.route('/:id/upcoming/').get(objectIdValidation, (req, res) => {
-  const DBController = new ClassDBController('user', 'event');
+  const DBController = new ClassDBController('topic', 'event');
 
   req.query = {
     participants: {
@@ -160,7 +160,21 @@ router.route('/:id/upcoming/').get(objectIdValidation, (req, res) => {
   };
 
   DBController.findEvents(req)
-    .then(events => res.status(200).json({ data: events }))
+    .then(events => {
+      const allEvents = events.map(event =>
+        DBController.findOneTopic({ _id: event.topicId }, 'title address')
+      );
+
+      Promise.all(allEvents)
+        .then(data => {
+          res.status(200).json({
+            data: data.map((topic, index) => {
+              return { date: events[index].date, topic };
+            })
+          });
+        })
+        .catch(err => console.log(err));
+    })
     .catch(error => res.status(404).send(error));
 });
 
