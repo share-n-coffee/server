@@ -125,7 +125,14 @@ function eventMethodsFactory(modelNames) {
         $and: [
           {
             date: {
-              $lt: currentTime + 3600 * 24
+              $and: [
+                {
+                  $lte: currentTime + 3600 * 24
+                },
+                {
+                  $gte: currentTime
+                }
+              ]
             }
           },
           {
@@ -141,8 +148,11 @@ function eventMethodsFactory(modelNames) {
     ).exec();
   };
   // ------------ //
-  const getUpdateEventStatus = (eventId) => {
-    return Event.updateOne({ _id: eventId }, { $set: {isNotifited: true }}).exec();
+  const getUpdateEventStatus = eventId => {
+    return Event.updateOne(
+      { _id: eventId },
+      { $set: { isReminded: true } }
+    ).exec();
   };
 
   return {
@@ -163,8 +173,6 @@ function eventMethodsFactory(modelNames) {
     getUpcomingEventsBothAccepted,
     getUpcomingEventsOneAccepted,
     getUpdateEventStatus
-
-
   };
 }
 

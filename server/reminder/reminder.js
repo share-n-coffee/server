@@ -1,4 +1,3 @@
-
 // здесь будет крутиться cron для рассылки уведолений
 const cron = require('node-cron');
 const bot = require('../bot/telegramBot');
@@ -9,8 +8,8 @@ console.log('test');
 const task = cron.schedule('*/20 * * * * *', () => {
   const time = Date.now();
   const currentTime = new Date().getTime();
-  notifyCaseAccepted()
-  notifyCaseDeclined()
+  notifyCaseAccepted();
+  notifyCaseDeclined();
 });
 
 function notifyCaseAccepted() {
@@ -39,7 +38,6 @@ function notifyCaseAccepted() {
           });
         }
       });
-
     })
 
     .catch(err => console.log(err));
@@ -71,15 +69,14 @@ function notifyCaseDeclined() {
               });
             }
           });
-        };
-      })
+        }
+      });
     })
 
     .catch(err => console.log(err));
 
   function checkExpiredUsers() {
-//функция для определения периода со времени первого оповещения юзера
-
+    // функция для определения периода со времени первого оповещения юзера
   }
 }
 
