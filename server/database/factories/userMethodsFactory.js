@@ -49,7 +49,8 @@ function userMethodsFactory(userModelName) {
       lastName: user.last_name,
       telegramId: user.id,
       avatar: user.photo_url,
-      username: user.username
+      username: user.username,
+      events: []
     };
     return Users.findOneAndUpdate(
       { telegramId: newUser.telegramId },
