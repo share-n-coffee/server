@@ -9,7 +9,10 @@ function topicMethodsFactory(topicModelName) {
   const Topics = TopicSchema(topicModelName);
 
   const findTopics = req =>
-    Topics.find(req.query, req.fields, { ...req.sorting });
+    Topics.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneTopic = (query, fields = null) =>
     Topics.findOne(query, fields).exec();
@@ -17,17 +20,13 @@ function topicMethodsFactory(topicModelName) {
   const countTopics = () => Topics.find({}).count();
 
   const getAllTopics = () => {
-    return Topics.find({})
-      .lean()
-      .exec();
+    return Topics.find({}).exec();
   };
 
   const getTopicById = topicId => {
     return Topics.findOne({
       _id: mongoose.Types.ObjectId(topicId)
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
 
   const postNewTopic = topic => {

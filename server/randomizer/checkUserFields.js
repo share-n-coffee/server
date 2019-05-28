@@ -1,8 +1,13 @@
-function checkUserFields(usersData) {
-  const checkedUsers = usersData.filter(user => {
-    return user.events && user.events.length > 0 && user.department;
-  });
-  return checkedUsers;
+const DBController = require('../database/dbController');
+
+const controller = new DBController();
+
+async function checkUserFields(userId) {
+  const user = await controller.getUserByUserId(userId);
+  if (user.department === undefined || user.banned.status === true) {
+    return false;
+  }
+  return true;
 }
 
 module.exports = checkUserFields;

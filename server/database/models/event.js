@@ -17,9 +17,13 @@ const EventSchema = new Schema({
         ref: 'User',
         required: false
       },
-      // status: pending, notified, accepted, declined
+      // status: pending, notified, accepted, declined, reminded
       status: { type: String, required: false, default: 'free' },
-      _id: false
+      _id: false,
+      notificationDate: {
+        type: Number,
+        required: false
+      }
     }
   ],
   // дата проведения

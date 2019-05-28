@@ -8,7 +8,10 @@ function eventMethodsFactory(modelNames) {
   const Events = EventSchema(modelNames);
 
   const findEvents = req =>
-    Events.find(req.query, req.fields, { ...req.sorting });
+    Events.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
 
   const findOneEvent = (query, fields = null) =>
     Events.findOne(query, fields).exec();
@@ -17,7 +20,7 @@ function eventMethodsFactory(modelNames) {
 
   // новые методы //
   const addEvent = (topicID, dateTimestamp) => {
-    const newEvent = new EventSchema({
+    const newEvent = new Events({
       topicId: topicID,
       date: dateTimestamp
     });
@@ -35,9 +38,7 @@ function eventMethodsFactory(modelNames) {
       if (err) {
         console.log(err);
       }
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
 
   const addParticipant = (eventID, userID) => {
@@ -57,27 +58,39 @@ function eventMethodsFactory(modelNames) {
   };
 
   const getEventById = _id => {
-    return Events.findOne({ _id })
-      .lean()
-      .exec();
+    return Events.findOne({ _id }).exec();
   };
   const getDateByEventId = eventId => {
-    return Events.findOne({ _id: eventId }, 'date')
-      .lean()
-      .exec();
+    return Events.findOne({ _id: eventId }, 'date').exec();
   };
   const getAllUsersByEvent = eventId => {
     return Events.findOne(
       { _id: eventId },
       { 'participants.userId': true, _id: false }
-    )
-      .lean()
-      .exec();
+    ).exec();
   };
   const setUserStatusByEventId = (eventId, userID, stat) => {
     return Events.updateOne(
       { _id: eventId, 'participants.userId': userID },
       { $set: { 'participants.$.status': stat } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
+  const setNotificationDateByEventId = (eventId, userID, date) => {
+    return Events.updateOne(
+      { _id: eventId, 'participants.userId': userID },
+      { $set: { 'participants.$.notificationDate': date } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
+  const getUserStatusByEventId = (eventId, userId) => {
+    return Events.findOne(
+      { _id: eventId },
+      { participants: { $elemMatch: { userId } } },
       err => {
         if (err) console.log(err);
       }
@@ -91,9 +104,7 @@ function eventMethodsFactory(modelNames) {
   const getEventsByTopicId = topicId => {
     return Events.find({ topicId }, err => {
       if (err) console.log(err);
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
   // ------------ //
 
@@ -110,6 +121,8 @@ function eventMethodsFactory(modelNames) {
     findOneEvent,
     getAllUsersByEvent,
     setUserStatusByEventId,
+    setNotificationDateByEventId,
+    getUserStatusByEventId,
     countEvents
   };
 }

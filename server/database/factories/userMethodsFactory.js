@@ -32,21 +32,15 @@ function userMethodsFactory(userModelName) {
   };
 
   const getAllUsers = (fields = null) => {
-    return Users.find({}, fields)
-      .lean()
-      .exec();
+    return Users.find({}, fields).exec();
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields)
-      .lean()
-      .exec();
+    return Users.findOne({ _id }, fields).exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields)
-      .lean()
-      .exec();
+    return Users.findOne({ telegramId }, fields).exec();
   };
 
   const createNewUser = user => {
@@ -79,9 +73,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserByUserId = _id => {
-    return Users.deleteOne({ _id })
-      .lean()
-      .exec();
+    return Users.deleteOne({ _id }).exec();
   };
 
   const getAllUsersByEventId = (id, fields = {}, sorting = {}) => {
