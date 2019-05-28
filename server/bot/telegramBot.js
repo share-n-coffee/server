@@ -201,7 +201,9 @@ module.exports = {
           logger.info(
             id,
             logTypes.userNotification,
-            `${notificationLogText} ${event.id}`
+            `{"eventId": "${
+              event.id
+            }", "status":"${notificationLogText}", "message": "${message}"}`
           );
         })
         .catch(err => {
@@ -210,8 +212,9 @@ module.exports = {
           logger.info(
             id,
             logTypes.userNotification,
-            `${notificationErrorLogText}.
-            ${err.response.body.description}`
+            `{"eventId": "${
+              event.id
+            }", "status":"${err}", "message": "${message}"}`
           );
         });
     });
