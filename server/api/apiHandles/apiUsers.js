@@ -47,7 +47,7 @@ router
         DBController.getDepartmentById(users[0].department)
           .then(department => {
             const answer = { data: users[0].toJSON() };
-            answer.data.department = department.toJSON();
+            answer.data.department = department ? department.toJSON() : null;
             return res.status(200).json(answer);
           })
           .catch(error => res.status(404).send(error));
