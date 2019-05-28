@@ -1,17 +1,22 @@
-const EventSchema = require('../models/event');
+const ArchiveSchema = require('../models/archive');
 const isNull = require('../../utilities/isNull');
 
 function eventsArchiveMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
     return {};
   }
-  const Event = EventSchema(modelNames);
+  const Archive = ArchiveSchema(modelNames);
 
   const addEventToArchive = eventObj => {
-    const newEvent = new Event(eventObj);
+    const newArchive = new Archive({
+      _id: eventObj.id,
+      topicId: eventObj.topicId,
+      participants: eventObj.participants,
+      date: eventObj.date
+    });
 
     return new Promise((resolve, reject) => {
-      newEvent.save((err, addedEvent) => {
+      newArchive.save((err, addedEvent) => {
         if (err) reject(err);
         resolve(addedEvent);
       });
