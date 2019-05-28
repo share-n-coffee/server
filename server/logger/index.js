@@ -45,14 +45,13 @@ module.exports = {
   error(err) {
     logger.error(err);
   },
-  info(userId, type, payload) {
-    let logType = type;
-    if (!logType) logType = 'unknown_type';
+  info(userId, type = 'unknown_type', payload) {
+    const jsonPayload = JSON.stringify(payload);
     controller
       .postNewLog({
         userId,
-        type: logType,
-        payload,
+        type,
+        payload: jsonPayload,
         timestamp: Date.now()
       })
       .catch(err => this.error(err));

@@ -137,6 +137,7 @@ controller
 module.exports = {
   notify(notifyType, user, event) {
     const { id, firstName, telegramId } = user;
+    const eventId = event.id;
     let message = `Привет, ${firstName}😉!${'\n'}`;
     let replyObj;
     switch (notifyType) {
@@ -162,11 +163,11 @@ module.exports = {
                 [
                   {
                     text: acceptText,
-                    callback_data: `acpt${event.id}` // передаем статус ответа вместе с eventId в строке
+                    callback_data: `acpt${eventId}` // передаем статус ответа вместе с eventId в строке
                   },
                   {
                     text: declineText,
-                    callback_data: `dcln${event.id}`
+                    callback_data: `dcln${eventId}`
                   }
                 ]
               ]
@@ -198,24 +199,12 @@ module.exports = {
         .sendMessage(telegramId, message, replyObj)
         .then(data => {
           resolve(data);
-          logger.info(
-            id,
-            logTypes.userNotification,
-            `{"eventId": "${
-              event.id
-            }", "status":"${notificationLogText}", "message": "${message}"}`
-          );
+          logger.info(id, logTypes.userNotification, { eventId, message });
         })
         .catch(err => {
           reject(err);
 
-          logger.info(
-            id,
-            logTypes.userNotification,
-            `{"eventId": "${
-              event.id
-            }", "status":"${err}", "message": "${message}"}`
-          );
+          logger.info(id, logTypes.userNotification, { eventId, message, err });
         });
     });
   },

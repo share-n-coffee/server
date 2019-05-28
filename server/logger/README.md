@@ -1,9 +1,13 @@
 # Логи
 
-Все логи ведутся в папку server/log в файл вида %DATE%-results.log
+Все логи уровня error ведутся в папку server/log в файл вида %DATE%-results.log
 А в development окружении также в консоль.
 
-## Usage
+Логи уровня info записываются в коллекцию logs
+
+## Уровни логов
+
+* Error
 
 ```
 const logger = require('./server/logger');
@@ -11,6 +15,16 @@ const logger = require('./server/logger');
 logger.error('Error message!');
 ```
 
-## Уровни логов
+* Info
 
-* Error
+```
+const logger = require('./server/logger');
+
+const { logTypes } = logger;
+
+logger.info(id, logTypes.userNotification, { eventId, message });
+```
+logTypes:
+userNotification
+userSubscription
+userBan

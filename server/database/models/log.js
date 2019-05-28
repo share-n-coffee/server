@@ -12,8 +12,7 @@ const LogSchema = new Schema({
     required: true
   },
   payload: {
-    type: String,
-    required: true
+    type: String
   },
   timestamp: {
     type: Number,
