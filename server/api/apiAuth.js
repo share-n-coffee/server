@@ -30,14 +30,22 @@ function createPayload(user, department) {
 
 router.route('/').post((req, res) => {
   const reqUser = req.body;
-  const DBController = new ClassDBController('user', 'department', 'log');
+  const DBController = new ClassDBController('user', 'department');
 
   DBController.getUserByTelegramId(reqUser.id)
     .then(async takenUser => {
-      const user =
-        takenUser === null
-          ? await DBController.createNewUser(reqUser)
-          : takenUser;
+      // const user =
+      //   takenUser === null
+      //     ? await DBController.createNewUser(reqUser)
+      //     : takenUser;
+
+      const user = await DBController.createNewUser({
+        ...reqUser,
+        firstName: reqUser.firstName,
+        lastName: reqUser.lastName,
+        avatar: reqUser.avatar,
+        username: reqUser.username
+      });
 
       let { department } = user || null;
 
@@ -51,7 +59,7 @@ router.route('/').post((req, res) => {
       }
 
       logger.info(user._id, 'user_login', {
-        action: `${user.username} is logged in via Telegram`
+        action: 'User is logged in via Telegram'
       });
       res.json({ token: createJWT(createPayload(user, department)) });
     })
@@ -61,7 +69,7 @@ router.route('/').post((req, res) => {
 router.route('/admin').post(async (req, res) => {
   const { username, password } = req.body;
 
-  const DBController = new ClassDBController('user', 'department', 'log');
+  const DBController = new ClassDBController('user', 'department');
   const user = await DBController.findOneUser({
     username
   });
