@@ -5,6 +5,9 @@ const DBController = require('../database/dbController');
 const countDaysRemained = require('./countDaysRemained');
 const checkUserFields = require('./checkUserFields');
 const bot = require('../bot/telegramBot');
+const logger = require('../logger/index');
+
+const { logTypes } = logger;
 
 const controller = new DBController();
 
@@ -111,12 +114,15 @@ async function tryToSubsitute(eventId) {
           'pending'
         );
       }
+      await logger.info(balancedUser.id, logTypes.userBalance, {
+        message: 'user was substituted'
+      });
     }
   }
 
   addAcceptableParticipants();
 
-  bot.mailing(event.id);
+  await bot.mailing(event.id);
   return true;
 }
 
