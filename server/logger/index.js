@@ -46,7 +46,7 @@ module.exports = {
   error(err) {
     logger.error(err);
   },
-  info(userId, type = 'unknown_type', payload) {
+  info(userId, type = 'unknown_type', payload = {}) {
     const jsonPayload = JSON.stringify(payload);
     controller
       .postNewLog({
