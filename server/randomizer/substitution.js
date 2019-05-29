@@ -26,9 +26,7 @@ async function tryToSubsitute(eventId) {
   }
 
   const usersToSubstitute = event.participants.filter(participant => {
-    return (
-      participant.status === 'declined' || participant.status === 'expired'
-    );
+    return participant.status === 'declined';
   });
 
   if (
@@ -41,10 +39,7 @@ async function tryToSubsitute(eventId) {
   const balancedUsers = [];
 
   for (let i = 0; i < event.participants.length; i++) {
-    if (
-      event.participants[i].status !== 'declined' ||
-      event.participants[i].status !== 'expired'
-    ) {
+    if (event.participants[i].status !== 'declined') {
       const selectedUser = await controller.getUserByUserId(
         event.participants[i].userId
       );
@@ -82,22 +77,6 @@ async function tryToSubsitute(eventId) {
   async function removeDeclinedParticipants() {
     for (const participant of event.participants) {
       if (participant.status === 'declined') {
-        await controller.removeParticipant(eventId, participant.userId);
-        await controller.removeUserEventByUserId(participant.userId, eventId);
-      }
-
-      if (participant.status === 'expired') {
-        const visitsRemained = await controller.getVisitsRemainedQuantity(
-          event.topicId,
-          participant.userId
-        );
-
-        await controller.setVisitsRemainedQuantity(
-          event.topicId,
-          participant.userId,
-          visitsRemained[0].visitsRemained + 1
-        );
-
         await controller.removeParticipant(eventId, participant.userId);
         await controller.removeUserEventByUserId(participant.userId, eventId);
       }
