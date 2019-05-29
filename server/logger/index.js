@@ -11,7 +11,8 @@ const logTypes = {
   userNotification: 'user_notification',
   userReply: 'user_reply',
   userSubscription: 'user_subscription',
-  userBan: 'user_ban'
+  userBan: 'user_ban',
+  userBalance: 'user_balance'
 };
 
 const dailyRotateFileTransport = new transports.DailyRotateFile({
