@@ -50,18 +50,42 @@ function notifyCaseDeclined() {
 }
 function checkExpiredUsers(n) {
   // функция для определения периода с истекшим периодом ответа на  уведомление
-  controller.getAllEventsNotificationTimeExpired(n).then(events => {
-    console.log(events);
-    events.forEach(event => {
-      event.participants.forEach(user => {
-        if (user.status === 'notified') {
-          console.log(user.userId);
-          bot.mailing(event.id, 'remind'); // вызов c remind в качестве теста(должен быть другой тип)
-          controller.setUserStatusByEventId(event.id, user.userId, 'expired');
-        }
+  controller
+    .getAllEventsNotificationTimeExpired(n)
+    .then(events => {
+      console.log(events);
+      events.forEach(event => {
+        event.participants.forEach(user => {
+          const person = {
+            firstName: null,
+            telegramID: null,
+            description: null,
+            title: null
+          };
+          if (user.status === 'notified') {
+          controller.getUserByUserId(user.userId).then(userData => {
+              person.firstName = userData.firstName;
+              person.telegramID = userData.telegramId;
+            });
+            controller.setUserStatusByEventId(event.id, user.userId, 'expired');
+            controller.getTopicById(event.topicId).then(topicData => {
+              person.description = topicData.description;
+              person.title = topicData.title;
+            bot.notify(
+              'meetingFail',
+              { firstName: person.firstName, telegramUserId: person.telegramID },
+              {
+                  title: person.title,
+                  description: person.description
+                }
+              );
+            });
+          }
+        });
       });
-    });
-  });
+    })
+
+    .catch(err => console.log(err));
 }
 
 task.start();
