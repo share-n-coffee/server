@@ -67,19 +67,21 @@ function checkExpiredUsers(n) {
               person.firstName = userData.firstName;
               person.telegramID = userData.telegramId;
             });
-            controller.setUserStatusByEventId(event.id, user.userId, 'expired');
-            controller.getTopicById(event.topicId).then(topicData => {
+            controller
+              .setUserStatusByEventId(event.id, user.userId, 'expired')
+              .addEventForSubstitution(event.id)
+              .getTopicById(event.topicId).then(topicData => {
               person.description = topicData.description;
-              person.title = topicData.title;
+                person.title = topicData.title;
             bot.notify(
               'meetingFail',
               { firstName: person.firstName, telegramUserId: person.telegramID },
               {
                   title: person.title,
                   description: person.description
-                }
-              );
-            });
+                  }
+                );
+              });
           }
         });
       });
