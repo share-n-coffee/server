@@ -63,14 +63,19 @@ class RandController {
   static async removePastEvents(event) {
     const currentDate = new Date();
     if (currentDate > event.date) {
-      const users = await controller.getAllUsersByEvent(event.id);
-      const eventUsers = users.participants;
-      const eventParticipants = [].concat(eventUsers);
-
+      const eventParticipants = [].concat(event.participants);
       for (const participant of eventParticipants) {
         await controller.removeUserEventByUserId(participant.userId, event.id);
+        const topicOfEvent = await controller.getTopicById(event.topicId);
+        if (topicOfEvent.cyclic === false) {
+          await controller.removeSubscription(
+            event.topicId,
+            participant.userId
+          );
+        }
       }
 
+      controller.addEventToArchive(event);
       await controller.removeEventByEventId(event.id);
     }
   }
