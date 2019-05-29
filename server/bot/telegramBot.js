@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-/* eslint-disable dot-notation */
+
 process.env.NTBA_FIX_319 = 1;
 const TelegramBot = require('node-telegram-bot-api');
 const { telegramBotToken } = require('../config/config');
@@ -19,6 +19,7 @@ const {
   inviteText,
   remindText,
   apologyText,
+  expiredText,
   acceptText,
   declineText,
   acceptReply,
@@ -26,7 +27,8 @@ const {
   notificationLogText,
   notificationErrorLogText,
   userAcceptLogText,
-  userDeclineLogText
+  userDeclineLogText,
+  errorMessage
 } = require('./botMessages');
 
 const prettifyDate = timestamp => {
@@ -43,7 +45,7 @@ const prettifyDate = timestamp => {
 
 const getEventDescription = event => {
   const eventDate = prettifyDate(event.date);
-  return `\n${event.title}\n${event.description}\n${eventDate}`;
+  return `\n<b>${event.title}</b>\n${event.description}\n${eventDate}`;
 };
 
 // Реагируем на ответы пользователя
@@ -59,7 +61,11 @@ bot.on('callback_query', callbackQuery => {
 
   const editMessage = status => {
     if (status !== 'notified') {
-      updatedMessage = 'Что-то пошло не так...';
+      if (status === 'expired') {
+        updatedMessage += expiredText;
+      } else {
+        updatedMessage = errorMessage;
+      }
       bot.editMessageText(updatedMessage, {
         chat_id: chat.id,
         message_id
@@ -105,8 +111,10 @@ module.exports = {
   notify(notifyType, user, event) {
     const { id, firstName, telegramId } = user;
     const eventId = event.id;
+    const replyObj = {
+      parse_mode: 'HTML'
+    };
     let message = `${greeting}, ${firstName}😉!${'\n'}`;
-    let replyObj;
     switch (notifyType) {
       case 'ban':
         message += `${banText}`;
@@ -124,21 +132,19 @@ module.exports = {
         message += `${inviteText}${'\n'}`;
         if (event) {
           message += `${getEventDescription(event)}`;
-          replyObj = {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  {
-                    text: acceptText,
-                    callback_data: `acpt${eventId}` // передаем статус ответа вместе с eventId в строке
-                  },
-                  {
-                    text: declineText,
-                    callback_data: `dcln${eventId}`
-                  }
-                ]
+          replyObj.reply_markup = {
+            inline_keyboard: [
+              [
+                {
+                  text: acceptText,
+                  callback_data: `acpt${eventId}` // передаем статус ответа вместе с eventId в строке
+                },
+                {
+                  text: declineText,
+                  callback_data: `dcln${eventId}`
+                }
               ]
-            }
+            ]
           };
         }
         break;
