@@ -104,7 +104,7 @@ bot.on('callback_query', callbackQuery => {
         return controller.addEventForSubstitution(eventId); // вызываем замену
       }
     })
-    .catch(err => logger.error(err.message));
+    .catch(() => logger.info(userId, logTypes.userReply, { updatedMessage }));
 });
 
 module.exports = {
