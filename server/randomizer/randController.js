@@ -75,6 +75,7 @@ class RandController {
         }
       }
 
+      controller.addEventToArchive(event);
       await controller.removeEventByEventId(event.id);
     }
   }
