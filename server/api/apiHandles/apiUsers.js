@@ -97,13 +97,6 @@ router
         });
       }
 
-      if (req.body.admin.password) {
-        req.body.admin.password = crypto
-          .createHash('md5')
-          .update(req.body.admin.password)
-          .digest('hex');
-      }
-
       DBController.updateUser(req.params.id, {
         admin: req.body.admin
       })
