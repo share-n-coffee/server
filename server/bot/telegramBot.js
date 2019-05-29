@@ -91,6 +91,7 @@ bot.on('callback_query', callbackQuery => {
     })
     .then(data => editMessage(data.participants[0].status)) // проверяем статус и редактируем сообщение
     .then(() => controller.setUserStatusByEventId(eventId, userId, newStatus)) // обновляем статус
+    // eslint-disable-next-line consistent-return
     .then(() => {
       logger.info(userId, logTypes.userReply, { replyText, eventId });
       if (newStatus === 'declined') {
