@@ -6,8 +6,13 @@ const { telegramBotToken } = require('../config/config');
 const DBController = require('../database/dbController');
 const logger = require('../logger');
 
+let telegramBotPolling = false;
+if (process.env.NODE_ENV === 'production') {
+  telegramBotPolling = true;
+}
+
 const { logTypes } = logger;
-const bot = new TelegramBot(telegramBotToken, { polling: true });
+const bot = new TelegramBot(telegramBotToken, { polling: telegramBotPolling });
 const controller = new DBController('user', 'event', 'topic', 'substitution');
 
 // Тексты сообщений
