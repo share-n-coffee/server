@@ -7,6 +7,7 @@ const connectDatabase = require('./server/lib/connectDatabase');
 const setViewEngine = require('./server/lib/setViewEngine');
 const checkEnvironment = require('./server/lib/checkEnvironment');
 const config = require('./server/config/config');
+const randController = require('./server/randomizer/randController');
 
 const dev = process.env.NODE_ENV !== 'production';
 

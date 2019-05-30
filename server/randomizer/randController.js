@@ -3,7 +3,6 @@
 // eslint-disable-next-line prefer-destructuring
 const CronJob = require('cron').CronJob;
 const DBController = require('../database/dbController');
-const checkData = require('./checkDataCorrectness');
 const tryToSubsitute = require('./substitution');
 const generateUpcomingDatesByTopic = require('./generateUpcomingDatesByTopic');
 const checkLastEventsCreationDate = require('./checkLastEventsCreationDate');
@@ -13,20 +12,6 @@ const restoreVisits = require('./restoreVisits');
 const controller = new DBController();
 
 class RandController {
-  static checkAllData() {
-    Promise.all([
-      controller.getAllEvents(),
-      controller.getAllDepartments(),
-      controller.getAllUsers()
-    ])
-      .then(allData => {
-        checkData(allData);
-      })
-      .catch(error => {
-        throw Error(error);
-      });
-  }
-
   static async generateEventsForTopics() {
     const allTopics = await controller.getAllTopics();
 
@@ -70,7 +55,7 @@ class RandController {
             eventForSubstitution.eventId
           } has been completed`
         );
-        await controller.removeEvent(eventForSubstitution.eventId);
+        await controller.removeSubstitutedEvent(eventForSubstitution.eventId);
       }
     }
   }
@@ -78,20 +63,21 @@ class RandController {
   static async removePastEvents(event) {
     const currentDate = new Date();
     if (currentDate > event.date) {
-      const users = await controller.getAllUsersByEvent(event.id);
-      const eventUsers = users.participants;
-      const eventParticipants = [].concat(eventUsers);
-
+      const eventParticipants = [].concat(event.participants);
       for (const participant of eventParticipants) {
         await controller.removeUserEventByUserId(participant.userId, event.id);
+        const topicOfEvent = await controller.getTopicById(event.topicId);
+        if (topicOfEvent.cyclic === false) {
+          await controller.removeSubscription(
+            event.topicId,
+            participant.userId
+          );
+        }
       }
 
+      controller.addEventToArchive(event);
       await controller.removeEventByEventId(event.id);
     }
-  }
-
-  static async makeSubstitution(eventId) {
-    await controller.createEvent(eventId);
   }
 }
 

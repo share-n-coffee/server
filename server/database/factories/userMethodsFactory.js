@@ -1,5 +1,6 @@
 const UserSchema = require('../models/user');
 const isString = require('../../utilities/isString');
+const nullAndUndefinedValidation = require('./../../utilities/nullAndUndefinedValidation');
 
 function userMethodsFactory(userModelName) {
   if (!isString(userModelName)) {
@@ -8,40 +9,64 @@ function userMethodsFactory(userModelName) {
 
   const Users = UserSchema(userModelName);
 
+  const findUsers = req =>
+    Users.find(req.query, req.fields || '-admin.password', {
+      ...req.sorting,
+      ...req.pagination
+    });
+
+  const findOneUser = (query, fields = null) =>
+    Users.findOne(query, fields).exec();
+
+  const countUsers = () => Users.find({}).count();
+
+  const updateUser = (id, newProps) => {
+    nullAndUndefinedValidation(id, newProps);
+    return Users.findOneAndUpdate(
+      { _id: id },
+      { $set: newProps },
+      {
+        upsert: true,
+        new: true,
+        fields: '-admin.password'
+      }
+    );
+  };
+
   const getAllUsers = (fields = null) => {
-    return Users.find({}, fields)
-      .lean()
-      .exec();
+    return Users.find({}, fields).exec();
   };
 
   const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields)
-      .lean()
-      .exec();
+    return Users.findOne({ _id }, fields).exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
-    return Users.findOne({ telegramId }, fields)
-      .lean()
-      .exec();
+    return Users.findOne({ telegramId }, fields).exec();
   };
 
   const createNewUser = user => {
+    nullAndUndefinedValidation(user);
     const newUser = {
       firstName: user.first_name,
       lastName: user.last_name,
       telegramId: user.id,
       avatar: user.photo_url,
-      username: user.username
+      username: user.username,
+      events: [],
+      created: Date.now(),
+      banned: { status: false, expired: 0 },
+      admin: { permission: 0, password: null }
     };
     return Users.findOneAndUpdate(
       { telegramId: newUser.telegramId },
       { $set: newUser },
-      { upsert: true }
+      { upsert: true, new: true }
     );
   };
 
   const updateUserInfoByUserId = (_id, info) => {
+    nullAndUndefinedValidation(_id, info);
     return Users.findOneAndUpdate(
       { _id },
       {
@@ -56,16 +81,22 @@ function userMethodsFactory(userModelName) {
   };
 
   const removeUserByUserId = _id => {
-    return Users.deleteOne({ _id })
-      .lean()
-      .exec();
+    nullAndUndefinedValidation(_id);
+    return Users.deleteOne({ _id }).exec();
+  };
+
+  const getAllUsersByEventId = (id, fields = {}, sorting = {}) => {
+    return Users.find({ 'events.eventId': id }, fields, sorting).exec();
   };
 
   const putUserEventByUserId = (_id, eventId) => {
+    nullAndUndefinedValidation(_id, eventId);
     return Users.findOneAndUpdate(
       { _id },
       { $push: { events: { eventId } } },
-      { upsert: true }
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
 
@@ -82,6 +113,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const setUserDepartmentByUserId = (_id, department) => {
+    nullAndUndefinedValidation(_id, department);
     return Users.updateOne({ _id }, { $set: { department } });
   };
 
@@ -90,6 +122,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const banUserByUserId = (_id, duration) => {
+    nullAndUndefinedValidation(_id, duration);
     const expireTime = Date.now() + duration;
     console.log('expire time');
     return Users.findOneAndUpdate(
@@ -108,6 +141,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const assignAdminByUserId = (_id, password) => {
+    nullAndUndefinedValidation(_id, password);
     return Users.updateOne(
       { _id },
       { $set: { 'admin.permission': 1, 'admin.password': password } }
@@ -115,6 +149,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const assignSuperAdminByUserId = (_id, password) => {
+    nullAndUndefinedValidation(_id, password);
     return Users.updateOne(
       { _id },
       { $set: { 'admin.permission': 2, 'admin.password': password } }
@@ -126,6 +161,7 @@ function userMethodsFactory(userModelName) {
   };
 
   const dischargeAdminByUserId = _id => {
+    nullAndUndefinedValidation(_id);
     return Users.updateOne(
       { _id },
       { $set: { 'admin.permission': 0, 'admin.password': null } }
@@ -134,6 +170,8 @@ function userMethodsFactory(userModelName) {
 
   return {
     getAllUsers,
+    getAllUsersByEventId,
+    findUsers,
     getUserByUserId,
     getUserByTelegramId,
     createNewUser,
@@ -148,9 +186,12 @@ function userMethodsFactory(userModelName) {
     banUserByUserId,
     unbanUserByUserId,
     assignAdminByUserId,
+    dischargeAdminByUserId,
+    findOneUser,
+    updateUser,
     assignSuperAdminByUserId,
     getAdminPropertiesByUserId,
-    dischargeAdminByUserId
+    countUsers
   };
 }
 

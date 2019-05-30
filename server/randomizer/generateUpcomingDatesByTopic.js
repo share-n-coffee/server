@@ -17,7 +17,7 @@ function generateUpcomingDatesByTopic({
   } else {
     firstDayNextMonth = new Date(
       new Date(lastEventsCreationDate).getFullYear(),
-      new Date(lastEventsCreationDate).getMonth() + 1,
+      new Date(lastEventsCreationDate).getMonth() + 2,
       1,
       3
     );

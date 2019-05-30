@@ -8,18 +8,27 @@ function departmentMethodsFactory(departmentModelName) {
   }
   const Departments = DepartmentSchema(departmentModelName);
 
+  const findDepartments = req =>
+    Departments.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
+
+  const findOneDepartment = (query, fields = null) =>
+    Departments.findOne(query, fields).exec();
+
+  const countDepartments = () => Departments.find({}).count();
+
+  const deleteDepartment = id => Departments.findByIdAndDelete(id).exec();
+
   const getDepartmentById = departmentId => {
     return Departments.findOne({
       _id: mongoose.Types.ObjectId(departmentId)
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
 
   const getAllDepartments = () => {
-    return Departments.find({})
-      .lean()
-      .exec();
+    return Departments.find({}).exec();
   };
 
   const postNewDepartment = department => {
@@ -45,7 +54,11 @@ function departmentMethodsFactory(departmentModelName) {
     getDepartmentById,
     getAllDepartments,
     postNewDepartment,
-    updateDepartment
+    updateDepartment,
+    findDepartments,
+    findOneDepartment,
+    countDepartments,
+    deleteDepartment
   };
 }
 

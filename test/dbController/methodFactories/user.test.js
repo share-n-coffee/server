@@ -4,7 +4,7 @@ const config = require('../../../server/config/config');
 // const connectDatabase = require('../../../server/lib/connectDatabase');
 const DBController = require('../../../server/database/dbController');
 const collection = require('./../../../server/database/collection');
-const usersBackup = require('../collectionBackups/users.json');
+// eslint-disable-next-line import/no-unresolved
 const usersComparison = require('../collectionBackups/usersComparison.json');
 const copyDatabaseCollection = require('../lib/copyDatabaseCollection');
 const cloneObject = require('./../lib/cloneObject');

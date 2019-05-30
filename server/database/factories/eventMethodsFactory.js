@@ -5,11 +5,22 @@ function eventMethodsFactory(modelNames) {
   if (isNull(modelNames)) {
     return {};
   }
-  const Event = EventSchema(modelNames);
+  const Events = EventSchema(modelNames);
+
+  const findEvents = req =>
+    Events.find(req.query, req.fields, {
+      ...req.sorting,
+      ...req.pagination
+    });
+
+  const findOneEvent = (query, fields = null) =>
+    Events.findOne(query, fields).exec();
+
+  const countEvents = () => Events.find({}).count();
 
   // новые методы //
   const addEvent = (topicID, dateTimestamp) => {
-    const newEvent = new Event({
+    const newEvent = new Events({
       topicId: topicID,
       date: dateTimestamp
     });
@@ -23,17 +34,15 @@ function eventMethodsFactory(modelNames) {
   };
 
   const getAllEvents = () => {
-    return Event.find({}, (err, data) => {
+    return Events.find({}, (err, data) => {
       if (err) {
         console.log(err);
       }
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
 
   const addParticipant = (eventID, userID) => {
-    return Event.findOneAndUpdate(
+    return Events.findOneAndUpdate(
       { _id: eventID },
       { $push: { participants: { userId: userID } } },
       { useFindAndModify: false, new: true }
@@ -41,7 +50,7 @@ function eventMethodsFactory(modelNames) {
   };
 
   const removeParticipant = (eventID, userID) => {
-    return Event.findOneAndUpdate(
+    return Events.findOneAndUpdate(
       { _id: eventID },
       { $pull: { participants: { userId: userID } } },
       { useFindAndModify: false, new: true }
@@ -49,25 +58,19 @@ function eventMethodsFactory(modelNames) {
   };
 
   const getEventById = _id => {
-    return Event.findOne({ _id })
-      .lean()
-      .exec();
+    return Events.findOne({ _id }).exec();
   };
   const getDateByEventId = eventId => {
-    return Event.findOne({ _id: eventId }, 'date')
-      .lean()
-      .exec();
+    return Events.findOne({ _id: eventId }, 'date').exec();
   };
-  const getAllUsersByEventId = eventId => {
-    return Event.findOne(
+  const getAllUsersByEvent = eventId => {
+    return Events.findOne(
       { _id: eventId },
       { 'participants.userId': true, _id: false }
-    )
-      .lean()
-      .exec();
+    ).exec();
   };
   const setUserStatusByEventId = (eventId, userID, stat) => {
-    return Event.updateOne(
+    return Events.updateOne(
       { _id: eventId, 'participants.userId': userID },
       { $set: { 'participants.$.status': stat } },
       err => {
@@ -75,17 +78,33 @@ function eventMethodsFactory(modelNames) {
       }
     ).exec();
   };
+  const setNotificationDateByEventId = (eventId, userID, date) => {
+    return Events.updateOne(
+      { _id: eventId, 'participants.userId': userID },
+      { $set: { 'participants.$.notificationDate': date } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
+  const getUserStatusByEventId = (eventId, userId) => {
+    return Events.findOne(
+      { _id: eventId },
+      { participants: { $elemMatch: { userId } } },
+      err => {
+        if (err) console.log(err);
+      }
+    ).exec();
+  };
   const removeEventByEventId = _id => {
-    return Event.deleteOne({ _id }, err => {
+    return Events.deleteOne({ _id }, err => {
       if (err) console.log(err);
     });
   };
   const getEventsByTopicId = topicId => {
-    return Event.find({ topicId }, err => {
+    return Events.find({ topicId }, err => {
       if (err) console.log(err);
-    })
-      .lean()
-      .exec();
+    }).exec();
   };
   // ------------ //
 
@@ -98,8 +117,13 @@ function eventMethodsFactory(modelNames) {
     addParticipant,
     removeParticipant,
     getDateByEventId,
-    getAllUsersByEventId,
-    setUserStatusByEventId
+    findEvents,
+    findOneEvent,
+    getAllUsersByEvent,
+    setUserStatusByEventId,
+    setNotificationDateByEventId,
+    getUserStatusByEventId,
+    countEvents
   };
 }
 

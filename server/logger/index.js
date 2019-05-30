@@ -7,6 +7,14 @@ const env = process.env.NODE_ENV || 'development';
 const logDir = 'server/log';
 const controller = new DBcontroller('log');
 
+const logTypes = {
+  userNotification: 'user_notification',
+  userReply: 'user_reply',
+  userSubscription: 'user_subscription',
+  userBan: 'user_ban',
+  userBalance: 'user_balance'
+};
+
 const dailyRotateFileTransport = new transports.DailyRotateFile({
   filename: `${logDir}/%DATE%-results.log`,
   datePattern: 'YYYY-MM-DD',
@@ -16,9 +24,7 @@ const dailyRotateFileTransport = new transports.DailyRotateFile({
 const consoleTransport = new transports.Console({
   format: format.combine(
     format.colorize(),
-    format.printf(
-      info => `${info.timestamp} ${info.level} [${info.label}]: ${info.message}`
-    )
+    format.printf(info => `${info.timestamp} ${info.level} ${info.message}`)
   )
 });
 
@@ -28,8 +34,7 @@ const logger = createLogger({
   format: format.combine(
     format.timestamp({
       format: 'YYYY-MM-DD HH:mm:ss'
-    }),
-    format.label({ label: path.basename(process.mainModule.filename) })
+    })
   ),
   transports: [dailyRotateFileTransport]
 });
@@ -42,14 +47,16 @@ module.exports = {
   error(err) {
     logger.error(err);
   },
-  info(userId, logType, logMessage) {
+  info(userId, type = 'unknown_type', payload = {}) {
+    const jsonPayload = JSON.stringify(payload);
     controller
       .postNewLog({
         userId,
-        type: logType,
-        message: logMessage,
+        type,
+        payload: jsonPayload,
         timestamp: Date.now()
       })
       .catch(err => this.error(err));
-  }
+  },
+  logTypes
 };
