@@ -49,9 +49,11 @@ const prettifyDate = timestamp => {
 };
 
 const getEventDescription = event => {
-  const eventDate = prettifyDate(event.date);
-  const eventAddress = event.address || '';
-  return `\n<b>${event.title}</b>\n${eventAddress}\n${eventDate}`;
+  const date = prettifyDate(event.date);
+  const title = `<b>${event.title}</b>`;
+  const address = `${event.address || ''}`;
+  const description = `${event.description.replace(/(<([^>]+)>)/gi, '') || ''}`;
+  return `\n${date}\n${title}\n${address}\n${description}`;
 };
 
 // Реагируем на ответы пользователя
@@ -204,6 +206,7 @@ module.exports = {
       .then(topicData => {
         event.title = topicData.title;
         event.address = topicData.address;
+        event.description = topicData.description;
 
         event.users.forEach(user => {
           if (
