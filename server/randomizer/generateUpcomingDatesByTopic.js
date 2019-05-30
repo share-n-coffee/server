@@ -45,7 +45,7 @@ function generateUpcomingDatesByTopic({
       const year = new Date(currentTime).getFullYear();
       const month = new Date(currentTime).getMonth();
       const day = new Date(currentTime).getDate();
-      const hour = +eventTime.slice(0, eventTime.indexOf(':')) + 2;
+      const hour = eventTime.slice(0, eventTime.indexOf(':'));
       const minutes = eventTime.slice(eventTime.indexOf(':') + 1);
       nextDates.push(new Date(year, month, day, hour, minutes));
     }
