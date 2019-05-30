@@ -122,7 +122,7 @@ async function tryToSubsitute(eventId) {
 
   addAcceptableParticipants();
 
-  await bot.mailing(event.id);
+  bot.mailing(event.id);
   return true;
 }
 
