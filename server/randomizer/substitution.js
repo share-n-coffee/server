@@ -117,12 +117,12 @@ async function tryToSubsitute(eventId) {
       await logger.info(balancedUser.id, logTypes.userBalance, {
         message: 'user was substituted'
       });
+      bot.mailing(event.id);
     }
   }
 
   addAcceptableParticipants();
 
-  bot.mailing(event.id);
   return true;
 }
 
