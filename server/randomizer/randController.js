@@ -34,7 +34,6 @@ class RandController {
         const hour = topic.time.slice(0, topic.time.indexOf(':'));
         const minutes = topic.time.slice(topic.time.indexOf(':') + 1);
         const date = new Date(year, month, day, hour, minutes);
-        console.log(date);
         controller.addEvent(topic.id, date);
       }
       const dateOfEventsСreation = +new Date();
