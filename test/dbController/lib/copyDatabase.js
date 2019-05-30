@@ -1,5 +1,5 @@
 /* eslint-disable dot-notation */
-// const connectDatabase = require('./../../../server/lib/connectDatabase');
+// const connectTestDatabase = require('./connectTestDatabase');
 const copyDatabaseCollection = require('./copyDatabaseCollection');
 
 function copyDatabase(sourceMongoUri, db, folder) {
