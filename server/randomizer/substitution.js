@@ -118,11 +118,11 @@ async function tryToSubsitute(eventId) {
         message: 'user was substituted'
       });
     }
+    bot.mailing(event.id);
   }
 
   addAcceptableParticipants();
 
-  await bot.mailing(event.id);
   return true;
 }
 
