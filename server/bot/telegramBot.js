@@ -190,8 +190,9 @@ module.exports = {
   // метод рассылки
   mailing(eventId, notifyType = 'invite') {
     const event = {}; // объект для передачи в notify
+    const notifications = []; // все промисы после вызова notify для всех юзеров
 
-    controller
+    return controller
       .getEventById(eventId)
       .then(eventData => {
         event.id = eventId;
@@ -210,36 +211,38 @@ module.exports = {
             (user.status === 'accepted' &&
               (notifyType === 'remind' || notifyType === 'apology'))
           ) {
-            controller
-              .getUserByUserId(user.userId)
-              .then(userData => this.notify(notifyType, userData, event))
-              .then(() => {
-                let newStatus;
-                if (user.status === 'pending') {
-                  newStatus = 'notified';
-                }
-                if (user.status === 'accepted') {
-                  newStatus = 'reminded';
-                }
-                return controller.setUserStatusByEventId(
-                  eventId,
-                  user.userId,
-                  newStatus
-                );
-              })
-              .then(() => {
-                if (!user.notificationDate) {
-                  controller.setNotificationDateByEventId(
+            notifications.push(
+              controller
+                .getUserByUserId(user.userId)
+                .then(userData => this.notify(notifyType, userData, event))
+                .then(() => {
+                  let newStatus;
+                  if (user.status === 'pending') {
+                    newStatus = 'notified';
+                  }
+                  if (user.status === 'accepted') {
+                    newStatus = 'reminded';
+                  }
+                  return controller.setUserStatusByEventId(
                     eventId,
                     user.userId,
-                    Date.now()
+                    newStatus
                   );
-                }
-              })
-              .catch(err => logger.error(err.message));
+                })
+                .then(() => {
+                  if (!user.notificationDate) {
+                    controller.setNotificationDateByEventId(
+                      eventId,
+                      user.userId,
+                      Date.now()
+                    );
+                  }
+                })
+            );
           }
         });
       })
+      .then(() => Promise.all(notifications))
       .catch(err => logger.error(err.message));
   }
 };
