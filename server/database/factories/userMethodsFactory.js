@@ -94,7 +94,9 @@ function userMethodsFactory(userModelName) {
     return Users.findOneAndUpdate(
       { _id },
       { $push: { events: { eventId } } },
-      err => console.log(err)
+      err => {
+        if (err) console.log(err);
+      }
     );
   };
 

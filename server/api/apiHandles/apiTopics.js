@@ -73,9 +73,26 @@ router
     ) {
       const DBController = new ClassDBController('subscription');
 
-      DBController.createSubscription(req.params.topicId, req.params.userId)
-        .then(subscription => {
-          res.status(200).json({ data: subscription });
+      req.query = {
+        ...req.query,
+        userId: ObjectId(`${req.params.userId}`),
+        topicId: ObjectId(`${req.params.topicId}`)
+      };
+
+      DBController.findSubscriptions(req)
+        .then(subscriptions => {
+          if (subscriptions.length === 0) {
+            DBController.createSubscription(
+              req.params.topicId,
+              req.params.userId
+            )
+              .then(newSubscription => {
+                res.status(200).json({ data: newSubscription });
+              })
+              .catch(error => res.status(404).send(error));
+          } else {
+            res.status(200).json({ subscriptions });
+          }
         })
         .catch(error => res.status(404).send(error));
     } else {
