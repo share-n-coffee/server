@@ -1,0 +1,11 @@
+{
+  "user": "user",
+  "topic": "topic",
+  "departments": "department",
+  "event": "event",
+  "subscription": "subscription",
+  "substitution": "substitution",
+  "log": "log",
+  "archive": "archive",
+  "project": "random-coffee"
+}

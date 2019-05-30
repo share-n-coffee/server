@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - '8'
+  - '9'
+  - '10'
+  - '11'
+  - '12'
+services:
+  - mongodb
+sudo: false
+script:
+  - npm run codecov
+after_success:
+  - ./bin/codecov -e TRAVIS_NODE_VERSION -f coverage/*.json

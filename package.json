@@ -4,10 +4,13 @@
   "description": "auth project",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "cross-env NODE_ENV=production node server.js",
     "server": "nodemon server.js",
-    "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "lint": "eslint -c .eslintrc.js ./server/**/*.js",
+    "fix-lint": "eslint -c .eslintrc.js ./server/**/*.js --fix",
+    "format": "prettier --write \"server/**/*.js\"",
+    "test": "jest",
+    "codecov": "jest --coverage && codecov"
   },
   "repository": {
     "type": "git",
@@ -21,17 +24,59 @@
   "homepage": "https://github.com/saniok017/demoproject#readme",
   "dependencies": {
     "concurrently": "^4.1.0",
+    "config": "^3.1.0",
     "cors": "^2.8.5",
+    "cron": "^1.7.1",
     "cross-env": "^5.2.0",
+    "dotenv": "^7.0.0",
     "ejs": "^2.6.1",
+    "eslint": "^5.0.0",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
     "isomorphic-unfetch": "^3.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^3.2.4",
     "mongoose": "^5.5.4",
+    "node-telegram-bot-api": "^0.30.0",
     "passport": "^0.4.0",
-    "passport-telegram": "^1.0.0"
+    "passport-telegram": "^1.0.0",
+    "winston": "^3.2.1",
+    "winston-daily-rotate-file": "^3.9.0"
   },
   "devDependencies": {
-    "nodemon": "^1.18.11"
+    "@shelf/jest-mongodb": "^1.0.1",
+    "codecov": "^3.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "husky": "^2.2.0",
+    "jest": "^24.8.0",
+    "lint-staged": "^8.1.6",
+    "mongo-mock": "^3.4.0",
+    "nodemon": "^1.18.11",
+    "prettier": "^1.13.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "engines": {
+    "node": ">=8.0.0 <12.2.0"
+  },
+  "lint-staged": {
+    "linters": {
+      "*.js": [
+        "eslint -c .eslintrc.js --fix",
+        "prettier --write",
+        "git add"
+      ]
+    }
+  },
+  "jest": {
+    "preset": "@shelf/jest-mongodb",
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
   }
 }

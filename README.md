@@ -1,16 +1,16 @@
-# # [Development server](https://forge-development.herokuapp.com/)
+# [Development server](https://forge-development.herokuapp.com/)
 
-[![codecov](https://codecov.io/gh/saniok017/Server/branch/master/graph/badge.svg)](https://codecov.io/gh/saniok017/Server) 
-[![Build Status](https://travis-ci.com/saniok017/Server.svg?branch=master)](https://travis-ci.com/saniok017/Server)
+[![codecov](https://codecov.io/gh/saniok017/Server/branch/db-tests/graph/badge.svg)](https://codecov.io/gh/saniok017/Server)
+[![Build Status](https://travis-ci.com/saniok017/Server.svg?branch=db-tests)](https://travis-ci.com/saniok017/Server)
 ![Heroku](http://heroku-badge.herokuapp.com/?app=forge-development&style=flat)
 
-## Quick Start
+# [main server](https://forgeserver.herokuapp.com/)
 
-- GO to [telegram](https://telepass.me/my_apps) and click `Create new app`
-- Name your app
-- set Redirect URL to `http://localhost:3000/auth/telegram/callback`
-- smash `Create` button
-- and finaly set your Secret and App ID in `./server/config/config.json`
+# [Documentation](https://documenter.getpostman.com/view/7419944/S1Lx1ouZ)
+
+> Development branch.
+
+## Quick Start
 
 ```bash
 # Install dependencies for server
@@ -25,8 +25,5 @@ npm run dev
 # Run the Express server only
 npm run server
 
-# Run the React client only
-npm run client
-
-# Server runs on http://localhost:3000 and client on http://localhost:5000
+# Server runs on http://localhost:3000
 ```
