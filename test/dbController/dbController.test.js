@@ -1,9 +1,20 @@
 /* eslint-disable dot-notation */
 const mongoose = require('mongoose');
-const connectDatabase = require('../../server/lib/connectDatabase');
+const createTestDatabase = require('./lib/createTestDatabase');
+const connectTestDatabase = require('./lib/connectTestDatabase');
+const databaseConfig = require('./../../server/database/collection.json');
 const ClassController = require('../../server/database/dbController');
-// const collectionConfig = require('./collection');
 
+const testMongoUri =
+  'mongodb://demoman:wgforge1@ds261716.mlab.com:61716/test-db';
+// const folder = './../../collectionBackups/';
+const projectName = databaseConfig.project;
+const collections = Object.values(databaseConfig)
+  .filter(value => value !== projectName)
+  .map(collection => collection.concat('s'));
+
+createTestDatabase(testMongoUri, 'test-db', collections);
+// connectTestDatabase(testMongoUri);
 const userMethods = [
   'getAllUsers',
   'getUserById',
@@ -42,7 +53,6 @@ const testData = {
   eventId: undefined,
   departmentId: undefined
 };
-connectDatabase();
 
 describe('dbController tests', () => {
   it('config test', () => {
