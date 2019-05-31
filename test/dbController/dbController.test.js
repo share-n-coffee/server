@@ -5,6 +5,7 @@ const connectTestDatabase = require('./lib/connectTestDatabase');
 const databaseConfig = require('./../../server/database/collection.json');
 const ClassController = require('../../server/database/dbController');
 
+/*
 const testMongoUri =
   'mongodb://demoman:wgforge1@ds261716.mlab.com:61716/test-db';
 // const folder = './../../collectionBackups/';
@@ -14,45 +15,139 @@ const collections = Object.values(databaseConfig)
   .map(collection => collection.concat('s'));
 
 createTestDatabase(testMongoUri, 'test-db', collections);
+
+*/
+
 // connectTestDatabase(testMongoUri);
+const methodNames = [
+  'user',
+  'topic',
+  'event',
+  'department',
+  'subscription',
+  'substitution',
+  'log'
+].sort();
 const userMethods = [
   'getAllUsers',
-  'getUserById',
-  'postNewUser',
   'getAllUsersByEventId',
-  'querySearch',
-  'putUserBan',
-  'saveNewUser',
+  'findUsers',
+  'getUserByUserId',
+  'getUserByTelegramId',
+  'createNewUser',
+  'updateUserInfoByUserId',
+  'removeUserByUserId',
+  'putUserEventByUserId',
+  'getAllUserEventsByUserId',
+  'removeUserEventByUserId',
+  'removeAllUserEventsByUserId',
+  'setUserDepartmentByUserId',
+  'getUserDepartmentByUserId',
+  'banUserByUserId',
+  'unbanUserByUserId',
+  'assignAdminByUserId',
+  'dischargeAdminByUserId',
+  'findOneUser',
   'updateUser',
-  'setEventStatus'
-];
+  'assignSuperAdminByUserId',
+  'getAdminPropertiesByUserId',
+  'countUsers'
+].sort();
 const eventMethods = [
-  'getAllEvents',
+  'getEventsByTopicId',
+  'removeEventByEventId',
   'getEventById',
-  'postNewEvent',
-  'updateEvent'
-];
+  'addEvent',
+  'getAllEvents',
+  'addParticipant',
+  'removeParticipant',
+  'getDateByEventId',
+  'findEvents',
+  'findOneEvent',
+  'getAllUsersByEvent',
+  'setUserStatusByEventId',
+  'setNotificationDateByEventId',
+  'getUserStatusByEventId',
+  'countEvents'
+].sort();
+const topicMethods = [
+  'getAllTopics',
+  'getTopicById',
+  'postNewTopic',
+  'updateTopic',
+  'makeTopicActive',
+  'makeTopicInactive',
+  'changeCyclicProp',
+  'setLastEventsCreationDate',
+  'updateLastEventsCreationDate',
+  'getLastEventsCreationDate',
+  'findTopics',
+  'findOneTopic',
+  'countTopics'
+].sort();
 const departmentMethods = [
   'getDepartmentById',
   'getAllDepartments',
   'postNewDepartment',
-  'updateDepartment'
-];
-const randomizerMethods = [
-  'updateEventPairs',
-  'insertEventPairs',
-  'removeEventPairByEventId',
-  'getEventPairsById',
-  'insertPair',
-  'removePair'
-];
+  'updateDepartment',
+  'findDepartments',
+  'findOneDepartment',
+  'countDepartments',
+  'deleteDepartment'
+].sort();
+const subscriptionMethods = [
+  'findSubscriptions',
+  'createSubscription',
+  'getAllSubscriptionsByTopicId',
+  'getAllSubscriptionsByUserId',
+  'getAllSubscriptions',
+  'removeSubscription',
+  'getVisitsRemainedQuantity',
+  'setVisitsRemainedQuantity'
+].sort();
+const substitutionMethods = [
+  'addEventForSubstitution',
+  'removeSubstitutedEvent',
+  'getAllEventsForSubstitution'
+].sort();
+const logMethods = [
+  'postNewLog',
+  'getAllLogs',
+  'getLogsByUserId',
+  'getLogsByType'
+].sort();
+
+const archiveEventMethods = ['addEventToArchive'];
 
 const controller = new ClassController();
+const userController = new ClassController('user');
+const topicController = new ClassController('topic');
+const eventController = new ClassController('event');
+const departmentController = new ClassController('department');
+const subscriptionController = new ClassController('subscription');
+const substitutionController = new ClassController('substitution');
+const logController = new ClassController('log');
+const archiveEventController = new ClassController('archive');
+
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
   departmentId: undefined
 };
+
+const controllerMethods = Object.keys(controller).sort();
+const testMethodNames = []
+  .concat(
+    userMethods,
+    topicMethods,
+    eventMethods,
+    departmentMethods,
+    subscriptionMethods,
+    substitutionMethods,
+    logMethods,
+    archiveEventMethods
+  )
+  .sort();
 
 describe('dbController tests', () => {
   it('config test', () => {
@@ -65,206 +160,185 @@ describe('dbController tests', () => {
   });
 
   test('Has all methods in default case', done => {
-    const controllerMethods = Object.keys(controller).sort();
-    const testMethods = userMethods
-      .concat(eventMethods, departmentMethods, randomizerMethods)
-      .sort();
-    expect(controllerMethods.length).toEqual(testMethods.length);
-
-    controllerMethods.forEach(method => {
-      expect(testMethods.includes(method)).toBeTruthy();
-    });
+    expect(controllerMethods).toHaveLength(testMethodNames.length);
     done();
   });
+  // controllerMethods.forEach((method, i) => {
+  //   // expect(testMethods.includes(method)).toBeTruthy();
+  //   expect(method).toEqual(allTestMethods[i]);
+  // });
 });
 
-describe('dbController tests with "user" argument passed in', () => {
-  const userController = new ClassController('user');
-  const controllerMethods = Object.keys(userController);
-  it('config test', () => {
-    expect(userController).toBeTruthy();
-  });
+describe('Controller has proper methods quantity', () => {
+  const userControllerMethods = Object.keys(userController).sort();
+  const topicControllerMethods = Object.keys(topicController).sort();
+  const eventControllerMethods = Object.keys(eventController).sort();
+  const departmentControllerMethods = Object.keys(departmentController).sort();
+  const subscriptionControllerMethods = Object.keys(
+    subscriptionController
+  ).sort();
+  const substitutionControllerMethods = Object.keys(
+    substitutionController
+  ).sort();
+  const logControllerMethods = Object.keys(logController).sort();
+  const archiveEventControllerMethods = Object.keys(
+    archiveEventController
+  ).sort();
 
-  test('Has valid quantity of user methods', done => {
-    expect(controllerMethods.length).toEqual(userMethods.length);
+  // user
+  test('User controller has proper methods quantity', done => {
+    expect(userControllerMethods).toHaveLength(userMethods.length);
     done();
   });
 
-  test('Has all user methods', done => {
+  test('User controller has all user methods', done => {
     userMethods.forEach(method => {
       expect(userController).toHaveProperty(method);
     });
     done();
   });
 
-  test('Has no event methods', done => {
-    eventMethods.forEach(method => {
-      expect(userController).not.toHaveProperty(method);
-    });
+  // event
+  test('Event controller has proper methods quantity', done => {
+    expect(eventControllerMethods).toHaveLength(eventMethods.length);
     done();
   });
 
-  test('Has no department methods', done => {
-    departmentMethods.forEach(method => {
-      expect(userController).not.toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has no randomizer methods', done => {
-    randomizerMethods.forEach(method => {
-      expect(userController).not.toHaveProperty(method);
-    });
-    done();
-  });
-});
-
-describe('dbController tests with "event" argument passed in', () => {
-  const eventController = new ClassController('event');
-  const controllerMethods = Object.keys(eventController);
-  it('config test', () => {
-    expect(eventController).toBeTruthy();
-  });
-
-  test('Has valid quantity of event methods', done => {
-    expect(controllerMethods.length).toEqual(eventMethods.length);
-    done();
-  });
-
-  test('Has no user methods', done => {
-    userMethods.forEach(method => {
-      expect(eventController).not.toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has all event methods', done => {
+  test('Event controller has all event methods', done => {
     eventMethods.forEach(method => {
       expect(eventController).toHaveProperty(method);
     });
     done();
   });
 
+  // topic
+  test('Topic controller has proper methods quantity', done => {
+    expect(topicControllerMethods).toHaveLength(topicMethods.length);
+    done();
+  });
+
+  test('Topic controller has all topic methods', done => {
+    topicMethods.forEach(method => {
+      expect(topicController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  // department
+  test('Department controller has proper methods quantity', done => {
+    expect(departmentControllerMethods).toHaveLength(departmentMethods.length);
+    done();
+  });
+
+  test('Department controller has all department methods', done => {
+    departmentMethods.forEach(method => {
+      expect(departmentController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  // subscription
+  test('Subscription controller has proper methods quantity', done => {
+    expect(subscriptionControllerMethods).toHaveLength(
+      subscriptionMethods.length
+    );
+    done();
+  });
+
+  test('Subscription controller has all subscription methods', done => {
+    subscriptionMethods.forEach(method => {
+      expect(subscriptionController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  // substitution
+  test('Substitution controller has proper methods quantity', done => {
+    expect(substitutionControllerMethods).toHaveLength(
+      substitutionMethods.length
+    );
+    done();
+  });
+
+  test('Substitution controller has all substitution methods', done => {
+    substitutionMethods.forEach(method => {
+      expect(substitutionController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  // log
+  test('Log controller has proper methods quantity', done => {
+    expect(logControllerMethods).toHaveLength(logMethods.length);
+    done();
+  });
+
+  test('Log controller has all log methods', done => {
+    logMethods.forEach(method => {
+      expect(logController).toHaveProperty(method);
+    });
+    done();
+  });
+
+  // archive
+  test('Archive event controller has proper methods quantity', done => {
+    expect(archiveEventControllerMethods).toHaveLength(
+      archiveEventMethods.length
+    );
+    done();
+  });
+
+  test('Archive event controller has all archive event methods', done => {
+    archiveEventMethods.forEach(method => {
+      expect(archiveEventController).toHaveProperty(method);
+    });
+    done();
+  });
+});
+
+describe('Controller tests with "user", "event" and "log" arguments passed in', () => {
+  const controllerUEL = new ClassController('user', 'event', 'log');
+  const controllerUELMethods = Object.keys(controllerUEL).sort();
+  const expectedUELMethods = []
+    .concat(userMethods, eventMethods, logMethods)
+    .sort();
+
+  test('Has proper method quantity', done => {
+    expect(controllerUELMethods).toHaveLength(expectedUELMethods.length);
+    done();
+  });
+
+  test('Has all proper methods', done => {
+    expectedUELMethods.forEach(method => {
+      expect(controllerUEL).toHaveProperty(method);
+    });
+    done();
+  });
+
+  test('Has no topic methods', done => {
+    topicMethods.forEach(method => {
+      expect(controllerUEL).not.toHaveProperty(method);
+    });
+    done();
+  });
+
   test('Has no department methods', done => {
     departmentMethods.forEach(method => {
-      expect(eventController).not.toHaveProperty(method);
+      expect(controllerUEL).not.toHaveProperty(method);
     });
     done();
   });
 
-  test('Has no randomizer methods', done => {
-    randomizerMethods.forEach(method => {
-      expect(eventController).not.toHaveProperty(method);
-    });
-    done();
-  });
-});
-
-describe('dbController tests with "department" argument passed in', () => {
-  const departmentController = new ClassController('department');
-  const controllerMethods = Object.keys(departmentController);
-  it('config test', () => {
-    expect(departmentController).toBeTruthy();
-  });
-
-  test('Has valid quantity of department methods', done => {
-    expect(controllerMethods.length).toEqual(departmentMethods.length);
-    done();
-  });
-
-  test('Has no user methods', done => {
-    userMethods.forEach(method => {
-      expect(departmentController).not.toHaveProperty(method);
+  test('Has no subscription methods', done => {
+    subscriptionMethods.forEach(method => {
+      expect(controllerUEL).not.toHaveProperty(method);
     });
     done();
   });
 
-  test('Has no event methods', done => {
-    eventMethods.forEach(method => {
-      expect(departmentController).not.toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has all department methods', done => {
-    departmentMethods.forEach(method => {
-      expect(departmentController).toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has no randomizer methods', done => {
-    randomizerMethods.forEach(method => {
-      expect(departmentController).not.toHaveProperty(method);
-    });
-    done();
-  });
-});
-
-describe('dbController tests with "randomizer" argument passed in', () => {
-  const randomizerController = new ClassController('randomizer');
-  const controllerMethods = Object.keys(randomizerController);
-  it('config test', () => {
-    expect(randomizerController).toBeTruthy();
-  });
-
-  test('Has valid quantity of randomizer methods', done => {
-    expect(controllerMethods.length).toEqual(randomizerMethods.length);
-    done();
-  });
-
-  test('Has no user methods', done => {
-    userMethods.forEach(method => {
-      expect(randomizerController).not.toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has no event methods', done => {
-    eventMethods.forEach(method => {
-      expect(randomizerController).not.toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has no department methods', done => {
-    departmentMethods.forEach(method => {
-      expect(randomizerController).not.toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has all randomizer methods', done => {
-    randomizerMethods.forEach(method => {
-      expect(randomizerController).toHaveProperty(method);
-    });
-    done();
-  });
-});
-
-describe('dbController tests with plural arguments passed in', () => {
-  const departmentController = new ClassController('user', 'department');
-  it('config test', () => {
-    expect(departmentController).toBeTruthy();
-  });
-
-  test('Has user methods', done => {
-    userMethods.forEach(method => {
-      expect(departmentController).toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has no event methods', done => {
-    eventMethods.forEach(method => {
-      expect(departmentController).not.toHaveProperty(method);
-    });
-    done();
-  });
-
-  test('Has department methods', done => {
-    departmentMethods.forEach(method => {
-      expect(departmentController).toHaveProperty(method);
+  test('Has no substitution methods', done => {
+    substitutionMethods.forEach(method => {
+      expect(controllerUEL).not.toHaveProperty(method);
     });
     done();
   });
