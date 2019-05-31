@@ -49,11 +49,16 @@ const prettifyDate = timestamp => {
 };
 
 const getEventDescription = event => {
-  const date = prettifyDate(event.date);
   const title = `<b>${event.title}</b>`;
-  const address = `${event.address || ''}`;
-  const description = `${event.description.replace(/(<([^>]+)>)/gi, '') || ''}`;
-  return `\n${date}\n${title}\n${address}\n${description}`;
+  const date = prettifyDate(event.date);
+  const address = `<i>${event.address || ''}</i>`;
+  const maxDescLength = 90;
+  let description = event.description.replace(/(<([^>]+)>)/gi, '');
+
+  if (description.length > maxDescLength) {
+    description = `${description.slice(0, maxDescLength)}...`;
+  }
+  return `\n${title}\n${date}\n${address}\n\n${description}`;
 };
 
 // Реагируем на ответы пользователя
