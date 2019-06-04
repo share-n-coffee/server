@@ -1,6 +1,8 @@
+const mongoose = require('mongoose');
 const UserSchema = require('../models/user');
 const isString = require('../../utilities/isString');
 const nullAndUndefinedValidation = require('./../../utilities/nullAndUndefinedValidation');
+const cloneObject = require('./../../../test/dbController/lib/cloneObject');
 
 function userMethodsFactory(userModelName) {
   if (!isString(userModelName)) {
@@ -37,8 +39,11 @@ function userMethodsFactory(userModelName) {
     return Users.find({}, fields).exec();
   };
 
-  const getUserByUserId = (_id, fields = null) => {
-    return Users.findOne({ _id }, fields).exec();
+  const getUserByUserId = id => {
+    if (!isString(id)) {
+      console.log('TypeError at getUserByUserId: id should be a string!');
+    }
+    return Users.findById(id).exec();
   };
 
   const getUserByTelegramId = (telegramId, fields = null) => {
