@@ -5,18 +5,8 @@ const connectTestDatabase = require('./lib/connectTestDatabase');
 const databaseConfig = require('./../../server/database/collection.json');
 const ClassController = require('../../server/database/dbController');
 
-/*
 const testMongoUri =
   'mongodb://demoman:wgforge1@ds261716.mlab.com:61716/test-db';
-// const folder = './../../collectionBackups/';
-const projectName = databaseConfig.project;
-const collections = Object.values(databaseConfig)
-  .filter(value => value !== projectName)
-  .map(collection => collection.concat('s'));
-
-createTestDatabase(testMongoUri, 'test-db', collections);
-
-*/
 
 // connectTestDatabase(testMongoUri);
 const methodNames = [
@@ -163,10 +153,6 @@ describe('dbController tests', () => {
     expect(controllerMethods).toHaveLength(testMethodNames.length);
     done();
   });
-  // controllerMethods.forEach((method, i) => {
-  //   // expect(testMethods.includes(method)).toBeTruthy();
-  //   expect(method).toEqual(allTestMethods[i]);
-  // });
 });
 
 describe('Controller has proper methods quantity', () => {
