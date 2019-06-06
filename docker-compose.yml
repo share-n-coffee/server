@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  server:
+    image: server
+    build: .
+    environment:
+      NODE_ENV: production
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - 3000:3000
