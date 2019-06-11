@@ -34,18 +34,15 @@ router.route('/').post((req, res) => {
 
   DBController.getUserByTelegramId(reqUser.id)
     .then(async takenUser => {
-      // const user =
-      //   takenUser === null
-      //     ? await DBController.createNewUser(reqUser)
-      //     : takenUser;
-
-      const user = await DBController.createNewUser({
-        ...reqUser,
-        firstName: reqUser.firstName,
-        lastName: reqUser.lastName,
-        avatar: reqUser.avatar,
-        username: reqUser.username
-      });
+      let user;
+      if (takenUser === null) {
+        user = await DBController.createNewUser(reqUser);
+      } else {
+        user = await DBController.updateUserInfoByUserId(
+          takenUser._id,
+          reqUser
+        );
+      }
 
       let { department } = user || null;
 
