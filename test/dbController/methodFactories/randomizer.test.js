@@ -6,7 +6,7 @@ const connectDatabase = require('../../../server/lib/connectDatabase');
 const ClassController = require('../../../server/database/dbController');
 // const collectionConfig = require('./collection');
 
-const controller = new ClassController();
+const controller = new ClassController('randomizer');
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,

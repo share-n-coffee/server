@@ -6,7 +6,7 @@ const connectDatabase = require('../../../server/lib/connectDatabase');
 const ClassController = require('../../../server/database/dbController');
 // const collectionConfig = require('./collection');
 
-const controller = new ClassController();
+const controller = new ClassController('department');
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
@@ -23,7 +23,18 @@ describe('dbController tests', () => {
     await mongoose.connection.close();
     console.log('tests done, May the Force be with you young Jedi');
   });
+  /*
+  test('GET Department by _id', done => {
+    function cb(department) {
+      expect(department).toHaveProperty('description');
+      done();
+    }
 
+    controller.getDepartmentById(testData.departmentId).then(department => {
+      cb(department);
+    });
+  });
+*/
   test('Get all Departments', done => {
     function cb(controllerDepartments, mongoDepartmentsCount) {
       testData.departmentId = controllerDepartments[0]['_id'];
@@ -46,17 +57,6 @@ describe('dbController tests', () => {
           });
       }
     );
-  });
-
-  test('GET Department by _id', done => {
-    function cb(department) {
-      expect(department).toHaveProperty('description');
-      done();
-    }
-
-    controller.getDepartmentById(testData.departmentId).then(department => {
-      cb(department);
-    });
   });
 
   test('POST new Department', done => {
@@ -89,4 +89,20 @@ describe('dbController tests', () => {
       cb(newDepartment);
     });
   });
+  // test('updateDepartment', done => {
+  //   const departmentParams = {
+  //     title: 'New Department',
+  //     description: 'Just another Department'
+  //   };
+  //   controller.postNewDepartment(departmentParams);
+  // });
 });
+
+// const updateDepartment = (departmentId, newProps) => {
+//   return Departments.findOneAndUpdate(
+//     { _id: departmentId },
+//     { $set: newProps },
+//     { useFindAndModify: false, new: true },
+//     (err, data) => data
+//   );
+// };

@@ -5,22 +5,29 @@ const copyDatabaseCollection = (
   mongoUri,
   databaseName,
   collectionName,
-  path
+  folder
 ) => {
+  const collection = `${collectionName}s`;
   MongoClient.connect(
     mongoUri,
+    { useNewUrlParser: true },
     (err, client) => {
       if (err) throw err;
       client
         .db(databaseName)
-        .collection(`${collectionName}s`)
+        .collection(collection)
         .find()
         .toArray()
         .then(items => {
-          fs.writeFile(path, JSON.stringify(items), error => {
+          const extension = '.json';
+          const path = folder + collection + extension;
+          fs.writeFile(path, JSON.stringify(items), { flag: 'w' }, error => {
             if (error) throw error;
-            console.log(`
-            ${collectionName} collection successfuly copied to ${path}!`);
+            fs.readFile(path, 'utf-8', readError => {
+              if (readError) throw readError;
+              console.log(`
+              ${collectionName} collection successfuly copied to ${path}!`);
+            });
             client.close();
           });
         });

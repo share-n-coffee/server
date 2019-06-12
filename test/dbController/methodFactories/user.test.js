@@ -1,54 +1,20 @@
 /* eslint-disable dot-notation */
 const mongoose = require('mongoose');
 const config = require('../../../server/config/config');
-// const connectDatabase = require('../../../server/lib/connectDatabase');
 const DBController = require('../../../server/database/dbController');
-const collection = require('./../../../server/database/collection');
-// eslint-disable-next-line import/no-unresolved
-const usersComparison = require('../collectionBackups/usersComparison.json');
-const copyDatabaseCollection = require('../lib/copyDatabaseCollection');
+const connectTestDatabase = require('./../lib/connectTestDatabase');
+const usersBackup = require('../collectionBackups/users.json');
 const cloneObject = require('./../lib/cloneObject');
 
-const mongoUri =
-  'mongodb://demoman:wgforge1@ds259806.mlab.com:59806/random-coffee';
-// JSON.stringify(config.database);
+const testMongoUri =
+  'mongodb://demoman:wgforge1@ds261716.mlab.com:61716/test-db';
+connectTestDatabase(testMongoUri);
+
 const controller = new DBController('user');
 const testData = {
   userTelegramId: undefined,
   eventId: undefined,
   departmentId: undefined
-};
-
-mongoose
-  .connect(
-    mongoUri,
-    {
-      useNewUrlParser: true,
-      useCreateIndex: true
-    }
-  )
-  .then(() => {
-    console.log('Database is connected');
-  })
-  .catch(error => {
-    console.log(error);
-  });
-
-// save user collection in backup file
-copyDatabaseCollection(
-  mongoUri,
-  collection.project,
-  collection.user,
-  './test/dbController/collectionBackups/users.json'
-);
-
-const updateUsersComparison = () => {
-  copyDatabaseCollection(
-    mongoUri,
-    collection.project,
-    collection.user,
-    './test/dbController/collectionBackups/usersComparison.json'
-  );
 };
 
 describe('dbController user methods tests', () => {
@@ -62,39 +28,37 @@ describe('dbController user methods tests', () => {
   });
 
   test('getAllUsers works', done => {
-    controller.getAllUsers().then(controllerUsers => {
-      updateUsersComparison();
-      expect(controllerUsers).toHaveLength(usersComparison.length);
+    controller.getAllUsers().then(controllerAllUsers => {
+      expect(controllerAllUsers).toHaveLength(usersBackup.length);
+      usersBackup.forEach((user, i) => {
+        expect(user).toEqual(usersBackup[i]);
+      });
       done();
     });
   });
 
   test('getUserByUserId works', done => {
-    updateUsersComparison();
-    const userComparison = usersComparison[0];
-    const userId = userComparison['_id'];
+    const userId = '5ce5b8797247dc3860f0a746';
     controller.getUserByUserId(userId).then(controllerUser => {
-      expect(cloneObject(controllerUser)).toEqual(userComparison);
+      expect(controllerUser).toEqual(usersBackup[0]);
       done();
     });
   });
 
   test('getUserByTelegramId works', done => {
-    updateUsersComparison();
-    const userComparison = usersComparison[5];
-    const { telegramId } = userComparison;
-    controller.getUserByTelegramId(telegramId).then(controllerUser => {
-      expect(cloneObject(controllerUser)).toEqual(userComparison);
+    const userTelegramId = usersBackup[2]['telegramId'];
+    controller.getUserByTelegramId(userTelegramId).then(controllerUser => {
+      expect(cloneObject(controllerUser)).toEqual(usersBackup[2]);
       done();
     });
   });
 
   const newUser = {
-    first_name: 'Petro',
-    last_name: 'Poroshenko',
+    first_name: 'Pedro',
+    last_name: 'Rodrigez',
     id: 9876543210,
     photo_url: 'http://www.cnn.com',
-    username: 'petka'
+    username: 'pedro17'
   };
 
   test('createNewUser works', done => {
@@ -113,23 +77,6 @@ describe('dbController user methods tests', () => {
         expect(newMongoUser[mongoProperty]).toEqual(newUser[property]);
         done();
       });
-    });
-  });
-
-  updateUsersComparison();
-  test('putUserEventByUserId works', done => {
-    const { eventId } = usersComparison[0].events[0];
-    controller.putUserEventByUserId(eventId).then(controllerEvent => {
-      console.log('NEW EVENT ADDED>>>> ', cloneObject(controllerEvent));
-    });
-    done();
-  });
-
-  test('getAllUserEventsByUserId works', done => {
-    const lastUser = usersComparison[usersComparison.length - 1];
-    const lastUserId = lastUser['_id'];
-    controller.getAllUserEventsByUserId(lastUserId).then(controllerEvents => {
-      console.log('EVENTS>>>>>> ', controllerEvents);
     });
   });
 });
