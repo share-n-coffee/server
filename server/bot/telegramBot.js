@@ -49,9 +49,16 @@ const prettifyDate = timestamp => {
 };
 
 const getEventDescription = event => {
-  const eventDate = prettifyDate(event.date);
-  const eventAddress = event.address || '';
-  return `\n<b>${event.title}</b>\n${eventAddress}\n${eventDate}`;
+  const title = `<b>${event.title}</b>`;
+  const date = prettifyDate(event.date);
+  const address = `<i>${event.address || ''}</i>`;
+  const maxDescLength = 90;
+  let description = event.description.replace(/(<([^>]+)>)/gi, '');
+
+  if (description.length > maxDescLength) {
+    description = `${description.slice(0, maxDescLength)}...`;
+  }
+  return `\n${title}\n${date}\n${address}\n\n${description}`;
 };
 
 // Реагируем на ответы пользователя
@@ -204,6 +211,7 @@ module.exports = {
       .then(topicData => {
         event.title = topicData.title;
         event.address = topicData.address;
+        event.description = topicData.description;
 
         event.users.forEach(user => {
           if (

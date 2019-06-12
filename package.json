@@ -33,17 +33,14 @@
     "eslint": "^5.0.0",
     "express": "^4.16.4",
     "express-session": "^1.16.1",
-    "isomorphic-unfetch": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.2.4",
     "mongoose": "^5.5.4",
     "node-telegram-bot-api": "^0.30.0",
-    "passport": "^0.4.0",
-    "passport-telegram": "^1.0.0",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^3.9.0"
   },
   "devDependencies": {
+    "mongodb": "^3.2.4",
     "@shelf/jest-mongodb": "^1.0.1",
     "codecov": "^3.4.0",
     "eslint-config-airbnb-base": "^13.1.0",
