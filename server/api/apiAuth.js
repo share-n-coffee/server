@@ -34,24 +34,28 @@ router
   .all(dataValidation)
   .post((req, res) => {
     const reqUser = req.body;
-    const DBController = new ClassDBController('user', 'department');
+    const userDepartmentDBController = new ClassDBController(
+      'user',
+      'department'
+    );
 
-    DBController.getUserByTelegramId(reqUser.id)
+    userDepartmentDBController
+      .getUserByTelegramId(reqUser.id)
       .then(async takenUser => {
         let user;
         if (takenUser === null) {
-          user = await DBController.createNewUser(reqUser);
+          user = await userDepartmentDBController.createNewUser(reqUser);
         } else {
-          user = await DBController.updateUserInfoByUserId(
+          user = await userDepartmentDBController.updateUserInfoByUserId(
             takenUser._id,
             reqUser
           );
         }
 
-        let { department } = user || null;
+        let { department } = user;
 
         if (department) {
-          department = await DBController.findOneDepartment(
+          department = await userDepartmentDBController.findOneDepartment(
             {
               _id: user.department
             },
@@ -70,8 +74,11 @@ router
 router.route('/admin').post(async (req, res) => {
   const { username, password } = req.body;
 
-  const DBController = new ClassDBController('user', 'department');
-  const user = await DBController.findOneUser({
+  const userDepartmentDBController = new ClassDBController(
+    'user',
+    'department'
+  );
+  const user = await userDepartmentDBController.findOneUser({
     username
   });
 
@@ -94,7 +101,7 @@ router.route('/admin').post(async (req, res) => {
     });
   }
 
-  const department = await DBController.findOneDepartment(
+  const department = await userDepartmentDBController.findOneDepartment(
     {
       _id: user.department
     },
