@@ -15,5 +15,6 @@ module.exports = {
   telegramToken: process.env.NODE_TELEGRAM_TOKEN,
   jwtSecret: process.env.NODE_JWT_SECRET,
   telegramBotToken: process.env.NODE_TELEGRAM_TOKEN,
-  frontendServer: 'http://random-coffee.fun'
+  frontendServer: 'http://random-coffee.fun',
+  dataAuthExpirationTimeLimit: 86400
 };

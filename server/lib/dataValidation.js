@@ -1,20 +1,19 @@
-const jwt = require('jsonwebtoken');
 const checkSignature = require('./checkTelegramSignature');
-const config = require('../config/config');
+const { dataAuthExpirationTimeLimit } = require('../config/config');
 
-async function dataValidation(req, res, next) {
-  const { user } = req;
+function dataValidation(req, res, next) {
+  const user = req.body;
+
   if (!checkSignature(user)) {
     return res.status(401).send('Data is NOT from Telegram');
   }
-  if (+new Date() - user.auth_date > 86400) {
+
+  // need to divide timestamp because telegram send it with 10 digit precision
+  if (+new Date() / 1000 - user.auth_date > dataAuthExpirationTimeLimit) {
     return res.status(401).send('Data is outdated');
   }
   delete user.hash;
 
-  const token = await jwt.sign(user, config.jwtSecret);
-  user.token = token;
-  req.user = user;
   return next();
 }
 

@@ -5,6 +5,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const config = require('../config/config');
 const ClassDBController = require('../database/dbController');
+const dataValidation = require('../lib/dataValidation');
 
 const logger = require('./../logger');
 
@@ -28,49 +29,56 @@ function createPayload(user, department) {
   return payload;
 }
 
-router.route('/').post((req, res) => {
-  const reqUser = req.body;
-  const DBController = new ClassDBController('user', 'department');
+router
+  .route('/')
+  .all(dataValidation)
+  .post((req, res) => {
+    const reqUser = req.body;
+    const userDepartmentDBController = new ClassDBController(
+      'user',
+      'department'
+    );
 
-  DBController.getUserByTelegramId(reqUser.id)
-    .then(async takenUser => {
-      // const user =
-      //   takenUser === null
-      //     ? await DBController.createNewUser(reqUser)
-      //     : takenUser;
+    userDepartmentDBController
+      .getUserByTelegramId(reqUser.id)
+      .then(async takenUser => {
+        let user;
+        if (takenUser === null) {
+          user = await userDepartmentDBController.createNewUser(reqUser);
+        } else {
+          user = await userDepartmentDBController.updateUserInfoByUserId(
+            takenUser._id,
+            reqUser
+          );
+        }
 
-      const user = await DBController.createNewUser({
-        ...reqUser,
-        firstName: reqUser.firstName,
-        lastName: reqUser.lastName,
-        avatar: reqUser.avatar,
-        username: reqUser.username
-      });
+        let { department } = user;
 
-      let { department } = user || null;
+        if (department) {
+          department = await userDepartmentDBController.findOneDepartment(
+            {
+              _id: user.department
+            },
+            'title description'
+          );
+        }
 
-      if (department) {
-        department = await DBController.findOneDepartment(
-          {
-            _id: user.department
-          },
-          'title description'
-        );
-      }
-
-      logger.info(user._id, 'user_login', {
-        action: 'User is logged in via Telegram'
-      });
-      res.json({ token: createJWT(createPayload(user, department)) });
-    })
-    .catch(err => console.log(err));
-});
+        logger.info(user._id, 'user_login', {
+          action: 'User is logged in via Telegram'
+        });
+        res.json({ token: createJWT(createPayload(user, department)) });
+      })
+      .catch(err => console.log(err));
+  });
 
 router.route('/admin').post(async (req, res) => {
   const { username, password } = req.body;
 
-  const DBController = new ClassDBController('user', 'department');
-  const user = await DBController.findOneUser({
+  const userDepartmentDBController = new ClassDBController(
+    'user',
+    'department'
+  );
+  const user = await userDepartmentDBController.findOneUser({
     username
   });
 
@@ -93,7 +101,7 @@ router.route('/admin').post(async (req, res) => {
     });
   }
 
-  const department = await DBController.findOneDepartment(
+  const department = await userDepartmentDBController.findOneDepartment(
     {
       _id: user.department
     },
