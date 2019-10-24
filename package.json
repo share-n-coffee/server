@@ -1,7 +1,7 @@
 {
-  "name": "demoproject",
-  "version": "1.0.1",
-  "description": "auth project",
+  "name": "random-coffee-server",
+  "version": "1.0.2",
+  "description": "Node.js-powered backend for Random Coffee service",
   "main": "server.js",
   "scripts": {
     "start": "cross-env NODE_ENV=production node server.js",
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/saniok017/demoproject.git"
+    "url": "git+https://github.com/share-n-coffee/server.git"
   },
   "author": "saniok",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/saniok017/demoproject/issues"
+    "url": "https://github.com/share-n-coffee/server/issues"
   },
-  "homepage": "https://github.com/saniok017/demoproject#readme",
+  "homepage": "https://github.com/share-n-coffee/server/#readme",
   "dependencies": {
     "concurrently": "^4.1.0",
     "config": "^3.1.0",
