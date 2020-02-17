@@ -1,7 +1,7 @@
 const { createHash, createHmac } = require('crypto');
 const config = require('../config/config');
 
-const TOKEN = config.telegramToken;
+const TOKEN = config.TELEGRAM_BOT_TOKEN;
 
 const secret = createHash('sha256')
   .update(TOKEN)

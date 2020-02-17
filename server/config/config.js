@@ -1,19 +1,23 @@
-module.exports = {
-  database: `${process.env.NODE_MONGODB_URI}`,
-  port: `${process.env.PORT || 3000}`,
-  corsOptions: {
-    origins: [
-      'https://forgeserver.herokuapp.com',
-      'http://random-coffee.fun',
-      'https://loori-r.github.io',
-      'http://localhost:3000',
-      'http://127.0.0.1:5500'
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true
-  },
-  telegramToken: process.env.NODE_TELEGRAM_TOKEN,
+const config = {
+  PORT: process.env.PORT || 3000,
+  DATABASE: process.env.NODE_MONGODB_URI,
+  MAX_DATABASE_CONNECTION_ATTEMPTS: 100,
   jwtSecret: process.env.NODE_JWT_SECRET,
-  telegramBotToken: process.env.NODE_TELEGRAM_TOKEN,
-  frontendServer: 'http://random-coffee.fun'
+  CORS_ENABLED: Boolean(+process.env.CORS_ENABLED),
+  TELEGRAM_BOT_ENABLED: Boolean(+process.env.TELEGRAM_BOT_ENABLED)
 };
+
+config.CORS = {
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  origins:
+    config.CORS_ENABLED && process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(',')
+      : '*'
+};
+
+if (config.TELEGRAM_BOT_ENABLED) {
+  config.TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+}
+
+module.exports = config;

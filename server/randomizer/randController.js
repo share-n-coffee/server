@@ -41,7 +41,7 @@ class RandController {
         console.log(error);
       });
 
-    if (eventToBalance.active) {
+    if (eventToBalance && eventToBalance.active) {
       await controller.removeAllEventPairsByEventId(eventId);
       pairsGenerator(eventToBalance); // <===  Функция генерации пар//
     } else {

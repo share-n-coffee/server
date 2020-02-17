@@ -1,7 +1,5 @@
 /* eslint-disable dot-notation */
 const mongoose = require('mongoose');
-const { MongoClient } = require('mongodb');
-const config = require('../../../server/config/config');
 const connectDatabase = require('../../../server/lib/connectDatabase');
 const ClassController = require('../../../server/database/dbController');
 // const collectionConfig = require('./collection');
