@@ -21,3 +21,17 @@ npm run server
 
 # Server runs on http://localhost:3000
 ```
+
+## .env example
+
+```bash
+NODE_MONGODB_URI=mongodb://root:root@localhost:27017/random_coffee
+NODE_JWT_SECRET=random_jwt
+
+TELEGRAM_BOT_ENABLED=0
+TELEGRAM_BOT_TOKEN=123
+
+CORS_ENABLED=0
+CORS_ORIGINS=http://localhost:3000,https://google.com
+```
+
