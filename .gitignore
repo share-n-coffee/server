@@ -56,10 +56,13 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+*.env
 
 # next.js build output
 .next
 
 .idea
 .vscode
+
+.DS_Store
+mongo-volume/

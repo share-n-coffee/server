@@ -11,7 +11,7 @@ const Users = UserSchema('demo_user');
 const tokenLifeTime = 60 * 60 * 24 * 7;
 
 function createJWT(data) {
-  return jwt.sign({ data }, config.jwtSecret, { expiresIn: tokenLifeTime });
+  return jwt.sign({ data }, config.JWT_SECRET, { expiresIn: tokenLifeTime });
 }
 
 function createPayload(user) {
@@ -48,16 +48,26 @@ router.route('/admin').post(async (req, res) => {
   return res.json({ token: createJWT(createPayload(user)) });
 });
 
-router.route('/').put((req, res) => {
+router.route('/').post(async (req, res) => {
+  console.log(`Login attempt: ${JSON.stringify(req.body)}`);
   const reqUser = req.body;
 
-  Users.findOne({
-    telegramUserId: reqUser.id
-  }).then(async takenUser => {
-    const DBController = new ClassDBController('user');
-    const user = takenUser || (await DBController.saveNewUser(reqUser));
+  if (reqUser.id) {
+    let user = await Users.findOne({ telegramUserId: reqUser.id });
+
+    console.log(user ? 'User exists' : 'Create new user');
+
+    if (!user) {
+      const DBController = new ClassDBController('user');
+      user = await DBController.saveNewUser(reqUser);
+    }
+
+    console.log(user);
     res.json({ token: createJWT(createPayload(user)) });
-  });
+  } else {
+    console.log('ERROR: user id required');
+    res.status(400).json({ error: 'user_id_required' });
+  }
 });
 
 module.exports = router;

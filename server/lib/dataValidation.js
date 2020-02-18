@@ -12,7 +12,7 @@ async function dataValidation(req, res, next) {
   }
   delete user.hash;
 
-  const token = await jwt.sign(user, config.jwtSecret);
+  const token = await jwt.sign(user, config.JWT_SECRET);
   user.token = token;
   req.user = user;
   return next();

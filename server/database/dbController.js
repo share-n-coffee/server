@@ -33,10 +33,10 @@ function DBController(...collectionNames) {
 
   return collections.reduce((result, collection) => {
     if (typeof collection !== 'string') {
-      throw new TypeError('DBController argument should be a strind');
+      throw new TypeError('DBController argument should be a string');
     }
     if (!methodNames.includes(collection)) {
-      throw SyntaxError(`arguments should be from list: ${methodNames}`);
+      throw SyntaxError(`Arguments should be from list: ${methodNames}`);
     }
     return Object.assign(result, switchFactory(collection));
   }, {});
