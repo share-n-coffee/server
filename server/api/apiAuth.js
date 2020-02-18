@@ -11,7 +11,7 @@ const Users = UserSchema('demo_user');
 const tokenLifeTime = 60 * 60 * 24 * 7;
 
 function createJWT(data) {
-  return jwt.sign({ data }, config.jwtSecret, { expiresIn: tokenLifeTime });
+  return jwt.sign({ data }, config.JWT_SECRET, { expiresIn: tokenLifeTime });
 }
 
 function createPayload(user) {

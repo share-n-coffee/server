@@ -8,12 +8,12 @@ function checkOrigin(origin, callback) {
   }
 
   const msg =
-    'The CORS policy for this site does not ' +
-    'allow access from the specified Origin.';
+    'The CORS policy for this site does not allow access from the specified Origin.';
   return callback(new Error(msg), false);
 }
 
-const CORS_POLITICS = config.CORS_ENABLED ? checkOrigin : false;
+const CORS_POLITICS =
+  config.CORS.enabled && config.CORS.origins ? checkOrigin : false;
 
 module.exports = app => {
   app.use(express.json());
