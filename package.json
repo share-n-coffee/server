@@ -24,7 +24,7 @@
   "homepage": "https://github.com/share-n-coffee/server/#readme",
   "dependencies": {
     "concurrently": "4.1.0",
-    "config": "3.1.0",
+    "config": "3.3.8",
     "cors": "2.8.5",
     "cron": "1.7.1",
     "dotenv": "7.0.0",
